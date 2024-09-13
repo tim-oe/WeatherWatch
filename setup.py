@@ -79,7 +79,7 @@ class SonarCommand(Command):
 # p3 setup tests -s <fully qualified test module>
 setup(
     version="0.1",
-    description="honeyPi beehive monitor",
+    description="weather watch sensor processor",
     author="tim Cronin",
     author_email="tecronin@gmail.com",
     packages=find_packages(),

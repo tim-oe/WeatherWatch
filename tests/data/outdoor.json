@@ -1,0 +1,20 @@
+{
+"time" : "2024-09-11 21:22:57", 
+"model" : "Cotech-367959", 
+"id" : 33, 
+"battery_ok" : 1, 
+"temperature_F" : 81.400, 
+"humidity" : 42, 
+"rain_mm" : 0.000, 
+"wind_dir_deg" : 329, 
+"wind_avg_m_s" : 0.000, 
+"wind_max_m_s" : 0.300, 
+"light_lux" : 2, 
+"uv" : 0.000, 
+"mic" : "CRC", 
+"mod" : "ASK", 
+"freq" : 433.993, 
+"rssi" : -0.102, 
+"snr" : 15.687, 
+"noise" : -15.789
+}

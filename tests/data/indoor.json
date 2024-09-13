@@ -1,0 +1,15 @@
+{
+    "time": "2024-09-11 21:11:42", 
+    "model": "Ambientweather-F007TH", 
+    "id": 95, 
+    "channel": 3, 
+    "battery_ok": 1, 
+    "temperature_F": 76.1, 
+    "humidity": 52, 
+    "mic": "CRC", 
+    "mod": "ASK", 
+    "freq": 433.992, 
+    "rssi": -0.131, 
+    "snr": 15.283, 
+    "noise": -15.414
+    }

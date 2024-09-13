@@ -1,7 +1,13 @@
 # WeatherWatch
-raspbery pi weather data collector
+raspbery pi weather data collector using OTS parts.
 
 ## BOM
+- [Nooelec RTL-SDR v5](https://www.nooelec.com/store/nesdr-smart-sdr.html?srsltid=AfmBOooo6Krrq7dvl4eQHVzfA-Yd0QMADqy0cH9XJ5qf-dx8T5dQAby2)
+- [indoor Thermo-Hygrometer](https://www.sainlogic.com/english/additional-temperature-and-humidity-sensor-for-sainlogic-weather-station-ft0300.html)
+- [outdoor sensor](https://www.sainlogic.com/english/transmitter-for-sainlogic-weather-station-ft0310-1.html)
+
+## libs
+- [rtl_433](https://github.com/merbanan/rtl_433)
 
 ## python libs
 - [pipdeptree](https://pypi.org/project/pipdeptree/)
@@ -10,7 +16,7 @@ raspbery pi weather data collector
 - [RPi.gpio](https://pypi.org/project/RPi.GPIO/)
 
 ## tests
- p3 setup.py test -v  -s <fully qualified test class>
+ python3 setup.py test -v  -s <fully qualified test class>
 
 ## build system
 - [jenkins](https://www.jenkins.io/)
