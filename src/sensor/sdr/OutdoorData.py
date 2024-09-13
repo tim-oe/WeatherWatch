@@ -2,6 +2,13 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 
 class OutdoorData(IndoorData):
+    RAIN_KEY = 'rain_mm'
+    WIND_AVE_KEY = 'wind_avg_m_s'
+    WIND_MAX_KEY = 'wind_max_m_s'
+    WIND_DIR_KEY = 'wind_dir_deg'
+    LUX_KEY = 'light_lux'
+    UV_KEY = 'uv'
+
     """
     outdoor sensor data 
     """
@@ -55,12 +62,12 @@ class OutdoorData(IndoorData):
             BaseData.baseDecoder(data, d)
             data.temperature = d[IndoorData.TEMP_KEY]
             data.humidity = d[IndoorData.HUMID_KEY]            
-            data.rain_mm = d['rain_mm']
-            data.wind_avg_m_s = d['wind_avg_m_s']
-            data.wind_max_m_s = d['wind_max_m_s']
-            data.wind_dir_deg = d['wind_dir_deg']
-            data.light_lux = d['light_lux']
-            data.uv = d['uv']
+            data.rain_mm = d[OutdoorData.RAIN_KEY]
+            data.wind_avg_m_s = d[OutdoorData.WIND_AVE_KEY]
+            data.wind_max_m_s = d[OutdoorData.WIND_MAX_KEY]
+            data.wind_dir_deg = d[OutdoorData.WIND_DIR_KEY]
+            data.light_lux = d[OutdoorData.LUX_KEY]
+            data.uv = d[OutdoorData.UV_KEY]
             return data            
         except Exception as e:
             raise Exception('failed to parse ' + str(d)) from e

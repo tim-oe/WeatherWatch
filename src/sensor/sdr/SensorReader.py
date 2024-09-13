@@ -7,7 +7,7 @@
 """
 
 # https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python
-__all__ = ["BaseSensor"]
+__all__ = ["SensorReader"]
 
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
@@ -19,15 +19,15 @@ import time
 import sys
 import json
 
-class BaseSensor(object):
+class SensorReader(object):
     """
     base RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
     reciever: https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-smart-sdr.html?srsltid=AfmBOoqsEaIcHnJ1mghLBbE5q-Gf0NjyJYp46zaCQwDXRngPQauzruzT
     """
     ON_POSIX = 'posix' in sys.builtin_module_names
-    #CMD = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '20']
-    CMD = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '153']
+    CMD = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '20']
+    #CMD = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '153']
 
     def __init__(self):
         """
@@ -59,11 +59,11 @@ class BaseSensor(object):
         """
         read sensor data
         """        
-        self.p = Popen( BaseSensor.CMD, 
+        self.p = Popen( SensorReader.CMD, 
                        stdout=PIPE, 
                        stderr=STDOUT, 
                        bufsize=1, 
-                       close_fds=BaseSensor.ON_POSIX)
+                       close_fds=SensorReader.ON_POSIX)
         self.q = Queue()
 
         self.t = Thread(target=self.pushRecord, 
@@ -80,8 +80,8 @@ class BaseSensor(object):
                 time.sleep(5)
             else: # got line
                 print("sensor json: " + data.decode())
-                #record: IndoorData = json.loads(data, object_hook = IndoorData.jsonDecoder)
-                record: OutdoorData = json.loads(data, object_hook = OutdoorData.jsonDecoder)
+                record: IndoorData = json.loads(data, object_hook = IndoorData.jsonDecoder)
+                #record: OutdoorData = json.loads(data, object_hook = OutdoorData.jsonDecoder)
                 print("sensor instance: " + str(record))
 
             sys.stdout.flush()

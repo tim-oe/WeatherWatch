@@ -4,7 +4,16 @@ class BaseData(object):
 
     # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    TIME_KEY = 'time'
     MODEL_KEY = 'model'
+    ID_KEY = 'id'
+    BATTERY_KEY = 'battery_ok'
+    MIC_KEY = 'mic'
+    MOD_KEY = 'mod'   
+    FREQ_KEY = 'freq'
+    RSSI_KEY = 'rssi'
+    NOISE_KEY = 'noise'
+    SNR_KEY = 'snr'
 
     """
     base sensor data 
@@ -43,14 +52,14 @@ class BaseData(object):
             o.timeStamp = datetime.strptime(d['time'], BaseData.DATE_FORMAT)
             # TODO will drive instance type...
             o.model = d[BaseData.MODEL_KEY]
-            o.id = int(d['id'])
-            o.batteryOk = (d['battery_ok'] == 1)
-            o.mic = d['mic']
-            o.mod = d['mod']
-            o.freq = d['freq']
-            o.rssi = d['rssi']
-            o.noise = d['noise']
-            o.snr = d['snr']
+            o.id = int(d[BaseData.ID_KEY])
+            o.batteryOk = (d[BaseData.BATTERY_KEY] == 1)
+            o.mic = d[BaseData.MIC_KEY]
+            o.mod = d[BaseData.MOD_KEY]
+            o.freq = d[BaseData.FREQ_KEY]
+            o.rssi = d[BaseData.RSSI_KEY]
+            o.noise = d[BaseData.NOISE_KEY]
+            o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
             print("BD wtf" + str(e))            
             #raise Exception('failed to parse ' + str(d)) from e
@@ -224,7 +233,7 @@ class BaseData(object):
         :param self: this
         :return: the noise
         """
-        return self._snr
+        return self._noise
     
     @noise.setter
     def noise(self, noise):
