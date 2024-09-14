@@ -18,6 +18,7 @@ from queue import Queue, Empty
 import time
 import sys
 import json
+import logging
 
 class SensorReader(object):
     """
@@ -49,7 +50,7 @@ class SensorReader(object):
                     # TODO () -> k,v pair?
                     queue.put(line)
                 except ValueError as e:
-                    #print ("not json=[", line, "]")
+                    logging.info(line)
                     pass 
             out.close()
         except:
@@ -59,6 +60,8 @@ class SensorReader(object):
         """
         read sensor data
         """        
+        logging.debug('starting cmd: ' + str(SensorReader.CMD))
+
         self.p = Popen( SensorReader.CMD, 
                        stdout=PIPE, 
                        stderr=STDOUT, 
@@ -79,9 +82,9 @@ class SensorReader(object):
             except Empty:
                 time.sleep(5)
             else: # got line
-                print("sensor json: " + data.decode())
+                logging.debug('sensor json: ' + data.decode())
                 record: IndoorData = json.loads(data, object_hook = IndoorData.jsonDecoder)
                 #record: OutdoorData = json.loads(data, object_hook = OutdoorData.jsonDecoder)
-                print("sensor instance: " + str(record))
+                logging.debug('sensor instance: ' + str(record))
 
             sys.stdout.flush()

@@ -1,6 +1,8 @@
+import logging
 from sensor.sdr.BaseData import BaseData
 
 class IndoorData(BaseData):
+    CHANNEL_KEY = 'channel'
     TEMP_KEY = 'temperature_F'
     HUMID_KEY = 'humidity'
 
@@ -10,6 +12,7 @@ class IndoorData(BaseData):
     def __init__(self, 
                  timeStamp=None,
                  id=None,
+                 model=None,
                  channel=None,
                  batteryOK = False,
                  mic = None,
@@ -26,6 +29,7 @@ class IndoorData(BaseData):
         """
         self.timeStamp = timeStamp
         self.id = id
+        self.model = model
         self.channel = channel
         self.batteryOk = batteryOK
         self.mic = mic
@@ -42,12 +46,12 @@ class IndoorData(BaseData):
         try:
             data = IndoorData()
             BaseData.baseDecoder(data, d)
-            data.channel = int(d['channel'])
+            data.channel = int(d[IndoorData.CHANNEL_KEY])
             data.temperature = d[IndoorData.TEMP_KEY]
             data.humidity = d[IndoorData.HUMID_KEY]            
             return data            
         except Exception as e:
-            #print("ID wtf" + str(e))
+            logging.error('failed to parse ' + str(d) + '\n' + str(e))            
             raise Exception('failed to parse ' + str(d)) from e
 
     @property

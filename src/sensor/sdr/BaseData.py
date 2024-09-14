@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 class BaseData(object):
@@ -21,6 +22,7 @@ class BaseData(object):
     def __init__(self, 
                  timeStamp=None,
                  id=None,
+                 model=None,
                  batteryOK = False,
                  mic = None,
                  mod = None,
@@ -33,6 +35,7 @@ class BaseData(object):
         :param self: this
         """
         self.timeStamp = timeStamp
+        self.model = model
         self.id = id
         self.batteryOk = batteryOK
         self.mic = mic
@@ -61,8 +64,8 @@ class BaseData(object):
             o.noise = d[BaseData.NOISE_KEY]
             o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
-            print("BD wtf" + str(e))            
-            #raise Exception('failed to parse ' + str(d)) from e
+            logging.error('failed to parse ' + str(d) + '\n' + str(e))            
+            raise Exception('failed to parse ' + str(d)) from e
             
     @property
     def timeStamp(self) -> datetime:

@@ -29,5 +29,8 @@ raspbery pi weather data collector using OTS parts.
     - gen ssh key via [putty](https://www.ssh.com/academy/ssh/putty/windows/puttygen)
     - for jenkins ssh key creds need to export private key as [openssh format](https://stackoverflow.com/questions/53636532/jenkins-what-is-the-correct-format-for-private-key-in-credentials) 
     - add jenkins to needed [groups](https://forums.raspberrypi.com/viewtopic.php?t=225274)
-    
+
+## faq
+    - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
+
 ## TODOs    

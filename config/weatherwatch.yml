@@ -1,0 +1,18 @@
+sensors:
+    - name: outdoor
+      model: Cotech-367959 
+      id: 33
+      dataClass: OutdoorData
+      device: 153
+    - name: indoor_3dfloor   
+      model: Ambientweather-F007TH 
+      id: 192 
+      channel: 2 
+      dataClass: IndoorData
+      device: 20
+    - name: indoor_basement   
+      model: Ambientweather-F007TH 
+      id: 95 
+      channel: 3 
+      dataClass: IndoorData
+      device: 20

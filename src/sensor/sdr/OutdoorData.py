@@ -1,3 +1,5 @@
+import logging
+
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 
@@ -15,6 +17,7 @@ class OutdoorData(IndoorData):
     def __init__(self, 
                  timeStamp=None,
                  id=None,
+                 model=None,
                  channel=None,
                  batteryOK = False,
                  mic = None,
@@ -38,6 +41,7 @@ class OutdoorData(IndoorData):
         super().__init__()
         self.timeStamp = timeStamp
         self.id = id
+        self.model = model
         self.channel = channel
         self.batteryOk = batteryOK
         self.mic = mic
@@ -70,6 +74,7 @@ class OutdoorData(IndoorData):
             data.uv = d[OutdoorData.UV_KEY]
             return data            
         except Exception as e:
+            logging.error('failed to parse ' + str(d) + '\n' + str(e))            
             raise Exception('failed to parse ' + str(d)) from e
 
     @property

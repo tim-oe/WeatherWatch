@@ -13,5 +13,6 @@ class IndoorDataTest(BaseTestData):
             record: IndoorData = json.load(file, object_hook = IndoorData.jsonDecoder)
 
         self.assertBase(expected, record)
+        self.assertEqual(expected[IndoorData.CHANNEL_KEY],record.channel)
         self.assertEqual(expected[IndoorData.HUMID_KEY],record.humidity)
         self.assertEqual(expected[IndoorData.TEMP_KEY],record.temperature)
