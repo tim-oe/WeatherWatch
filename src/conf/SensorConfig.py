@@ -13,6 +13,10 @@ class SensorConfig(object):
         """
         for key in config:
             self.__dict__['_' + key] = config[key]
+        
+        # optional config
+        if '_channel' not in self.__dict__:
+            self._channel = None
             
     #override
     def __str__(self):
@@ -27,15 +31,6 @@ class SensorConfig(object):
         """
         return self._name
     
-    @name.setter
-    def name(self, name):
-        """
-        name property setter
-        :param self: this
-        :param: the name
-        """
-        self._name = name
-
     @property
     def id(self) -> int:
         """
@@ -44,16 +39,16 @@ class SensorConfig(object):
         :return: the id
         """
         return self._id
-    
-    @id.setter
-    def id(self, id: int):
-        """
-        id property setter
-        :param self: this
-        :param: the id
-        """
-        self._id = id                
 
+    @property
+    def model(self) -> int:
+        """
+        model property getter
+        :param self: this
+        :return: the model
+        """
+        return self._model
+    
     @property
     def device(self) -> int:
         """
@@ -63,15 +58,6 @@ class SensorConfig(object):
         """
         return self._device
     
-    @device.setter
-    def device(self, device: int):
-        """
-        device property setter
-        :param self: this
-        :param: the device
-        """
-        self._device = device                
-
     @property
     def channel(self) -> int:
         """
@@ -80,16 +66,7 @@ class SensorConfig(object):
         :return: the channel
         """
         return self._channel
-    
-    @channel.setter
-    def channel(self, channel: int):
-        """
-        channel property setter
-        :param self: this
-        :param: the channel
-        """
-        self._channel = channel                        
-    
+        
     @property
     def model(self):
         """
@@ -99,15 +76,6 @@ class SensorConfig(object):
         """
         return self._model
     
-    @model.setter
-    def model(self, model):
-        """
-        model property setter
-        :param self: this
-        :param: the model
-        """
-        self._model = model
-
     @property
     def dataClass(self):
         """
@@ -125,4 +93,17 @@ class SensorConfig(object):
         :param: the dataClass
         """
         self._dataClass = dataClass
+
+    @property
+    def key(self):
+        """
+        key property getter
+        :param self: this
+        :return: the key
+        """
+        key = self._model + '|' + str(self._id)
         
+        if(self._channel != None):
+            key = key + '|' + str(self._channel) 
+        
+        return key  

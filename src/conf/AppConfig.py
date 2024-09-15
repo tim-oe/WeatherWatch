@@ -9,20 +9,33 @@ from src.conf.SensorConfig import SensorConfig
 class AppConfig(object):
     CONFIG_FILE = 'config/weatherwatch.yml'
     LOG_CONFIG_FILE = 'config/logging.yml'
+    SDR_KEY = 'sdr'
+    READER_KEY = 'reader'
     SENSORS_KEY = 'sensors'
+   
+    """
+    app config data 
+    """
     
-    """
-    sensor config data 
-    """
+    # override for singleton
+    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(AppConfig, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self):
         """
         ctor
         :param self: this
         """
+        
+        # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
+        # https://docs.python.org/3/library/logging.html#logrecord-attributes
         with open(AppConfig.LOG_CONFIG_FILE, 'rt') as f:
             lc = yaml.safe_load(f.read())
             logging.config.dictConfig(lc)        
-       
+    
         logging.info("loaded logging config " + AppConfig.LOG_CONFIG_FILE)
        
         with open(AppConfig.CONFIG_FILE) as f:
@@ -32,7 +45,7 @@ class AppConfig(object):
 
         self._sensors = []
         
-        for s in self._conf[AppConfig.SENSORS_KEY]:
+        for s in self._conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
              self._sensors.append(SensorConfig(s))
            
     #override
@@ -55,5 +68,4 @@ class AppConfig(object):
         :param self: this
         :return: the sensors
         """
-        return self.self._sensors
-
+        return self._sensors

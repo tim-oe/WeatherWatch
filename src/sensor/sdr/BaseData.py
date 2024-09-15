@@ -8,6 +8,8 @@ class BaseData(object):
     TIME_KEY = 'time'
     MODEL_KEY = 'model'
     ID_KEY = 'id'
+    # used by indoor sensor
+    CHANNEL_KEY = 'channel'
     BATTERY_KEY = 'battery_ok'
     MIC_KEY = 'mic'
     MOD_KEY = 'mod'   
@@ -53,7 +55,6 @@ class BaseData(object):
     def baseDecoder(o: 'BaseData' , d: dict):
         try:
             o.timeStamp = datetime.strptime(d['time'], BaseData.DATE_FORMAT)
-            # TODO will drive instance type...
             o.model = d[BaseData.MODEL_KEY]
             o.id = int(d[BaseData.ID_KEY])
             o.batteryOk = (d[BaseData.BATTERY_KEY] == 1)
@@ -66,6 +67,20 @@ class BaseData(object):
         except Exception as e:
             logging.error('failed to parse ' + str(d) + '\n' + str(e))            
             raise Exception('failed to parse ' + str(d)) from e
+ 
+    @staticmethod
+    def key(j):
+        """
+        key property getter
+        :param self: this
+        :return: the key
+        """
+        key = j[BaseData.MODEL_KEY] + '|' + str(j[BaseData.ID_KEY])
+        
+        if BaseData.CHANNEL_KEY in j:
+            key = key + '|' + str(j[BaseData.CHANNEL_KEY]) 
+        
+        return key  
             
     @property
     def timeStamp(self) -> datetime:

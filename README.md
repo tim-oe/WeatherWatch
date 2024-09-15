@@ -14,6 +14,8 @@ raspbery pi weather data collector using OTS parts.
 - [coverage](https://pypi.org/project/coverage/)
 - [black](https://pypi.org/project/black/)
 - [RPi.gpio](https://pypi.org/project/RPi.GPIO/)
+- [PyYaml](https://pyyaml.org/)
+- [tox](https://tox.wiki/en/4.18.1/index.html)
 
 ## tests
  python3 setup.py test -v  -s <fully qualified test class>
@@ -31,6 +33,6 @@ raspbery pi weather data collector using OTS parts.
     - add jenkins to needed [groups](https://forums.raspberrypi.com/viewtopic.php?t=225274)
 
 ## faq
-    - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
+- [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 
 ## TODOs    

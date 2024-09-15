@@ -10,7 +10,7 @@ class SensorConfigTest(unittest.TestCase):
         
         ac = AppConfig()
         
-        for expected in ac.conf['sensors']:
+        for expected in ac.conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
             sc: SensorConfig = SensorConfig(expected)
             self.assertEqual(expected[BaseData.MODEL_KEY],sc.model)
             self.assertEqual(expected[BaseData.ID_KEY],sc.id)

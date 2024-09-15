@@ -2,7 +2,6 @@ import logging
 from sensor.sdr.BaseData import BaseData
 
 class IndoorData(BaseData):
-    CHANNEL_KEY = 'channel'
     TEMP_KEY = 'temperature_F'
     HUMID_KEY = 'humidity'
 
@@ -46,7 +45,7 @@ class IndoorData(BaseData):
         try:
             data = IndoorData()
             BaseData.baseDecoder(data, d)
-            data.channel = int(d[IndoorData.CHANNEL_KEY])
+            data.channel = int(d[BaseData.CHANNEL_KEY])
             data.temperature = d[IndoorData.TEMP_KEY]
             data.humidity = d[IndoorData.HUMID_KEY]            
             return data            
