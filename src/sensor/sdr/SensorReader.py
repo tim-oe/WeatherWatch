@@ -123,7 +123,6 @@ class SensorReader(object):
         self.p = Popen( SensorReader.CMD, 
                        stdout=PIPE, 
                        stderr=STDOUT, 
-                       bufsize=1, 
                        close_fds=SensorReader.ON_POSIX)
         
         self.q = Queue()

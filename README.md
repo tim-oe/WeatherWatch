@@ -15,10 +15,12 @@ raspbery pi weather data collector using OTS parts.
 - [black](https://pypi.org/project/black/)
 - [RPi.gpio](https://pypi.org/project/RPi.GPIO/)
 - [PyYaml](https://pyyaml.org/)
-- [tox](https://tox.wiki/en/4.18.1/index.html)
+- [pipreqs](https://github.com/bndr/pipreqs)
+- [tox TBD...](https://tox.wiki/en/4.18.1/index.html)
 
 ## tests
- python3 setup.py test -v  -s <fully qualified test class>
+- python3 setup.py test -v  -s <fully qualified test class>
+- [run test with tox](https://jmeridth.com/posts/how-to-run-a-single-test-with-tox/)
 
 ## build system
 - [jenkins](https://www.jenkins.io/)

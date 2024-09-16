@@ -72,6 +72,34 @@ class SonarCommand(Command):
                   "-Dsonar.host.url=http://sonarqube " + 
                   "-Dsonar.login=sqp_71c96d128c55d2c7ecb534b89a9cfa35fe67a130")
 
+class DockerMysqlUpCommand(Command):
+    """launch mysql docker container"""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system("docker compose --file mysql-docker-compose.yml up -d")
+
+class DockerMysqlDownCommand(Command):
+    """shutdown mysql docker container"""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system("docker compose --file mysql-docker-compose.yml down")
+
 # https://www.tutorialguruji.com/python/python-package-structure-setup-py-for-running-unit-tests/
 # run tests
 # via this script
@@ -83,7 +111,15 @@ setup(
     author="tim Cronin",
     author_email="tecronin@gmail.com",
     packages=find_packages(),
-    install_requires=[],
+      install_requires=[
+          'setuptools',
+          'PyYAML',
+          'SQLAlchemy'
+      ],
     test_suite="tests",
-    cmdclass={"clean": CleanCommand, "cover": CoverageCommand, "sonar": SonarCommand},
+    cmdclass={"clean": CleanCommand, 
+              "cover": CoverageCommand, 
+              "sonar": SonarCommand,
+              'mysqlUp': DockerMysqlUpCommand,
+              'mysqlDown': DockerMysqlDownCommand},
 )

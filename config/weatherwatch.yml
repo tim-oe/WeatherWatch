@@ -1,6 +1,6 @@
 sdr:
   reader:
-    timeout: 120
+    timeout: 60
   sensors:
       - name: outdoor
         model: Cotech-367959 
