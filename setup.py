@@ -114,7 +114,8 @@ setup(
       install_requires=[
           'setuptools',
           'PyYAML',
-          'SQLAlchemy'
+          'SQLAlchemy',
+          'mysql-connector-python'
       ],
     test_suite="tests",
     cmdclass={"clean": CleanCommand, 

@@ -66,7 +66,7 @@ class BaseData(object):
             o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
             logging.error('failed to parse ' + str(d) + '\n' + str(e))            
-            raise Exception('failed to parse ' + str(d)) from e
+            raise Exception('failed to parse ' + str(d), ) from e
  
     @staticmethod
     def key(j):

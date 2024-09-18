@@ -1,3 +1,9 @@
+database:
+  dialect: 'mysql'
+  driver: 'mysqlconnector'
+  host: 'localhost'
+  port: 3306
+  name: 'weather'
 sdr:
   reader:
     timeout: 60

@@ -20,7 +20,8 @@ raspbery pi weather data collector using OTS parts.
 
 ## tests
 - python3 setup.py test -v  -s <fully qualified test class>
-- [run test with tox](https://jmeridth.com/posts/how-to-run-a-single-test-with-tox/)
+    - deprected moving to tox...
+- [run single test with tox](https://stackoverflow.com/questions/35697353/how-to-run-only-one-test-in-tox)
 
 ## build system
 - [jenkins](https://www.jenkins.io/)

@@ -55,9 +55,9 @@ class SensorReader(object):
     @property
     def reads(self) -> List[BaseData]:
         """
-        rain_mm string property getter
+        reads string property getter
         :param self: this
-        :return: the rain_mm
+        :return: the reads
         """
         return self._reads
 
@@ -118,6 +118,7 @@ class SensorReader(object):
         logging.info('starting cmd: ' + str(SensorReader.CMD))
 
         sensors = self._sensors.copy()
+        self._reads = []
         reads = []    
 
         self.p = Popen( SensorReader.CMD, 

@@ -4,6 +4,7 @@ import logging.config
 
 from typing import List
 
+from src.conf.DatabaseConfig import DatabaseConfig
 from src.conf.SensorConfig import SensorConfig
 
 class AppConfig(object):
@@ -12,6 +13,7 @@ class AppConfig(object):
     SDR_KEY = 'sdr'
     READER_KEY = 'reader'
     SENSORS_KEY = 'sensors'
+    DATABASE_KEY = 'database'
    
     """
     app config data 
@@ -48,6 +50,8 @@ class AppConfig(object):
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
              self._sensors.append(SensorConfig(s))
            
+        self._database =  DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])  
+    
     #override
     def __str__(self):
         return str(self.__dict__)
@@ -69,3 +73,12 @@ class AppConfig(object):
         :return: the sensors
         """
         return self._sensors
+    
+    @property
+    def database(self) -> DatabaseConfig:
+        """
+        database property getter
+        :param self: this
+        :return: the database
+        """
+        return self._database
