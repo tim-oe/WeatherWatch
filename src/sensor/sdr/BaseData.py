@@ -1,37 +1,41 @@
 import logging
 from datetime import datetime
 
+
 class BaseData(object):
 
     # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
-    DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-    TIME_KEY = 'time'
-    MODEL_KEY = 'model'
-    ID_KEY = 'id'
+    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+    TIME_KEY = "time"
+    MODEL_KEY = "model"
+    ID_KEY = "id"
     # used by indoor sensor
-    CHANNEL_KEY = 'channel'
-    BATTERY_KEY = 'battery_ok'
-    MIC_KEY = 'mic'
-    MOD_KEY = 'mod'   
-    FREQ_KEY = 'freq'
-    RSSI_KEY = 'rssi'
-    NOISE_KEY = 'noise'
-    SNR_KEY = 'snr'
+    CHANNEL_KEY = "channel"
+    BATTERY_KEY = "battery_ok"
+    MIC_KEY = "mic"
+    MOD_KEY = "mod"
+    FREQ_KEY = "freq"
+    RSSI_KEY = "rssi"
+    NOISE_KEY = "noise"
+    SNR_KEY = "snr"
 
     """
     base sensor data 
     """
-    def __init__(self, 
-                 timeStamp=None,
-                 id=None,
-                 model=None,
-                 batteryOK = False,
-                 mic = None,
-                 mod = None,
-                 freq = None,
-                 rssi = None,
-                 noise = None,
-                 snr = None):
+
+    def __init__(
+        self,
+        timeStamp=None,
+        id=None,
+        model=None,
+        batteryOK=False,
+        mic=None,
+        mod=None,
+        freq=None,
+        rssi=None,
+        noise=None,
+        snr=None,
+    ):
         """
         ctor
         :param self: this
@@ -47,17 +51,17 @@ class BaseData(object):
         self.noise = noise
         self.snr = snr
 
-    #override
+    # override
     def __str__(self):
         return str(self.__dict__)
 
     @staticmethod
-    def baseDecoder(o: 'BaseData' , d: dict):
+    def baseDecoder(o: "BaseData", d: dict):
         try:
-            o.timeStamp = datetime.strptime(d['time'], BaseData.DATE_FORMAT)
+            o.timeStamp = datetime.strptime(d["time"], BaseData.DATE_FORMAT)
             o.model = d[BaseData.MODEL_KEY]
             o.id = int(d[BaseData.ID_KEY])
-            o.batteryOk = (d[BaseData.BATTERY_KEY] == 1)
+            o.batteryOk = d[BaseData.BATTERY_KEY] == 1
             o.mic = d[BaseData.MIC_KEY]
             o.mod = d[BaseData.MOD_KEY]
             o.freq = d[BaseData.FREQ_KEY]
@@ -65,9 +69,11 @@ class BaseData(object):
             o.noise = d[BaseData.NOISE_KEY]
             o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
-            logging.error('failed to parse ' + str(d) + '\n' + str(e))            
-            raise Exception('failed to parse ' + str(d), ) from e
- 
+            logging.error("failed to parse " + str(d) + "\n" + str(e))
+            raise Exception(
+                "failed to parse " + str(d),
+            ) from e
+
     @staticmethod
     def key(j):
         """
@@ -75,13 +81,13 @@ class BaseData(object):
         :param self: this
         :return: the key
         """
-        key = j[BaseData.MODEL_KEY] + '|' + str(j[BaseData.ID_KEY])
-        
+        key = j[BaseData.MODEL_KEY] + "|" + str(j[BaseData.ID_KEY])
+
         if BaseData.CHANNEL_KEY in j:
-            key = key + '|' + str(j[BaseData.CHANNEL_KEY]) 
-        
-        return key  
-            
+            key = key + "|" + str(j[BaseData.CHANNEL_KEY])
+
+        return key
+
     @property
     def timeStamp(self) -> datetime:
         """
@@ -90,7 +96,7 @@ class BaseData(object):
         :return: the timestamp
         """
         return self._timeStamp
-    
+
     @timeStamp.setter
     def timeStamp(self, timeStamp: datetime):
         """
@@ -99,7 +105,7 @@ class BaseData(object):
         :param: the timeStamp
         """
         self._timeStamp = timeStamp
-        
+
     @property
     def model(self):
         """
@@ -108,7 +114,7 @@ class BaseData(object):
         :return: the model
         """
         return self._model
-    
+
     @model.setter
     def model(self, model):
         """
@@ -117,7 +123,7 @@ class BaseData(object):
         :param: the model
         """
         self._model = model
-        
+
     @property
     def id(self) -> int:
         """
@@ -126,7 +132,7 @@ class BaseData(object):
         :return: the id
         """
         return self._id
-    
+
     @id.setter
     def id(self, id: int):
         """
@@ -134,8 +140,8 @@ class BaseData(object):
         :param self: this
         :param: the id
         """
-        self._id = id                
-        
+        self._id = id
+
     @property
     def batteryOk(self) -> bool:
         """
@@ -144,7 +150,7 @@ class BaseData(object):
         :return: the batteryOk
         """
         return self._batteryOk
-    
+
     @batteryOk.setter
     def batteryOk(self, batteryOk: bool):
         """
@@ -162,7 +168,7 @@ class BaseData(object):
         :return: the mic
         """
         return self._mic
-    
+
     @mic.setter
     def mic(self, mic):
         """
@@ -171,7 +177,7 @@ class BaseData(object):
         :param: the mic
         """
         self._mic = mic
-        
+
     @property
     def mod(self):
         """
@@ -180,7 +186,7 @@ class BaseData(object):
         :return: the mod
         """
         return self._mod
-    
+
     @mod.setter
     def mod(self, mod):
         """
@@ -188,8 +194,8 @@ class BaseData(object):
         :param self: this
         :param: the mod
         """
-        self._mod = mod                                        
-        
+        self._mod = mod
+
     @property
     def freq(self):
         """
@@ -198,7 +204,7 @@ class BaseData(object):
         :return: the freq
         """
         return self._freq
-    
+
     @freq.setter
     def freq(self, freq):
         """
@@ -206,8 +212,8 @@ class BaseData(object):
         :param self: this
         :param: the freq
         """
-        self._freq = freq                                                
-        
+        self._freq = freq
+
     @property
     def rssi(self):
         """
@@ -216,7 +222,7 @@ class BaseData(object):
         :return: the rssi
         """
         return self._rssi
-    
+
     @rssi.setter
     def rssi(self, rssi):
         """
@@ -224,7 +230,7 @@ class BaseData(object):
         :param self: this
         :param: the rssi
         """
-        self._rssi = rssi                                                       
+        self._rssi = rssi
 
     @property
     def snr(self):
@@ -234,7 +240,7 @@ class BaseData(object):
         :return: the snr
         """
         return self._snr
-    
+
     @snr.setter
     def snr(self, snr):
         """
@@ -242,8 +248,8 @@ class BaseData(object):
         :param self: this
         :param: the snr
         """
-        self._snr = snr                                                               
-        
+        self._snr = snr
+
     @property
     def noise(self):
         """
@@ -252,7 +258,7 @@ class BaseData(object):
         :return: the noise
         """
         return self._noise
-    
+
     @noise.setter
     def noise(self, noise):
         """
@@ -260,4 +266,4 @@ class BaseData(object):
         :param self: this
         :param: the noise
         """
-        self._noise = noise                                                                       
+        self._noise = noise

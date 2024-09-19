@@ -1,24 +1,25 @@
 class SensorConfig(object):
-    NAME_KEY = 'name'
-    DEVICE_KEY = 'device'
-    CLASS_KEY = 'dataClass'
-    
+    NAME_KEY = "name"
+    DEVICE_KEY = "device"
+    CLASS_KEY = "dataClass"
+
     """
     sensor config data 
     """
+
     def __init__(self, config: dict):
         """
         ctor
         :param self: this
         """
         for key in config:
-            self.__dict__['_' + key] = config[key]
-        
+            self.__dict__["_" + key] = config[key]
+
         # optional config
-        if '_channel' not in self.__dict__:
+        if "_channel" not in self.__dict__:
             self._channel = None
-            
-    #override
+
+    # override
     def __str__(self):
         return str(self.__dict__)
 
@@ -30,7 +31,7 @@ class SensorConfig(object):
         :return: the name
         """
         return self._name
-    
+
     @property
     def id(self) -> int:
         """
@@ -48,7 +49,7 @@ class SensorConfig(object):
         :return: the model
         """
         return self._model
-    
+
     @property
     def device(self) -> int:
         """
@@ -57,7 +58,7 @@ class SensorConfig(object):
         :return: the device
         """
         return self._device
-    
+
     @property
     def channel(self) -> int:
         """
@@ -66,7 +67,7 @@ class SensorConfig(object):
         :return: the channel
         """
         return self._channel
-        
+
     @property
     def model(self):
         """
@@ -75,7 +76,7 @@ class SensorConfig(object):
         :return: the model
         """
         return self._model
-    
+
     @property
     def dataClass(self):
         """
@@ -84,7 +85,7 @@ class SensorConfig(object):
         :return: the dataClass
         """
         return self._dataClass
-    
+
     @dataClass.setter
     def dataClass(self, dataClass):
         """
@@ -101,9 +102,9 @@ class SensorConfig(object):
         :param self: this
         :return: the key
         """
-        key = self._model + '|' + str(self._id)
-        
-        if(self._channel != None):
-            key = key + '|' + str(self._channel) 
-        
-        return key  
+        key = self._model + "|" + str(self._id)
+
+        if self._channel != None:
+            key = key + "|" + str(self._channel)
+
+        return key

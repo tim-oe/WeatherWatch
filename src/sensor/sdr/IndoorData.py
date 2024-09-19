@@ -1,27 +1,32 @@
 import logging
-from sensor.sdr.BaseData import BaseData
+
+from sensor.sdr import BaseData
+
 
 class IndoorData(BaseData):
-    TEMP_KEY = 'temperature_F'
-    HUMID_KEY = 'humidity'
+    TEMP_KEY = "temperature_F"
+    HUMID_KEY = "humidity"
 
     """
     indoor sensor data 
     """
-    def __init__(self, 
-                 timeStamp=None,
-                 id=None,
-                 model=None,
-                 channel=None,
-                 batteryOK = False,
-                 mic = None,
-                 mod = None,
-                 freq = None,
-                 rssi = None,
-                 noise = None,
-                 snr = None,
-                 temprature = None,
-                 humidity = None):
+
+    def __init__(
+        self,
+        timeStamp=None,
+        id=None,
+        model=None,
+        channel=None,
+        batteryOK=False,
+        mic=None,
+        mod=None,
+        freq=None,
+        rssi=None,
+        noise=None,
+        snr=None,
+        temprature=None,
+        humidity=None,
+    ):
         """
         ctor
         :param self: this
@@ -41,17 +46,17 @@ class IndoorData(BaseData):
         self.humidity = humidity
 
     @staticmethod
-    def jsonDecoder(d: dict) -> 'IndoorData':
+    def jsonDecoder(d: dict) -> "IndoorData":
         try:
             data = IndoorData()
             BaseData.baseDecoder(data, d)
             data.channel = int(d[BaseData.CHANNEL_KEY])
             data.temperature = d[IndoorData.TEMP_KEY]
-            data.humidity = d[IndoorData.HUMID_KEY]            
-            return data            
+            data.humidity = d[IndoorData.HUMID_KEY]
+            return data
         except Exception as e:
-            logging.error('failed to parse ' + str(d) + '\n' + str(e))            
-            raise Exception('failed to parse ' + str(d)) from e
+            logging.error("failed to parse " + str(d) + "\n" + str(e))
+            raise Exception("failed to parse " + str(d)) from e
 
     @property
     def channel(self) -> int:
@@ -61,7 +66,7 @@ class IndoorData(BaseData):
         :return: the channel
         """
         return self._channel
-    
+
     @channel.setter
     def channel(self, channel: int):
         """
@@ -69,7 +74,7 @@ class IndoorData(BaseData):
         :param self: this
         :param: the channel
         """
-        self._channel = channel                        
+        self._channel = channel
 
     @property
     def temperature(self):
@@ -79,7 +84,7 @@ class IndoorData(BaseData):
         :return: the temperature
         """
         return self._temperature
-    
+
     @temperature.setter
     def temperature(self, temperature):
         """
@@ -97,7 +102,7 @@ class IndoorData(BaseData):
         :return: the humidity
         """
         return self._humidity
-    
+
     @humidity.setter
     def humidity(self, humidity):
         """
