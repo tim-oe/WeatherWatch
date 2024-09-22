@@ -84,9 +84,7 @@ class GPSReader(object):
         """
         logging.info("starting cmd: " + str(GPSReader.CMD))
 
-        self.p = Popen(
-            GPSReader.CMD, stdout=PIPE, stderr=STDOUT, close_fds=GPSReader.ON_POSIX
-        )
+        self.p = Popen(GPSReader.CMD, stdout=PIPE, stderr=STDOUT, close_fds=GPSReader.ON_POSIX)
 
         self.q = Queue()
 

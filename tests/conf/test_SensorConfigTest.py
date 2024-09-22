@@ -5,7 +5,6 @@ from src.conf.SensorConfig import SensorConfig
 from src.sensor.sdr.BaseData import BaseData
 from src.sensor.sdr.IndoorData import IndoorData
 
-
 class SensorConfigTest(unittest.TestCase):
     def test(self):
 

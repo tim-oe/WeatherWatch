@@ -18,6 +18,10 @@ raspbery pi weather data collector using OTS parts.
 - [pipreqs](https://github.com/bndr/pipreqs)
 - [tox TBD...](https://tox.wiki/en/4.18.1/index.html)
 
+## sensor
+-[circuitpython](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi)
+
+
 ## tests
 - python3 setup.py test -v  -s <fully qualified test class>
     - deprected moving to tox...

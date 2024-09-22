@@ -25,7 +25,7 @@ from src.conf import AppConfig, SensorConfig
 
 class SensorReader(object):
     """
-    base RTL-SDR sensor reader
+    RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
     reciever: https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-smart-sdr.html?srsltid=AfmBOoqsEaIcHnJ1mghLBbE5q-Gf0NjyJYp46zaCQwDXRngPQauzruzT
     """
@@ -40,9 +40,7 @@ class SensorReader(object):
         :param self: this
         """
         self._appConfig: AppConfig = AppConfig()
-        self._timeout = self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY][
-            "timeout"
-        ]
+        self._timeout = self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
 
         self._sensors: dict = {}
         for s in self._appConfig.sensors:
@@ -148,17 +146,13 @@ class SensorReader(object):
 
                 sys.stdout.flush()
                 duration = self.duration(start)
-                logging.debug(
-                    "duration: " + str(duration) + " reads " + str(len(reads))
-                )
+                logging.debug("duration: " + str(duration) + " reads " + str(len(reads)))
             self._reads = reads
         except Exception as e:
             logging.error("sensor read failed " + str(e))
             raise Exception("sensor read failed ") from e
         finally:
-            logging.info(
-                "stopping reader " + str(duration) + " reads " + str(len(reads))
-            )
+            logging.info("stopping reader " + str(duration) + " reads " + str(len(reads)))
             self.p.kill()
 
         for k, v in sensors.items():

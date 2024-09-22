@@ -12,6 +12,7 @@ class BaseRepository(Generic[T]):
     DataStore for orm
     https://github.com/auth0-blog/sqlalchemy-orm-tutorial
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
+    https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
     """
 
     def __init__(self):

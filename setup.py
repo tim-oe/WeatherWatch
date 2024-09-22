@@ -115,7 +115,8 @@ setup(
           'setuptools',
           'PyYAML',
           'SQLAlchemy',
-          'mysql-connector-python'
+          'mysql-connector-python',
+          'adafruit-circuitpython-bmp3xx'
       ],
     test_suite="tests",
     cmdclass={"clean": CleanCommand, 

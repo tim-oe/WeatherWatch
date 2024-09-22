@@ -3,7 +3,6 @@ import unittest
 from src.conf.AppConfig import AppConfig
 from src.conf.DatabaseConfig import DatabaseConfig
 
-
 class DatabaseConfigTest(unittest.TestCase):
     URL_MATCH = "mysql\+mysqlconnector://(.*?):(.*?)@localhost:3306/weather"
 

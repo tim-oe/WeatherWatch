@@ -4,7 +4,6 @@ from src.sensor.sdr.IndoorData import IndoorData
 from src.sensor.sdr.OutdoorData import OutdoorData
 from tests.sensor.sdr.BaseTestData import BaseTestData
 
-
 class OutdoorDataTest(BaseTestData):
 
     def test(self):

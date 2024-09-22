@@ -5,9 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class BaseSensor(DeclarativeBase):
-    id: Mapped[int] = mapped_column(
-        primary_key=True, nullable=False, autoincrement="auto"
-    )
+    id: Mapped[int] = mapped_column(primary_key=True, nullable=False, autoincrement="auto")
     model: Mapped[str] = mapped_column(String(128), nullable=False)
     read_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     battery_ok: Mapped[bool] = mapped_column(Boolean, nullable=False)

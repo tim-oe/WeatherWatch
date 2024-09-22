@@ -3,7 +3,6 @@ from datetime import datetime
 
 from src.sensor.sdr.BaseData import BaseData
 
-
 class BaseTestData(unittest.TestCase):
 
     def assertBase(self, expected, record: BaseData):
