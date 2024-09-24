@@ -1,10 +1,10 @@
 import board
 import adafruit_bmp3xx
 
-from src.sensor.bmp388.SensorData import SensorData
+from src.sensor.bmp.SensorData import SensorData
 
 
-class SensorReader(object):
+class Bmp388SensorReader(object):
     """
     adafruit bmp388 sensor reader
     lib: https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX
@@ -18,7 +18,7 @@ class SensorReader(object):
         # I2C setup
         self.i2c = board.I2C()  # uses board.SCL and board.SDA
 
-        self.bmp = adafruit_bmp3xx.BMP3XX_I2C(self.i2c)
+        self.bmp = adafruit_bmp3xx.BMP3XX_I2C(self.i2c, 0x76)
 
         # TODO what are these for, from sample
         self.bmp.pressure_oversampling = 8

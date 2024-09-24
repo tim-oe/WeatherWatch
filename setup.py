@@ -27,6 +27,7 @@ class CleanCommand(Command):
         os.system("rm -vrf ./report")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
+        os.system("find . -name \"__pycache__\" -type d -exec rm -vfR {} \;")
 
 class CoverageCommand(Command):
     """
