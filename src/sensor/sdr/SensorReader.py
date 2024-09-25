@@ -27,7 +27,10 @@ class SensorReader(object):
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
-    reciever: https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-smart-sdr.html?srsltid=AfmBOoqsEaIcHnJ1mghLBbE5q-Gf0NjyJYp46zaCQwDXRngPQauzruzT
+    dev receiver: https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-smart-sdr.html?srsltid=AfmBOoqsEaIcHnJ1mghLBbE5q-Gf0NjyJYp46zaCQwDXRngPQauzruzT
+    nano receiver: https://www.nooelec.com/store/nesdr-nano-three.html?srsltid=AfmBOoqo75MWaw153HkAv74eAI2DQ20mXLbyGMAAxUaYlXcehXMSOOzr
+    indoor: /usr/local/bin/rtl_433 -M level -F json -R 20
+    outdoor: /usr/local/bin/rtl_433 -M level -F json -R 153
     """
 
     ON_POSIX = "posix" in sys.builtin_module_names
