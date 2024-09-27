@@ -1,5 +1,7 @@
 import unittest
 
+import datetime
+
 import json
 
 from src.repository.IndoorSensorRepository import IndoorSensorRepository
@@ -25,7 +27,7 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         ent.humidity = data.humidity
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
-        ent.read_time = data.timeStamp
+        ent.read_time = datetime.datetime.now()
         ent.mic = data.mic
         ent.mod = data.mod
         ent.freq = data.freq
