@@ -29,6 +29,23 @@ class CleanCommand(Command):
         os.system("rm -vrf ./.coverage")
         os.system("find . -name \"__pycache__\" -type d -exec rm -vfR {} \;")
 
+# run black isort flake8
+class FormatCommand(Command):
+    """Custom format command to run formating and style checks."""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system("black src")
+        os.system("isort src")
+        os.system("flake8 src")
+
 class CoverageCommand(Command):
     """
     coverage command
@@ -106,21 +123,28 @@ class DockerMysqlDownCommand(Command):
 # via this script
 # for single test class
 # p3 setup tests -s <fully qualified test module>
+# TODO can this be removed since it's in the toml file
 setup(
     version="0.1",
     description="weather watch sensor processor",
     author="tim Cronin",
     author_email="tecronin@gmail.com",
     packages=find_packages(),
-      install_requires=[
-          'setuptools',
-          'PyYAML',
-          'SQLAlchemy',
-          'mysql-connector-python',
-          'adafruit-circuitpython-bmp3xx'
+    install_requires=[
+        'setuptools',
+        'black',
+        'coverage',
+        'isort',
+        'flake8',
+        'Flake8-pyproject',         
+        'PyYAML',
+        'SQLAlchemy',
+        'mysql-connector-python',
+        'adafruit-circuitpython-bmp3xx'
       ],
     test_suite="tests",
     cmdclass={"clean": CleanCommand, 
+              "format": FormatCommand, 
               "cover": CoverageCommand, 
               "sonar": SonarCommand,
               'mysqlUp': DockerMysqlUpCommand,

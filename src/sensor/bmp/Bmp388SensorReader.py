@@ -1,7 +1,9 @@
-import board
 import adafruit_bmp3xx
+import board
 
 from src.sensor.bmp.SensorData import SensorData
+
+__all__ = ["Bmp388SensorReader"]
 
 
 class Bmp388SensorReader(object):

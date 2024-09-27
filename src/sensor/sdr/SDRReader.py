@@ -7,7 +7,7 @@
 """
 
 # https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python
-__all__ = ["SensorReader"]
+__all__ = ["SDRReader"]
 
 import datetime
 import json
@@ -19,11 +19,16 @@ from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 from typing import List
 
-from sensor.sdr import BaseData, IndoorData, OutdoorData
-from src.conf import AppConfig, SensorConfig
+from sensor.sdr.BaseData import BaseData
+from sensor.sdr.IndoorData import IndoorData
+from sensor.sdr.OutdoorData import OutdoorData
+from src.conf.AppConfig import AppConfig
+from src.conf.SensorConfig import SensorConfig
+
+__all__ = ["SDRReader"]
 
 
-class SensorReader(object):
+class SDRReader(object):
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
@@ -31,7 +36,7 @@ class SensorReader(object):
     nano receiver: https://www.nooelec.com/store/nesdr-nano-three.html?srsltid=AfmBOoqo75MWaw153HkAv74eAI2DQ20mXLbyGMAAxUaYlXcehXMSOOzr
     indoor: /usr/local/bin/rtl_433 -M level -F json -R 20
     outdoor: /usr/local/bin/rtl_433 -M level -F json -R 153
-    """
+    """  # noqa
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
@@ -47,8 +52,8 @@ class SensorReader(object):
 
         self._sensors: dict = {}
         for s in self._appConfig.sensors:
-            SensorReader.CMD.append(SensorReader.DEVICE_FLAG)
-            SensorReader.CMD.append(str(s.device))
+            SDRReader.CMD.append(SDRReader.DEVICE_FLAG)
+            SDRReader.CMD.append(str(s.device))
             self._sensors[s.key] = s
 
         self._reads = []
@@ -75,11 +80,11 @@ class SensorReader(object):
                     json.loads(line)
                     # TODO () -> k,v pair?
                     queue.put(line)
-                except ValueError as e:
+                except ValueError:
                     logging.info(line.decode())
                     pass
             out.close()
-        except:
+        except Exception:
             pass
 
     def processRecord(self, line, sensors: dict, reads: List[BaseData]):
@@ -116,17 +121,17 @@ class SensorReader(object):
         read sensor data
         this will block until all sensors are read or until timeout
         """
-        logging.info("starting cmd: " + str(SensorReader.CMD))
+        logging.info("starting cmd: " + str(SDRReader.CMD))
 
         sensors = self._sensors.copy()
         self._reads = []
         reads = []
 
         self.p = Popen(
-            SensorReader.CMD,
+            SDRReader.CMD,
             stdout=PIPE,
             stderr=STDOUT,
-            close_fds=SensorReader.ON_POSIX,
+            close_fds=SDRReader.ON_POSIX,
         )
 
         self.q = Queue()

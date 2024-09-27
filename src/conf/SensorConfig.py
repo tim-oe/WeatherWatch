@@ -1,10 +1,13 @@
+__all__ = ["SensorConfig"]
+
+
 class SensorConfig(object):
     NAME_KEY = "name"
     DEVICE_KEY = "device"
     CLASS_KEY = "dataClass"
 
     """
-    sensor config data 
+    sensor config data
     """
 
     def __init__(self, config: dict):
@@ -69,15 +72,6 @@ class SensorConfig(object):
         return self._channel
 
     @property
-    def model(self):
-        """
-        model property getter
-        :param self: this
-        :return: the model
-        """
-        return self._model
-
-    @property
     def dataClass(self):
         """
         dataClass property getter
@@ -104,7 +98,7 @@ class SensorConfig(object):
         """
         key = self._model + "|" + str(self._id)
 
-        if self._channel != None:
+        if self._channel is not None:
             key = key + "|" + str(self._channel)
 
         return key

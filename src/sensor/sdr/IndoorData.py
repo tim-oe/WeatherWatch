@@ -1,6 +1,8 @@
 import logging
 
-from sensor.sdr import BaseData
+from sensor.sdr.BaseData import BaseData
+
+__all__ = ["IndoorData"]
 
 
 class IndoorData(BaseData):
@@ -8,7 +10,7 @@ class IndoorData(BaseData):
     HUMID_KEY = "humidity"
 
     """
-    indoor sensor data 
+    indoor sensor data
     """
 
     def __init__(

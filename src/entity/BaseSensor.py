@@ -3,6 +3,8 @@ from datetime import datetime
 from sqlalchemy import JSON, Boolean, DateTime, Integer, Numeric, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+__all__ = ["BaseSensor"]
+
 
 class BaseSensor(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False, autoincrement="auto")

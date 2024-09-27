@@ -2,7 +2,9 @@ from typing import Generic, TypeVar
 
 from sqlalchemy.orm import Session
 
-from src.repository import DataStore
+from src.repository.DataStore import DataStore
+
+__all__ = ["BaseRepository"]
 
 T = TypeVar("T")
 

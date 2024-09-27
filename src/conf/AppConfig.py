@@ -4,7 +4,10 @@ from typing import List
 
 import yaml
 
-from src.conf import DatabaseConfig, SensorConfig
+from src.conf.DatabaseConfig import DatabaseConfig
+from src.conf.SensorConfig import SensorConfig
+
+__all__ = ["AppConfig"]
 
 
 class AppConfig(object):
@@ -16,7 +19,7 @@ class AppConfig(object):
     DATABASE_KEY = "database"
 
     """
-    app config data 
+    app config data
     """
 
     # override for singleton

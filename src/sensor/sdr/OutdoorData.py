@@ -1,6 +1,9 @@
 import logging
 
-from sensor.sdr import BaseData, IndoorData
+from sensor.sdr.BaseData import BaseData
+from sensor.sdr.IndoorData import IndoorData
+
+__all__ = ["OutdoorData"]
 
 
 class OutdoorData(IndoorData):
@@ -12,7 +15,7 @@ class OutdoorData(IndoorData):
     UV_KEY = "uv"
 
     """
-    outdoor sensor data 
+    outdoor sensor data
     """
 
     def __init__(

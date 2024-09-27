@@ -1,3 +1,6 @@
+__all__ = ["SensorData"]
+
+
 class SensorData(object):
     """
     bp388 sensor data

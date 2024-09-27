@@ -1,5 +1,7 @@
 import os
 
+__all__ = ["DatabaseConfig"]
+
 
 class DatabaseConfig(object):
     # TODO defaults?
@@ -11,7 +13,7 @@ class DatabaseConfig(object):
 
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
-    PASSWORD_ENVAR = "WW_DB_USERNAME"
+    PASSWORD_ENVAR = "WW_DB_PASSWORD"
 
     # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
     # https://ankushkunwar7777.medium.com/connect-mysql-to-sqlalchemy-in-python-b94c34568818
@@ -20,7 +22,7 @@ class DatabaseConfig(object):
     URL_TEMPLATE = "{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}"
 
     """
-    database config data 
+    database config data
     """
 
     def __init__(self, config: dict):

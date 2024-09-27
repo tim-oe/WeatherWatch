@@ -16,9 +16,10 @@ import time
 from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
-from typing import List
 
-from src.conf import AppConfig
+from src.conf.AppConfig import AppConfig
+
+__all__ = ["GPSReader"]
 
 
 # TODO test...
@@ -63,11 +64,11 @@ class GPSReader(object):
                     json.loads(line)
                     # TODO () -> k,v pair?
                     queue.put(line)
-                except ValueError as e:
+                except ValueError:
                     logging.info(line.decode())
                     pass
             out.close()
-        except:
+        except Exception:
             pass
 
     def processRecord(self, line):
@@ -96,7 +97,7 @@ class GPSReader(object):
         self._record = None
 
         try:
-            while self._record == None:
+            while self._record is None:
                 try:
                     data = self.q.get(timeout=4)
                 except Empty:
