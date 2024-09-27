@@ -28,6 +28,7 @@ class BaseRepository(Generic[T]):
         session: Session = self._datastore.session
         session.add(o)
         session.commit()
+        session.refresh(o)
 
     def findById(self, id: int) -> T:
         session: Session = self._datastore.session
