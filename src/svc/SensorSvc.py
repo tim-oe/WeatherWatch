@@ -53,7 +53,6 @@ class SensorSvc(object):
                     case IndoorData.__name__:
                         self._indoorRepo.insert(self.toIndoor(d))
                     case OutdoorData.__name__:
-                        # TODO read BPM sensor
                         self._outdoorRepo.insert(self.toOutdoor(d, self._bmpReader.read()))
                     case _:
                         logging.error("unkown impl for sensor: " + d)
