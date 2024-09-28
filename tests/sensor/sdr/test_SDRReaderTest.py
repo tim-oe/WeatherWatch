@@ -9,3 +9,8 @@ class SDRReaderTest(unittest.TestCase):
         bs.read()
 
         self.assertTrue(len(bs.reads) > 0)
+
+        for d in bs.reads:
+            self.assertIsNotNone(d.raw)
+            self.assertIsNotNone(d.config)
+        

@@ -6,7 +6,7 @@ import json
 
 from src.repository.OutdoorSensorRepository import OutdoorSensorRepository
 from src.entity.OutdoorSensor import OutdoorSensor
-from sensor.sdr.OutdoorData import OutdoorData
+from src.sensor.sdr.OutdoorData import OutdoorData
 
 class OutdoorSensorRepositoryTest(unittest.TestCase):
 

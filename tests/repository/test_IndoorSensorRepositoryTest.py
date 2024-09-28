@@ -35,6 +35,19 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         ent.rssi = data.rssi
         ent.snr = data.snr
         ent.raw = j
+        ent.model = data.model
+        ent.temperature_f = data.temperature
+        ent.humidity = data.humidity
+        ent.sensor_id = data.id
+        ent.battery_ok = data.batteryOk
+        ent.read_time = datetime.datetime.now()
+        ent.mic = data.mic
+        ent.mod = data.mod
+        ent.freq = data.freq
+        ent.noise = data.noise
+        ent.rssi = data.rssi
+        ent.snr = data.snr
+        ent.raw = j
 
         repo.insert(ent)
         

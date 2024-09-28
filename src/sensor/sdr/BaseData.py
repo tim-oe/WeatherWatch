@@ -1,5 +1,8 @@
+import json
 import logging
 from datetime import datetime
+
+from src.conf.SensorConfig import SensorConfig
 
 __all__ = ["BaseData"]
 
@@ -37,6 +40,8 @@ class BaseData(object):
         rssi=None,
         noise=None,
         snr=None,
+        raw=None,
+        config=None,
     ):
         """
         ctor
@@ -52,6 +57,8 @@ class BaseData(object):
         self.rssi = rssi
         self.noise = noise
         self.snr = snr
+        self.raw = raw
+        self.config = config
 
     # override
     def __str__(self):
@@ -269,3 +276,39 @@ class BaseData(object):
         :param: the noise
         """
         self._noise = noise
+
+    @property
+    def raw(self) -> json:
+        """
+        raw json property getter
+        :param self: this
+        :return: the raw
+        """
+        return self._raw
+
+    @raw.setter
+    def raw(self, raw):
+        """
+        raw json property setter
+        :param self: this
+        :param: the raw
+        """
+        self._raw = raw
+
+    @property
+    def config(self) -> SensorConfig:
+        """
+        config property getter
+        :param self: this
+        :return: the config
+        """
+        return self._config
+
+    @config.setter
+    def config(self, config):
+        """
+        config property setter
+        :param self: this
+        :param: the config
+        """
+        self._config = config

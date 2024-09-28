@@ -8,6 +8,10 @@ __all__ = ["OutdoorSensor"]
 
 class OutdoorSensor(BaseSensor):
     __tablename__ = "outdoor_sensor"
+    __table_args__ = {"extend_existing": True}
+
+    pressure: Mapped[float] = mapped_column(Numeric, nullable=False)
+
     rain_mm: Mapped[float] = mapped_column(Numeric, nullable=False)
     wind_avg_m_s: Mapped[float] = mapped_column(Numeric, nullable=False)
     wind_max_m_s: Mapped[float] = mapped_column(Numeric, nullable=False)

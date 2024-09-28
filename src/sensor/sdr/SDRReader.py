@@ -42,6 +42,13 @@ class SDRReader(object):
     DEVICE_FLAG = "-R"
     CMD = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "json"]
 
+    # override for singleton
+    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(SDRReader, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self):
         """
         ctor
@@ -98,13 +105,20 @@ class SDRReader(object):
 
         if key in sensors:
             sensor: SensorConfig = sensors[key]
+            r: BaseData = None
             match sensor.dataClass:
                 case IndoorData.__name__:
-                    reads.append(json.loads(line, object_hook=IndoorData.jsonDecoder))
+                    r = json.loads(line, object_hook=IndoorData.jsonDecoder)
                 case OutdoorData.__name__:
-                    reads.append(json.loads(line, object_hook=OutdoorData.jsonDecoder))
+                    r = json.loads(line, object_hook=OutdoorData.jsonDecoder)
                 case _:
                     logging.error("unkown impl for sensor: " + sensor)
+
+            if r is not None:
+                r.raw = json.loads(line)
+                r.config = sensor
+                reads.append(r)
+
             del sensors[key]
         else:
             logging.debug("skipping: " + line)

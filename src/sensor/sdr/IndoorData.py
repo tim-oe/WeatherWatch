@@ -13,39 +13,14 @@ class IndoorData(BaseData):
     indoor sensor data
     """
 
-    def __init__(
-        self,
-        timeStamp=None,
-        id=None,
-        model=None,
-        channel=None,
-        batteryOK=False,
-        mic=None,
-        mod=None,
-        freq=None,
-        rssi=None,
-        noise=None,
-        snr=None,
-        temprature=None,
-        humidity=None,
-    ):
+    def __init__(self, channel=None):
         """
         ctor
         :param self: this
         """
-        self.timeStamp = timeStamp
-        self.id = id
-        self.model = model
-        self.channel = channel
-        self.batteryOk = batteryOK
-        self.mic = mic
-        self.mod = mod
-        self.freq = freq
-        self.rssi = rssi
-        self.noise = noise
-        self.snr = snr
-        self.temperature = temprature
-        self.humidity = humidity
+        self._channel = channel
+
+        super().__init__()
 
     @staticmethod
     def jsonDecoder(d: dict) -> "IndoorData":

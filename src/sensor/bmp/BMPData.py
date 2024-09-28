@@ -1,7 +1,7 @@
-__all__ = ["SensorData"]
+__all__ = ["BMPData"]
 
 
-class SensorData(object):
+class BMPData(object):
     """
     bp388 sensor data
     """

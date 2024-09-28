@@ -1,7 +1,7 @@
 import adafruit_bmp280
 import board
 
-from src.sensor.bmp.SensorData import SensorData
+from src.sensor.bmp.BMPData import BMPData
 
 __all__ = ["Bmp280SensorReader"]
 
@@ -27,11 +27,11 @@ class Bmp280SensorReader(object):
         self.bmp.pressure_oversampling = 8
         self.bmp.temperature_oversampling = 2
 
-    def read(self) -> SensorData:
+    def read(self) -> BMPData:
         """
         read sensor data
         """
-        return SensorData(
+        return BMPData(
             pressure=self.bmp.pressure,
             temperature=self.bmp.temperature,
             altitude=self.bmp.altitude,

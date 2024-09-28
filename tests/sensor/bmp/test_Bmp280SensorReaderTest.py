@@ -1,6 +1,6 @@
 import unittest
 
-from src.sensor.bmp.SensorData import SensorData
+from src.sensor.bmp.BMPData import BMPData
 from src.sensor.bmp.Bmp280SensorReader import Bmp280SensorReader
 
 class Bmp280SensorReaderTest(unittest.TestCase):
@@ -10,7 +10,7 @@ class Bmp280SensorReaderTest(unittest.TestCase):
             return
         
         sensor: Bmp280SensorReader = Bmp280SensorReader()
-        actual: SensorData = sensor.read()
+        actual: BMPData = sensor.read()
 
         print(actual)
                 

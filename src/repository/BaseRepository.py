@@ -1,6 +1,8 @@
-from typing import Generic, TypeVar
+from typing import Generic, List, TypeVar
 
+from sqlalchemy import Connection
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 from src.repository.DataStore import DataStore
 
@@ -17,11 +19,12 @@ class BaseRepository(Generic[T]):
     https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
     """
 
-    def __init__(self):
+    def __init__(self, entity):
         """
         ctor
         :param self: this
         """
+        self._entity = entity
         self._datastore: DataStore = DataStore()
 
     def insert(self, o: T):
@@ -32,7 +35,11 @@ class BaseRepository(Generic[T]):
 
     def findById(self, id: int) -> T:
         session: Session = self._datastore.session
-        return session.query(T).filter_by(id=id).first()
+        return session.query(self._entity).filter_by(id=id).first()
+
+    def top(self, limit: int) -> List[T]:
+        session: Session = self._datastore.session
+        return session.query(self._entity).limit(limit).all()
 
     # TODO this seems off but it's all the examples i found
     def update(self, o: T):
@@ -43,3 +50,9 @@ class BaseRepository(Generic[T]):
         session: Session = self._datastore.session
         session.delete(o)
         session.commit()
+
+    def exec(self, sql: str):
+        con: Connection = self._datastore.connection
+
+        con.execute(text(sql))
+        con.commit()

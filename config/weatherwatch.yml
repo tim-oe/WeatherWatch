@@ -11,11 +11,11 @@ bmp:
     i2caddr: 0x76  
 sdr:
   reader:
-    timeout: 60
+    timeout: 90
   sensors:
       - name: outdoor
         model: Cotech-367959 
-        id: 33
+        id: 96
         dataClass: OutdoorData
         device: 153
       - name: indoor_3dfloor   

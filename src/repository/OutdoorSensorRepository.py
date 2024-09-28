@@ -10,4 +10,11 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         ctor
         :param self: this
         """
-        super().__init__()
+        super().__init__(entity=OutdoorSensor)
+
+    # override for singleton
+    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(OutdoorSensorRepository, cls).__new__(cls)
+        return cls.instance

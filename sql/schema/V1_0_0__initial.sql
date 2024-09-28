@@ -6,6 +6,7 @@ CREATE TABLE `outdoor_sensor` (
     `sensor_id` SMALLINT UNSIGNED NOT NULL,
     `temperature_f` DECIMAL(5,2) NOT NULL,
     `humidity` TINYINT UNSIGNED NOT NULL,
+    `pressure` DECIMAL(7,3) NOT NULL,
     `rain_mm` DECIMAL(7,3) NOT NULL,
     `wind_avg_m_s` DECIMAL(5,3) NOT NULL,
     `wind_max_m_s` DECIMAL(5,3) NOT NULL,

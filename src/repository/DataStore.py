@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import Connection, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.conf.AppConfig import AppConfig
@@ -37,3 +37,12 @@ class DataStore(object):
         """
         Session = sessionmaker(bind=self._engine)
         return Session()
+
+    @property
+    def connection(self) -> Connection:
+        """
+        session property getter
+        :param self: this
+        :return: the session
+        """
+        return self._engine.connect()

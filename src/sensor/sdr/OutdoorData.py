@@ -20,19 +20,6 @@ class OutdoorData(IndoorData):
 
     def __init__(
         self,
-        timeStamp=None,
-        id=None,
-        model=None,
-        channel=None,
-        batteryOK=False,
-        mic=None,
-        mod=None,
-        freq=None,
-        rssi=None,
-        noise=None,
-        snr=None,
-        temprature=None,
-        humidity=None,
         rain_mm=None,
         wind_avg_m_s=None,
         wind_max_m_s=None,
@@ -44,26 +31,13 @@ class OutdoorData(IndoorData):
         ctor
         :param self: this
         """
-        super().__init__()
-        self.timeStamp = timeStamp
-        self.id = id
-        self.model = model
-        self.channel = channel
-        self.batteryOk = batteryOK
-        self.mic = mic
-        self.mod = mod
-        self.freq = freq
-        self.rssi = rssi
-        self.noise = noise
-        self.snr = snr
-        self.temperature = temprature
-        self.humidity = humidity
         self.rain_mm = rain_mm
         self.wind_avg_m_s = wind_avg_m_s
         self.wind_max_m_s = wind_max_m_s
         self.wind_dir_deg = wind_dir_deg
         self.light_lux = light_lux
         self.uv = uv
+        super().__init__()
 
     @staticmethod
     def jsonDecoder(d: dict) -> "OutdoorData":
