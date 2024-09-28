@@ -27,6 +27,7 @@ class AppConfig(object):
     """
     app config data
     envar ebedded yaml config
+    https://pyyaml.org/wiki/PyYAMLDocumentation
     https://pypi.org/project/pyaml-env/
     """
 
@@ -66,10 +67,15 @@ class AppConfig(object):
         # https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
         lc: dict = parse_config(AppConfig.LOG_CONFIG_FILE)
 
-        if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
-            lc["handlers"].remove("console")
-
         logging.config.dictConfig(lc)
+
+        if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
+            c: logging.Handler = None
+            for h in logging.root.handlers:
+                h: logging.Handler
+                if h.name == "console":
+                    c = h
+            logging.root.handlers.remove(c)
 
         logging.info("loaded logging config " + AppConfig.LOG_CONFIG_FILE)
 

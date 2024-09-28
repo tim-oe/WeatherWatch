@@ -18,7 +18,8 @@ dependencies = [
     "SQLAlchemy",
     "mysql-connector-python",
     "adafruit-circuitpython-bmp3xx",
-    "apscheduler"
+    "apscheduler",
+    "python-daemon"
 ]
 requires-python = ">=3.11"
 

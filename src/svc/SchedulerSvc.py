@@ -33,8 +33,9 @@ class SchedulerSvc(object):
         self._scheduler.add_job(
             self._sensorSvc.process,
             "interval",
-            minutes=self._schedulerConfig.sensorInterval,
+            minutes=int(self._schedulerConfig.sensorInterval),
             max_instances=1,
+            coalesce=True,
             name=SchedulerSvc.SENSOR_JOB,
             id=SchedulerSvc.SENSOR_JOB,
         )

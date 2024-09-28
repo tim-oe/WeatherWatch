@@ -13,7 +13,7 @@ bmp:
     i2caddr: 0x76  
 sdr:
   reader:
-    timeout: 90
+    timeout: !ENV ${WW_SENSOR_READ_TIMEOUT:90}
   sensors:
       - name: outdoor
         model: Cotech-367959 
@@ -34,4 +34,4 @@ sdr:
         device: 20
 scheduler:
   sensor:
-    interval: 5
+    interval: !ENV ${WW_SENSOR_INTERVAL:5}

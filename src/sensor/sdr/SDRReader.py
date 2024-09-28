@@ -55,7 +55,7 @@ class SDRReader(object):
         :param self: this
         """
         self._appConfig: AppConfig = AppConfig()
-        self._timeout = self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
+        self._timeout = int(self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"])
 
         self._sensors: dict = {}
         for s in self._appConfig.sensors:
