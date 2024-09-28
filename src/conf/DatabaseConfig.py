@@ -1,5 +1,3 @@
-import os
-
 __all__ = ["DatabaseConfig"]
 
 
@@ -10,6 +8,8 @@ class DatabaseConfig(object):
     DRIVER_KEY = "driver"
     HOST_KEY = "host"
     PORT_KEY = "port"
+    USERNAME_KEY = "username"
+    PASSWORD_KEY = "password"
 
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
@@ -47,8 +47,8 @@ class DatabaseConfig(object):
         return DatabaseConfig.URL_TEMPLATE.format(
             dialect=self.__dict__[DatabaseConfig.DIALECT_KEY],
             driver=self.__dict__[DatabaseConfig.DRIVER_KEY],
-            username=os.environ[DatabaseConfig.USERNAME_ENVAR],
-            password=os.environ[DatabaseConfig.PASSWORD_ENVAR],
+            username=self.__dict__[DatabaseConfig.USERNAME_KEY],
+            password=self.__dict__[DatabaseConfig.PASSWORD_KEY],
             host=self.__dict__[DatabaseConfig.HOST_KEY],
             port=self.__dict__[DatabaseConfig.PORT_KEY],
             database=self.__dict__[DatabaseConfig.NAME_KEY],

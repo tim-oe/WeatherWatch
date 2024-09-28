@@ -3,7 +3,7 @@ import logging.config
 import os
 from typing import List
 
-import yaml
+from pyaml_env import parse_config
 
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
@@ -15,9 +15,8 @@ __all__ = ["AppConfig"]
 class AppConfig(object):
     CONFIG_FILE = "config/weatherwatch.yml"
     LOG_CONFIG_FILE = "config/logging.yml"
-    ENVAR_LOG_PATH = "WW_LOG_PATH"
+
     ENVAR_NO_CONSOLE = "WW_NO_CONSOLE"
-    ENVAR_DEBUG = "WW_DEBUG"
 
     SDR_KEY = "sdr"
     READER_KEY = "reader"
@@ -27,6 +26,8 @@ class AppConfig(object):
 
     """
     app config data
+    envar ebedded yaml config
+    https://pypi.org/project/pyaml-env/
     """
 
     # override for singleton
@@ -43,8 +44,7 @@ class AppConfig(object):
         """
         self.logging()
 
-        with open(AppConfig.CONFIG_FILE) as f:
-            self._conf = yaml.safe_load(f)
+        self._conf = parse_config(AppConfig.CONFIG_FILE)
 
         logging.info("loaded application config " + AppConfig.CONFIG_FILE)
 
@@ -64,20 +64,12 @@ class AppConfig(object):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
         # https://docs.python.org/3/library/logging.html#logrecord-attributes
         # https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
-        with open(AppConfig.LOG_CONFIG_FILE, "rt") as f:
-            lc: dict = yaml.safe_load(f.read())
+        lc: dict = parse_config(AppConfig.LOG_CONFIG_FILE)
 
-            if AppConfig.ENVAR_NO_CONSOLE in os.environ:
-                lc["handlers"].remove("console")
+        if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
+            lc["handlers"].remove("console")
 
-            if AppConfig.ENVAR_DEBUG in os.environ:
-                lc["handlers"]["file"]["level"] = "DEBUG"
-
-            # set envvar via service in prod
-            logPath = os.getenv(AppConfig.ENVAR_LOG_PATH, ".")
-            lc["handlers"]["file"]["filename"] = lc["handlers"]["file"]["filename"].format(path=logPath)
-
-            logging.config.dictConfig(lc)
+        logging.config.dictConfig(lc)
 
         logging.info("loaded logging config " + AppConfig.LOG_CONFIG_FILE)
 

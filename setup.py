@@ -138,6 +138,7 @@ setup(
         'flake8',
         'Flake8-pyproject',         
         'PyYAML',
+        'pyaml-env',
         'SQLAlchemy',
         'mysql-connector-python',
         'adafruit-circuitpython-bmp3xx',
