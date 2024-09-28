@@ -1,7 +1,6 @@
 import logging
 from typing import List
 
-from conf.AppConfig import AppConfig
 from entity.BaseSensor import BaseSensor
 from entity.IndoorSensor import IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
@@ -14,7 +13,7 @@ from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from sensor.sdr.SDRReader import SDRReader
 
-__all__ = ["AppConfig"]
+__all__ = ["SensorSvc"]
 
 
 class SensorSvc(object):
@@ -33,7 +32,6 @@ class SensorSvc(object):
         return cls.instance
 
     def __init__(self):
-        self._appConfig: AppConfig = AppConfig()
         self._sdrReader: SDRReader = SDRReader()
         self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()

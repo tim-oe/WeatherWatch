@@ -30,3 +30,6 @@ sdr:
         channel: 3 
         dataClass: IndoorData
         device: 20
+scheduler:
+  sensor:
+    interval: 5

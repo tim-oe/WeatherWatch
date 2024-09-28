@@ -140,7 +140,8 @@ setup(
         'PyYAML',
         'SQLAlchemy',
         'mysql-connector-python',
-        'adafruit-circuitpython-bmp3xx'
+        'adafruit-circuitpython-bmp3xx',
+        'apscheduler'
       ],
     test_suite="tests",
     cmdclass={"clean": CleanCommand, 
