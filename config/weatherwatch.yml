@@ -1,7 +1,7 @@
 database:
   dialect: !ENV ${WW_DB_DIALECT:mysql}
   driver: !ENV ${WW_DB_DRIVER:mysqlconnector}
-  host: !ENV ${WW_DB_HOST:localhost}
+  host: !ENV ${WW_DB_HOST:127.0.0.1}
   port: !ENV ${WW_PORT:3306}
   name: !ENV ${WW_DB_NAME:weather}
   username: !ENV ${WW_DB_USERNAME}

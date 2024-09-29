@@ -56,7 +56,7 @@ class AppConfig(object):
         logging.info("loaded sensors config")
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
-        logging.info("loaded database config")
+        logging.info("loaded database config " + self._database.url)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         logging.info("loaded scheduler config")
@@ -69,13 +69,9 @@ class AppConfig(object):
 
         logging.config.dictConfig(lc)
 
+        # https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
-            c: logging.Handler = None
-            for h in logging.root.handlers:
-                h: logging.Handler
-                if h.name == "console":
-                    c = h
-            logging.root.handlers.remove(c)
+            logging.root.handlers = [h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
 
         logging.info("loaded logging config " + AppConfig.LOG_CONFIG_FILE)
 

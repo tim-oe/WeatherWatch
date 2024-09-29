@@ -1,6 +1,9 @@
 __all__ = ["DatabaseConfig"]
 
 
+import os
+
+
 class DatabaseConfig(object):
     # TODO defaults?
     NAME_KEY = "name"
@@ -32,6 +35,9 @@ class DatabaseConfig(object):
         """
         for key in config:
             self.__dict__[key] = config[key]
+
+        if DatabaseConfig.USERNAME_ENVAR not in os.environ or DatabaseConfig.PASSWORD_ENVAR not in os.environ:
+            raise Exception("missing env var " + DatabaseConfig.USERNAME_ENVAR + "," + DatabaseConfig.PASSWORD_ENVAR)
 
     # override
     def __str__(self):
