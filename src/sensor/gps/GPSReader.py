@@ -17,7 +17,7 @@ from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 
-from src.conf.AppConfig import AppConfig
+from conf.AppConfig import AppConfig
 
 __all__ = ["GPSReader"]
 
@@ -29,7 +29,6 @@ class GPSReader(object):
     """
 
     ON_POSIX = "posix" in sys.builtin_module_names
-    from src.conf import SensorConfig
 
     # https://manpages.ubuntu.com/manpages/trusty/man1/gpspipe.1.html
     CMD = ["gpspipe", "-w", "-n", "5", "|", "grep", "-m", "1", '\'{"class":"TPV".*}\'']

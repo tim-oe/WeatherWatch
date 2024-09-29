@@ -1,5 +1,5 @@
 # WeatherWatch service
-# # sudo ln -s //home/pi/src/WeatherWatch/systemd/weatherwatch.service /usr/lib/systemd/system/weatherwatch.service
+# sudo ln -s //home/tcronin/src/WeatherWatch/systemd/weatherwatch.service /usr/lib/systemd/system/weatherwatch.service
 # sudo systemctl enable weatherwatch.service
 # sudo systemctl start weatherwatch.service
 # sudo systemctl status weatherwatch.service
@@ -12,9 +12,10 @@ Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-Environment="WW_LOG_PATH=/var/log WW_NO_CONSOLE=1"
-WorkingDirectory=/home/pi/src/WeatherWatch
-ExecStart=/usr/bin/python3 /home/pi/src/WeatherWatch/src/main.py
+Environment="WW_LOG_PATH=/var/log" 
+Environment="WW_NO_CONSOLE=1"
+WorkingDirectory=/home/tcronin/src/WeatherWatch
+ExecStart=/home/tcronin/src/WeatherWatch/.venv/bin/python3 /home/tcronin/src/WeatherWatch/src/main.py
 StandardInput=tty-force
 StandardOutput=file:/var/log/WeatherWatch_out.log
 StandardError=file:/var/log/WeatherWatch_err.log

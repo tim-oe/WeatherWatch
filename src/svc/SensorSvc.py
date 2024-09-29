@@ -1,5 +1,6 @@
 import logging
-from typing import List
+
+from python_event_bus import EventBus
 
 from entity.BaseSensor import BaseSensor
 from entity.IndoorSensor import IndoorSensor
@@ -7,7 +8,6 @@ from entity.OutdoorSensor import OutdoorSensor
 from repository.IndoorSensorRepository import IndoorSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from sensor.bmp.Bmp388SensorReader import Bmp388SensorReader
-from sensor.bmp.BMPData import BMPData
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
@@ -37,40 +37,29 @@ class SensorSvc(object):
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
 
+        EventBus.subscribe(IndoorData.__name__, self.handleIndoor)
+        EventBus.subscribe(OutdoorData.__name__, self.handleOutdoor)
+
     def process(self):
         logging.info("processing sensors")
 
         self._sdrReader.read()
 
-        reads: List[BaseData] = self._sdrReader.reads
-        logging.info("sensor cnt: " + str(len(reads)))
-
-        for d in reads:
-            try:
-                match d.config.dataClass:
-                    case IndoorData.__name__:
-                        self._indoorRepo.insert(self.toIndoor(d))
-                    case OutdoorData.__name__:
-                        self._outdoorRepo.insert(self.toOutdoor(d, self._bmpReader.read()))
-                    case _:
-                        logging.error("unkown impl for sensor: " + d)
-            except Exception as e:
-                logging.error("failed to proces " + str(d) + "\n" + str(e))
-
         logging.info("processing complete")
 
-    def toIndoor(self, data: IndoorData) -> IndoorSensor:
+    def handleIndoor(self, data: IndoorData):
         ent: IndoorSensor = IndoorSensor()
         self.setBaseData(data, ent)
 
         ent.channel = data.channel
 
-        return ent
+        self._outdoorRepo.insert(ent)
 
-    def toOutdoor(self, data: OutdoorData, bmp: BMPData) -> OutdoorSensor:
+    def handleOutdoor(self, data: OutdoorData):
         ent: OutdoorSensor = OutdoorSensor()
         self.setBaseData(data, ent)
 
+        bmp = self._bmpReader.read()
         ent.pressure = bmp.pressure
 
         ent.rain_mm = data.rain_mm
@@ -80,7 +69,7 @@ class SensorSvc(object):
         ent.light_lux = data.light_lux
         ent.uv = data.uv
 
-        return ent
+        self._outdoorRepo.insert(ent)
 
     def setBaseData(self, data: BaseData, ent: BaseSensor):
         ent.model = data.model

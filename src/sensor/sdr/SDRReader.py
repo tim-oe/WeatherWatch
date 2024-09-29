@@ -19,11 +19,13 @@ from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 from typing import List
 
+from python_event_bus import EventBus
+
+from conf.AppConfig import AppConfig
+from conf.SensorConfig import SensorConfig
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
-from src.conf.AppConfig import AppConfig
-from src.conf.SensorConfig import SensorConfig
 
 __all__ = ["SDRReader"]
 
@@ -85,7 +87,6 @@ class SDRReader(object):
             for line in iter(out.readline, b""):
                 try:
                     json.loads(line)
-                    # TODO () -> k,v pair?
                     queue.put(line)
                 except ValueError:
                     logging.info(line.decode())
@@ -118,6 +119,8 @@ class SDRReader(object):
                 r.raw = json.loads(line)
                 r.config = sensor
                 reads.append(r)
+                logging.debug("event " + r.__class__.__name__)
+                EventBus.call(r.__class__.__name__, r)
 
             del sensors[key]
         else:

@@ -10,5 +10,5 @@ pyaml-env==1.2.1
 SQLAlchemy==2.0.35
 mysql-connector-python==9.0.0
 apscheduler==3.10.4
-python-daemon==3.0.1
+python-event-bus==1.2.0
 

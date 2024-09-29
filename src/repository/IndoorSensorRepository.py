@@ -1,5 +1,5 @@
-from src.entity.IndoorSensor import IndoorSensor
-from src.repository.BaseRepository import BaseRepository
+from entity.IndoorSensor import IndoorSensor
+from repository.BaseRepository import BaseRepository
 
 __all__ = ["IndoorSensorRepository"]
 

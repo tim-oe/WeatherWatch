@@ -1,7 +1,7 @@
 import adafruit_bmp280
 import board
 
-from src.sensor.bmp.BMPData import BMPData
+from sensor.bmp.BMPData import BMPData
 
 __all__ = ["Bmp280SensorReader"]
 

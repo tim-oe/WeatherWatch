@@ -1,8 +1,8 @@
 from sqlalchemy import Connection, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from src.conf.AppConfig import AppConfig
-from src.conf.DatabaseConfig import DatabaseConfig
+from conf.AppConfig import AppConfig
+from conf.DatabaseConfig import DatabaseConfig
 
 __all__ = ["DataStore"]
 

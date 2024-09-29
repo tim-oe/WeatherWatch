@@ -4,7 +4,7 @@ from sqlalchemy import Connection
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
-from src.repository.DataStore import DataStore
+from repository.DataStore import DataStore
 
 __all__ = ["BaseRepository"]
 

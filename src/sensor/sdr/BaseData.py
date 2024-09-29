@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime
 
-from src.conf.SensorConfig import SensorConfig
+from conf.SensorConfig import SensorConfig
 
 __all__ = ["BaseData"]
 

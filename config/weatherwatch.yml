@@ -15,11 +15,11 @@ sdr:
   reader:
     timeout: !ENV ${WW_SENSOR_READ_TIMEOUT:90}
   sensors:
-      - name: outdoor
-        model: Cotech-367959 
-        id: 96
-        dataClass: OutdoorData
-        device: 153
+#      - name: outdoor
+#        model: Cotech-367959 
+#        id: 96
+#        dataClass: OutdoorData
+#        device: 153
       - name: indoor_3dfloor   
         model: Ambientweather-F007TH 
         id: 192 

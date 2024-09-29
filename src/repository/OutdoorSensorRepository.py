@@ -1,5 +1,5 @@
-from src.entity.OutdoorSensor import OutdoorSensor
-from src.repository.BaseRepository import BaseRepository
+from entity.OutdoorSensor import OutdoorSensor
+from repository.BaseRepository import BaseRepository
 
 __all__ = ["OutdoorSensorRepository"]
 

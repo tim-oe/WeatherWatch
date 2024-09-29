@@ -1,7 +1,7 @@
 from sqlalchemy import Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.entity.BaseSensor import BaseSensor
+from entity.BaseSensor import BaseSensor
 
 __all__ = ["IndoorSensor"]
 
