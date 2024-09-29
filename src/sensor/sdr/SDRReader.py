@@ -13,10 +13,9 @@ import datetime
 import json
 import logging
 import sys
-import time
+from concurrent.futures import ThreadPoolExecutor
 from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
-from threading import Thread
 from typing import List
 
 from python_event_bus import EventBus
@@ -28,6 +27,27 @@ from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 
 __all__ = ["SDRReader"]
+
+
+class SensorEvent(object):
+    """
+    class to allow for async event
+    """
+
+    def __init__(self, data: BaseData):
+        """
+        ctor
+        :param self: this
+        """
+        self._data = data
+
+    def fire(self):
+        try:
+            eventName = self._data.__class__.__name__
+            logging.debug("fire " + eventName)
+            EventBus.call(eventName, self._data)
+        except Exception as e:
+            logging.error("event processing error " + str(e))
 
 
 class SDRReader(object):
@@ -42,7 +62,7 @@ class SDRReader(object):
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
-    CMD = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "json"]
+    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "json"]
 
     # override for singleton
     # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
@@ -57,13 +77,21 @@ class SDRReader(object):
         :param self: this
         """
         self._appConfig: AppConfig = AppConfig()
+
         self._timeout = int(self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"])
 
+        # sensor read pool predefined thread
+        self._readPool = ThreadPoolExecutor(max_workers=1)
+
         self._sensors: dict = {}
+        self._cmd = SDRReader.CMD_BASE.copy()
         for s in self._appConfig.sensors:
-            SDRReader.CMD.append(SDRReader.DEVICE_FLAG)
-            SDRReader.CMD.append(str(s.device))
+            self._cmd.append(SDRReader.DEVICE_FLAG)
+            self._cmd.append(str(s.device))
             self._sensors[s.key] = s
+
+        # sensor data thread to fire event async
+        self._dataPool = ThreadPoolExecutor(max_workers=len(self._sensors))
 
         self._reads = []
 
@@ -91,9 +119,12 @@ class SDRReader(object):
                 except ValueError:
                     logging.info(line.decode())
                     pass
-            out.close()
-        except Exception:
+        except Exception as e:
+            logging.error("line processing error " + str(e))
             pass
+        finally:
+            logging.debug("line processing complete")
+            out.close()
 
     def processRecord(self, line, sensors: dict, reads: List[BaseData]):
         """
@@ -119,8 +150,8 @@ class SDRReader(object):
                 r.raw = json.loads(line)
                 r.config = sensor
                 reads.append(r)
-                logging.debug("event " + r.__class__.__name__)
-                EventBus.call(r.__class__.__name__, r)
+                se: SensorEvent = SensorEvent(r)
+                self._dataPool.submit(se.fire)
 
             del sensors[key]
         else:
@@ -138,34 +169,32 @@ class SDRReader(object):
         read sensor data
         this will block until all sensors are read or until timeout
         """
-        logging.info("starting cmd: " + str(SDRReader.CMD))
+        logging.info("starting cmd: " + str(self._cmd))
 
         sensors = self._sensors.copy()
         self._reads = []
         reads = []
 
-        self.p = Popen(
-            SDRReader.CMD,
+        p = Popen(
+            self._cmd,
             stdout=PIPE,
             stderr=STDOUT,
             close_fds=SDRReader.ON_POSIX,
         )
 
-        self.q = Queue()
+        q = Queue()
 
-        self.t = Thread(target=self.pushRecord, args=(self.p.stdout, self.q))
-
-        self.t.daemon = True  # thread dies with the program
-        self.t.start()
+        # read sdr output
+        self._readPool.submit(self.pushRecord, p.stdout, q)
 
         start = datetime.datetime.now()
         duration = 0
         try:
             while len(reads) < len(self._sensors) and duration < self._timeout:
                 try:
-                    data = self.q.get(timeout=4)
+                    data = q.get(timeout=10)
                 except Empty:
-                    time.sleep(1)
+                    pass  # time.sleep(1)
                 else:  # got line
                     self.processRecord(data.decode(), sensors, reads)
 
@@ -175,10 +204,9 @@ class SDRReader(object):
             self._reads = reads
         except Exception as e:
             logging.error("sensor read failed " + str(e))
-            raise Exception("sensor read failed ") from e
         finally:
-            logging.info("stopping reader " + str(duration) + " reads " + str(len(reads)))
-            self.p.kill()
+            logging.info("stopping reader " + str(duration) + " sec, reads " + str(len(reads)))
+            p.kill()
 
         for k, v in sensors.items():
             logging.error("no data for " + k + " =" + str(v))

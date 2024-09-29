@@ -56,7 +56,7 @@ class AppConfig(object):
         logging.info("loaded sensors config")
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
-        logging.info("loaded database config " + self._database.url)
+        logging.info("loaded database config")
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         logging.info("loaded scheduler config")

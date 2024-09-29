@@ -5,7 +5,6 @@ import os
 
 
 class DatabaseConfig(object):
-    # TODO defaults?
     NAME_KEY = "name"
     DIALECT_KEY = "dialect"
     DRIVER_KEY = "driver"
@@ -43,6 +42,7 @@ class DatabaseConfig(object):
     def __str__(self):
         return str(self.__dict__)
 
+    # TODO https://docs.python.org/3/library/profile.html#module-cProfile
     @property
     def url(self):
         """

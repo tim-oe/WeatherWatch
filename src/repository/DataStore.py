@@ -11,6 +11,9 @@ class DataStore(object):
     """
     DataStore for orm
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
+    https://docs.sqlalchemy.org/en/20/core/engines.html#creating-urls-programmatically
+    TODO pooling https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+    https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration
     """
 
     # override for singleton
@@ -26,7 +29,9 @@ class DataStore(object):
         :param self: this
         """
         self._dbConfig: DatabaseConfig = AppConfig().database
-        self._engine = create_engine(self._dbConfig.url)
+
+        # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly
+        self._engine = create_engine(self._dbConfig.url, max_overflow=3, pool_size=3, pool_pre_ping=True)
 
     @property
     def session(self) -> Session:

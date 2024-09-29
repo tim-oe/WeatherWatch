@@ -43,3 +43,8 @@ raspbery pi weather data collector using OTS parts.
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 
 ## TODOs    
+- [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
+- profiling
+    - [cprofile](https://docs.python.org/3/library/profile.html#module-cProfile)
+    - [guide](https://www.turing.com/kb/python-code-with-cprofile)
+    

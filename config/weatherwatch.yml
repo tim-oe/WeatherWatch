@@ -6,6 +6,9 @@ database:
   name: !ENV ${WW_DB_NAME:weather}
   username: !ENV ${WW_DB_USERNAME}
   password: !ENV ${WW_DB_PASSWORD}
+  pool:
+    size: 3
+    overflow: 3
 bmp:
   388:
     i2caddr: 0x77
