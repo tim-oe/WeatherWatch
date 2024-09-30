@@ -1,16 +1,17 @@
 import io
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from py_singleton import singleton
 
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from svc.SensorSvc import SensorSvc
-from util.Singleton import Singleton
 
 __all__ = ["SchedulerSvc"]
 
 
-class SchedulerSvc(Singleton):
+@singleton
+class SchedulerSvc(object):
     SENSOR_JOB = "sensor"
 
     """
@@ -20,9 +21,6 @@ class SchedulerSvc(Singleton):
     """
 
     def __init__(self):
-        if self._initialized:
-            return
-        self._initialized = True
 
         self._schedulerConfig: SchedulerConfig = AppConfig().scheduler
         self._scheduler = BackgroundScheduler()

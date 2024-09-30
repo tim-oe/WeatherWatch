@@ -1,5 +1,6 @@
 import logging
 
+from py_singleton import singleton
 from python_event_bus import EventBus
 
 from entity.BaseSensor import BaseSensor
@@ -12,12 +13,12 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from sensor.sdr.SDRReader import SDRReader
-from util.Singleton import Singleton
 
 __all__ = ["SensorSvc"]
 
 
-class SensorSvc(Singleton):
+@singleton
+class SensorSvc(object):
     """
     sensor service
     this does the sensor processing
@@ -26,9 +27,6 @@ class SensorSvc(Singleton):
     """
 
     def __init__(self):
-        if self._initialized:
-            return
-        self._initialized = True
 
         self._sdrReader: SDRReader = SDRReader()
         self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()

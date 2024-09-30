@@ -1,14 +1,15 @@
+from py_singleton import singleton
 from sqlalchemy import Connection, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
-from util.Singleton import Singleton
 
 __all__ = ["DataStore"]
 
 
-class DataStore(Singleton):
+@singleton
+class DataStore(object):
     """
     DataStore for orm
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
@@ -22,10 +23,6 @@ class DataStore(Singleton):
         ctor
         :param self: this
         """
-        if self._initialized:
-            return
-        self._initialized = True
-
         self._dbConfig: DatabaseConfig = AppConfig().database
 
         # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly

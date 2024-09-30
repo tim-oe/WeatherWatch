@@ -3,17 +3,18 @@ import logging.config
 import os
 from typing import List
 
+from py_singleton import singleton
 from pyaml_env import parse_config
 
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
-from util.Singleton import Singleton
 
 __all__ = ["AppConfig"]
 
 
-class AppConfig(Singleton):
+@singleton
+class AppConfig(object):
 
     CONFIG_FILE = "config/weatherwatch.yml"
     LOG_CONFIG_FILE = "config/logging.yml"
@@ -38,9 +39,6 @@ class AppConfig(Singleton):
         ctor
         :param self: this
         """
-        if self._initialized:
-            return
-        self._initialized = True
 
         self.initLogging()
 

@@ -17,8 +17,9 @@ from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 
+from py_singleton import singleton
+
 from conf.AppConfig import AppConfig
-from util.Singleton import Singleton
 
 __all__ = ["GPSReader"]
 
@@ -26,7 +27,8 @@ __all__ = ["GPSReader"]
 # TODO test...
 
 
-class GPSReader(Singleton):
+@singleton
+class GPSReader(object):
     """
     gps reader for lon lat alt
     """
@@ -41,9 +43,6 @@ class GPSReader(Singleton):
         ctor
         :param self: this
         """
-        if self._initialized:
-            return
-        self._initialized = True
 
         self._appConfig: AppConfig = AppConfig()
         self._record = None

@@ -1,13 +1,14 @@
 import adafruit_bmp280
 import board
+from py_singleton import singleton
 
 from sensor.bmp.BMPData import BMPData
-from util.Singleton import Singleton
 
 __all__ = ["Bmp280SensorReader"]
 
 
-class Bmp280SensorReader(Singleton):
+@singleton
+class Bmp280SensorReader(object):
     """
     seeedstudio bmp280 sensor reader
     TODO: _CHIP_ID = const(0x60)
@@ -18,9 +19,6 @@ class Bmp280SensorReader(Singleton):
     """
 
     def __init__(self):
-        if self._initialized:
-            return
-        self._initialized = True
 
         #
         # I2C setup

@@ -18,14 +18,16 @@ from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from typing import List
 
+from py_singleton import singleton
 from python_event_bus import EventBus
 
 from conf.AppConfig import AppConfig
 from conf.SensorConfig import SensorConfig
+from entity.SDRMetricts import SDRMetrics
+from repository.SDRMetricsRepository import SDRMetricsRepository
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
-from util.Singleton import Singleton
 
 __all__ = ["SDRReader"]
 
@@ -52,7 +54,8 @@ class SensorEvent(object):
             logging.exception("event processing error " + eventName + " data\n" + self._data)
 
 
-class SDRReader(Singleton):
+@singleton
+class SDRReader(object):
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
@@ -71,9 +74,6 @@ class SDRReader(Singleton):
         ctor
         :param self: this
         """
-        if self._initialized:
-            return
-        self._initialized = True
 
         self._appConfig: AppConfig = AppConfig()
 
@@ -93,6 +93,8 @@ class SDRReader(Singleton):
         self._dataPool = ThreadPoolExecutor(max_workers=len(self._sensors))
 
         self._reads = []
+
+        self._sdrMetricsRepo = SDRMetricsRepository()
 
     @property
     def reads(self) -> List[BaseData]:
@@ -199,8 +201,10 @@ class SDRReader(Singleton):
 
                 sys.stdout.flush()
                 duration = self.duration(start)
+
                 logging.debug("duration: " + str(duration) + " reads " + str(len(reads)))
             self._reads = reads
+            self.logMetrics(start, datetime.datetime.now(), duration, len(reads))
         except Exception:
             logging.exception("sensor read failed")
         finally:
@@ -209,3 +213,15 @@ class SDRReader(Singleton):
 
         for k, v in sensors.items():
             logging.error("no data for " + k + " =\n" + str(v))
+
+    def logMetrics(self, startTime: datetime, endTime: datetime, duration: int, sensorCnt: int):
+        try:
+            m: SDRMetrics = SDRMetrics()
+            m.start_time = startTime
+            m.end_time = endTime
+            m.duration_sec = duration
+            m.sensor_cnt = sensorCnt
+
+            self._sdrMetricsRepo.insert(m)
+        except Exception:
+            logging.exception("sensor read failed")
