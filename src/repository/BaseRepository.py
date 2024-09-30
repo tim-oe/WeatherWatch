@@ -28,31 +28,49 @@ class BaseRepository(Generic[T]):
         self._datastore: DataStore = DataStore()
 
     def insert(self, o: T):
-        session: Session = self._datastore.session
-        session.add(o)
-        session.commit()
-        session.refresh(o)
+        try:
+            session: Session = self._datastore.session
+            session.add(o)
+            session.commit()
+            session.refresh(o)
+        finally:
+            session.close()
 
     def findById(self, id: int) -> T:
-        session: Session = self._datastore.session
-        return session.query(self._entity).filter_by(id=id).first()
+        try:
+            session: Session = self._datastore.session
+            return session.query(self._entity).filter_by(id=id).first()
+        finally:
+            session.close()
 
     def top(self, limit: int) -> List[T]:
-        session: Session = self._datastore.session
-        return session.query(self._entity).limit(limit).all()
+        try:
+            session: Session = self._datastore.session
+            return session.query(self._entity).limit(limit).all()
+        finally:
+            session.close()
 
     # TODO this seems off but it's all the examples i found
     def update(self, o: T):
-        session: Session = self._datastore.session
-        session.commit()
+        try:
+            session: Session = self._datastore.session
+            session.commit()
+        finally:
+            session.close()
 
     def delete(self, o: T):
-        session: Session = self._datastore.session
-        session.delete(o)
-        session.commit()
+        try:
+            session: Session = self._datastore.session
+            session.delete(o)
+            session.commit()
+        finally:
+            session.close()
 
     def exec(self, sql: str):
-        con: Connection = self._datastore.connection
+        try:
+            con: Connection = self._datastore.connection
 
-        con.execute(text(sql))
-        con.commit()
+            con.execute(text(sql))
+            con.commit()
+        finally:
+            con.close()

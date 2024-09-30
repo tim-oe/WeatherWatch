@@ -117,7 +117,7 @@ class SDRReader(object):
                     json.loads(line)
                     queue.put(line)
                 except ValueError:
-                    logging.info(line.decode())
+                    logging.debug(line.decode())
                     pass
         except Exception as e:
             logging.error("line processing error " + str(e))
@@ -159,7 +159,7 @@ class SDRReader(object):
 
     def duration(self, start: datetime) -> int:
         """
-        read sensor data
+        calculate the execution duration from start to now
         """
         current = datetime.datetime.now()
         return int((current - start).total_seconds())
@@ -169,7 +169,7 @@ class SDRReader(object):
         read sensor data
         this will block until all sensors are read or until timeout
         """
-        logging.info("starting cmd: " + str(self._cmd))
+        logging.debug("starting cmd: " + str(self._cmd))
 
         sensors = self._sensors.copy()
         self._reads = []
