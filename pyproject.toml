@@ -19,7 +19,8 @@ dependencies = [
     "mysql-connector-python",
     "adafruit-circuitpython-bmp3xx",
     "apscheduler",
-    "python-event-bus"
+    "python-event-bus",
+    "py-singleton"
 ]
 requires-python = ">=3.11"
 
