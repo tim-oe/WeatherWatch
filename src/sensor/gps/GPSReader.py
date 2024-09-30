@@ -18,12 +18,15 @@ from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 
 from conf.AppConfig import AppConfig
+from util.Singleton import Singleton
 
 __all__ = ["GPSReader"]
 
 
 # TODO test...
-class GPSReader(object):
+
+
+class GPSReader(Singleton):
     """
     gps reader for lon lat alt
     """
@@ -38,6 +41,10 @@ class GPSReader(object):
         ctor
         :param self: this
         """
+        if self._initialized:
+            return
+        self._initialized = True
+
         self._appConfig: AppConfig = AppConfig()
         self._record = None
 

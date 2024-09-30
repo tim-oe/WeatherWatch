@@ -5,11 +5,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from svc.SensorSvc import SensorSvc
+from util.Singleton import Singleton
 
 __all__ = ["SchedulerSvc"]
 
 
-class SchedulerSvc(object):
+class SchedulerSvc(Singleton):
     SENSOR_JOB = "sensor"
 
     """
@@ -18,14 +19,11 @@ class SchedulerSvc(object):
     https://apscheduler.readthedocs.io/en/3.x/index.html
     """
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(SchedulerSvc, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
+
         self._schedulerConfig: SchedulerConfig = AppConfig().scheduler
         self._scheduler = BackgroundScheduler()
         self._sensorSvc = SensorSvc()

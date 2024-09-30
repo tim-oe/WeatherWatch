@@ -12,11 +12,12 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from sensor.sdr.SDRReader import SDRReader
+from util.Singleton import Singleton
 
 __all__ = ["SensorSvc"]
 
 
-class SensorSvc(object):
+class SensorSvc(Singleton):
     """
     sensor service
     this does the sensor processing
@@ -24,14 +25,11 @@ class SensorSvc(object):
     2) write data to datastore
     """
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(SensorSvc, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
+
         self._sdrReader: SDRReader = SDRReader()
         self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()

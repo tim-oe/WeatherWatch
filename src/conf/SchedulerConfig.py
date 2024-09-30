@@ -1,7 +1,7 @@
 __all__ = ["SchedulerConfig"]
 
 
-class SchedulerConfig(object):
+class SchedulerConfig:
     SENSOR_KEY = "sensor"
     INTERVAL_KEY = "interval"
 
@@ -14,6 +14,7 @@ class SchedulerConfig(object):
         ctor
         :param self: this
         """
+
         for key in config:
             self.__dict__[key] = config[key]
 

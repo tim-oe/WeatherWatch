@@ -1,20 +1,19 @@
 from entity.OutdoorSensor import OutdoorSensor
 from repository.BaseRepository import BaseRepository
+from util.Singleton import Singleton
 
 __all__ = ["OutdoorSensorRepository"]
 
 
-class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
+class OutdoorSensorRepository(Singleton, BaseRepository[OutdoorSensor]):
+
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        super().__init__(entity=OutdoorSensor)
+        if self._initialized:
+            return
+        self._initialized = True
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(OutdoorSensorRepository, cls).__new__(cls)
-        return cls.instance
+        super().__init__(entity=OutdoorSensor)

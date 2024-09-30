@@ -2,11 +2,12 @@ import adafruit_bmp3xx
 import board
 
 from sensor.bmp.BMPData import BMPData
+from util.Singleton import Singleton
 
 __all__ = ["Bmp388SensorReader"]
 
 
-class Bmp388SensorReader(object):
+class Bmp388SensorReader(Singleton):
     """
     adafruit bmp388 sensor reader
     lib: https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX
@@ -15,14 +16,11 @@ class Bmp388SensorReader(object):
     doc: https://docs.circuitpython.org/projects/bmp3xx/en/latest/
     """
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(Bmp388SensorReader, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
+
         #
         # I2C setup
         self.i2c = board.I2C()  # uses board.SCL and board.SDA

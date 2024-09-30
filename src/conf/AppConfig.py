@@ -8,11 +8,13 @@ from pyaml_env import parse_config
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
+from util.Singleton import Singleton
 
 __all__ = ["AppConfig"]
 
 
-class AppConfig(object):
+class AppConfig(Singleton):
+
     CONFIG_FILE = "config/weatherwatch.yml"
     LOG_CONFIG_FILE = "config/logging.yml"
 
@@ -31,23 +33,20 @@ class AppConfig(object):
     https://pypi.org/project/pyaml-env/
     """
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(AppConfig, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        self.logging()
+        if self._initialized:
+            return
+        self._initialized = True
+
+        self.initLogging()
 
         self._conf = parse_config(AppConfig.CONFIG_FILE)
 
-        logging.info("loaded application config " + AppConfig.CONFIG_FILE)
+        logging.info("loaded application config file " + AppConfig.CONFIG_FILE)
 
         self._sensors = []
 
@@ -61,7 +60,7 @@ class AppConfig(object):
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         logging.info("loaded scheduler config")
 
-    def logging(self):
+    def initLogging(self):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
         # https://docs.python.org/3/library/logging.html#logrecord-attributes
         # https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
@@ -73,7 +72,7 @@ class AppConfig(object):
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
             logging.root.handlers = [h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
 
-        logging.info("loaded logging config " + AppConfig.LOG_CONFIG_FILE)
+        logging.info("loaded logging config file " + AppConfig.LOG_CONFIG_FILE)
 
     # override
     def __str__(self):

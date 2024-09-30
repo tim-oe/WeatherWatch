@@ -1,6 +1,7 @@
 __all__ = ["SensorConfig"]
 
 
+# not singleton...
 class SensorConfig(object):
     NAME_KEY = "name"
     DEVICE_KEY = "device"

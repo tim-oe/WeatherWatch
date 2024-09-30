@@ -1,20 +1,19 @@
 from entity.IndoorSensor import IndoorSensor
 from repository.BaseRepository import BaseRepository
+from util.Singleton import Singleton
 
 __all__ = ["IndoorSensorRepository"]
 
 
-class IndoorSensorRepository(BaseRepository[IndoorSensor]):
+class IndoorSensorRepository(Singleton, BaseRepository[IndoorSensor]):
+
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        super().__init__(entity=IndoorSensor)
+        if self._initialized:
+            return
+        self._initialized = True
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(IndoorSensorRepository, cls).__new__(cls)
-        return cls.instance
+        super().__init__(entity=IndoorSensor)

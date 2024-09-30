@@ -25,6 +25,7 @@ from conf.SensorConfig import SensorConfig
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
+from util.Singleton import Singleton
 
 __all__ = ["SDRReader"]
 
@@ -45,12 +46,14 @@ class SensorEvent(object):
         try:
             eventName = self._data.__class__.__name__
             logging.debug("fire " + eventName)
+
+            logging.getLogger
             EventBus.call(eventName, self._data)
         except Exception as e:
-            logging.error("event processing error " + str(e))
+            logging.error("event processing error", e, stack_info=True, exc_info=True)
 
 
-class SDRReader(object):
+class SDRReader(Singleton):
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
@@ -64,18 +67,15 @@ class SDRReader(object):
     DEVICE_FLAG = "-R"
     CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "json"]
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(SDRReader, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         """
         ctor
         :param self: this
         """
+        if self._initialized:
+            return
+        self._initialized = True
+
         self._appConfig: AppConfig = AppConfig()
 
         self._timeout = int(self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"])
@@ -120,7 +120,7 @@ class SDRReader(object):
                     logging.debug(line.decode())
                     pass
         except Exception as e:
-            logging.error("line processing error " + str(e))
+            logging.error("line processing error", e, stack_info=True, exc_info=True)
             pass
         finally:
             logging.debug("line processing complete")
@@ -194,7 +194,7 @@ class SDRReader(object):
                 try:
                     data = q.get(timeout=10)
                 except Empty:
-                    pass  # time.sleep(1)
+                    pass
                 else:  # got line
                     self.processRecord(data.decode(), sensors, reads)
 
@@ -203,7 +203,7 @@ class SDRReader(object):
                 logging.debug("duration: " + str(duration) + " reads " + str(len(reads)))
             self._reads = reads
         except Exception as e:
-            logging.error("sensor read failed " + str(e))
+            logging.error("sensor read failed ", e, stack_info=True, exc_info=True)
         finally:
             logging.info("stopping reader " + str(duration) + " sec, reads " + str(len(reads)))
             p.kill()

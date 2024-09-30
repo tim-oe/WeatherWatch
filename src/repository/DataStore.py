@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
+from util.Singleton import Singleton
 
 __all__ = ["DataStore"]
 
 
-class DataStore(object):
+class DataStore(Singleton):
     """
     DataStore for orm
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
@@ -16,18 +17,15 @@ class DataStore(object):
     https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration
     """
 
-    # override for singleton
-    # https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(DataStore, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         """
         ctor
         :param self: this
         """
+        if self._initialized:
+            return
+        self._initialized = True
+
         self._dbConfig: DatabaseConfig = AppConfig().database
 
         # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly
