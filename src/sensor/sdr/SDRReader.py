@@ -43,14 +43,13 @@ class SensorEvent(object):
         self._data = data
 
     def fire(self):
-        try:
-            eventName = self._data.__class__.__name__
-            logging.debug("fire " + eventName)
+        eventName = self._data.__class__.__name__
+        logging.debug("fire " + eventName)
 
-            logging.getLogger
+        try:
             EventBus.call(eventName, self._data)
-        except Exception as e:
-            logging.error("event processing error", e, stack_info=True, exc_info=True)
+        except Exception:
+            logging.exception("event processing error " + eventName + " data\n" + self._data)
 
 
 class SDRReader(Singleton):
@@ -119,8 +118,8 @@ class SDRReader(Singleton):
                 except ValueError:
                     logging.debug(line.decode())
                     pass
-        except Exception as e:
-            logging.error("line processing error", e, stack_info=True, exc_info=True)
+        except Exception:
+            logging.exception("line processing error")
             pass
         finally:
             logging.debug("line processing complete")
@@ -202,11 +201,11 @@ class SDRReader(Singleton):
                 duration = self.duration(start)
                 logging.debug("duration: " + str(duration) + " reads " + str(len(reads)))
             self._reads = reads
-        except Exception as e:
-            logging.error("sensor read failed ", e, stack_info=True, exc_info=True)
+        except Exception:
+            logging.exception("sensor read failed")
         finally:
             logging.info("stopping reader " + str(duration) + " sec, reads " + str(len(reads)))
             p.kill()
 
         for k, v in sensors.items():
-            logging.error("no data for " + k + " =" + str(v))
+            logging.error("no data for " + k + " =\n" + str(v))

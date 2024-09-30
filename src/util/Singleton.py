@@ -1,6 +1,8 @@
 class Singleton:
     """
-    poor mans singleton imple
+    poor man's singleton imple
+    https://stackoverflow.com/questions/12305142/issue-with-singleton-python-call-two-times-init
+
     add to top of child class __init__
 
     if(self._initialized): return
