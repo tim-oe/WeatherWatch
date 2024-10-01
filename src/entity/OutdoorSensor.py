@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from sqlalchemy import Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -6,6 +8,7 @@ from entity.BaseSensor import BaseSensor
 __all__ = ["OutdoorSensor"]
 
 
+@dataclass
 class OutdoorSensor(BaseSensor):
     __tablename__ = "outdoor_sensor"
     __table_args__ = {"extend_existing": True}

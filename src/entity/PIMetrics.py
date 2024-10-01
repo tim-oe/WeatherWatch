@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from dataclasses import dataclass
+
 from sqlalchemy import DateTime, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -8,6 +10,7 @@ from entity.BaseEntity import BaseEntity
 __all__ = ["PIMetrics"]
 
 
+@dataclass
 class PIMetrics(BaseEntity):
     __tablename__ = "pi_metrics"
     __table_args__ = {"extend_existing": True}

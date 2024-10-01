@@ -33,6 +33,8 @@ class OutdoorSensorRepositoryTest(unittest.TestCase):
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
         ent.read_time = datetime.datetime.now()
+        # comes from BMP sensor
+        ent.pressure = 999.99
         ent.mic = data.mic
         ent.mod = data.mod
         ent.freq = data.freq
@@ -44,3 +46,8 @@ class OutdoorSensorRepositoryTest(unittest.TestCase):
         repo.insert(ent)
         
         self.assertIsNotNone(ent.id)
+        act = repo.findById(ent.id)
+        self.assertIsNotNone(act)
+        # TODO not working...
+        #self.assertEquals(ent, act)
+        

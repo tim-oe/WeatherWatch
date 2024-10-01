@@ -6,7 +6,7 @@ import json
 
 from src.repository.IndoorSensorRepository import IndoorSensorRepository
 from src.entity.IndoorSensor import IndoorSensor
-from sensor.sdr.IndoorData import IndoorData
+from src.sensor.sdr.IndoorData import IndoorData
 
 class IndoorSensorRepositoryTest(unittest.TestCase):
 
@@ -52,3 +52,7 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         repo.insert(ent)
         
         self.assertIsNotNone(ent.id)
+        act = repo.findById(ent.id)
+        self.assertIsNotNone(act)
+        # TODO not working...
+        #self.assertEquals(ent, act)

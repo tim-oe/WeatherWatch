@@ -7,7 +7,7 @@ import gpiozero
 import psutil
 from py_singleton import singleton
 
-from entity.PiMetrics import PIMetrics
+from src.entity.PIMetrics import PIMetrics
 from repository.PIMetricsRepository import PIMetricsRepository
 
 __all__ = ["PIMetricsSvc"]

@@ -20,4 +20,8 @@ class SDRMetrictsRepositoryTest(unittest.TestCase):
         repo.insert(ent)
         
         self.assertIsNotNone(ent.id)
+        act = repo.findById(ent.id)
+        self.assertIsNotNone(act)
+        # TODO not working...
+        #self.assertEquals(ent, act)
         

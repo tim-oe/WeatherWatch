@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from dataclasses import dataclass
+
 from sqlalchemy import DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -7,7 +9,7 @@ from entity.BaseEntity import BaseEntity
 
 __all__ = ["SDRMetrics"]
 
-
+@dataclass
 class SDRMetrics(BaseEntity):
     __tablename__ = "sdr_metrics"
     __table_args__ = {"extend_existing": True}

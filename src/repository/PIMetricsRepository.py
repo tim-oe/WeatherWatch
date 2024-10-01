@@ -1,6 +1,6 @@
 from py_singleton import singleton
 
-from entity.PiMetrics import PIMetrics
+from src.entity.PIMetrics import PIMetrics
 from repository.BaseRepository import BaseRepository
 
 __all__ = ["PIMetricsRepository"]
