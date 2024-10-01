@@ -7,6 +7,7 @@ from entity.BaseSensor import BaseSensor
 
 __all__ = ["IndoorSensor"]
 
+
 @dataclass
 class IndoorSensor(BaseSensor):
     __tablename__ = "indoor_sensor"

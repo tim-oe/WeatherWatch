@@ -34,21 +34,21 @@ class SensorEvent(object):
     class to allow for async event
     """
 
-    def __init__(self, data: BaseData):
+    def __init__(self, evt: str, data: BaseData):
         """
         ctor
         :param self: this
         """
         self._data = data
+        self._evt = evt
 
     def fire(self):
-        eventName = self._data.__class__.__name__
-        logging.debug("fire " + eventName)
+        logging.debug("fire " + self._evt)
 
         try:
-            EventBus.call(eventName, self._data)
+            EventBus.call(self._evt, self._data)
         except Exception:
-            logging.exception("event processing error " + eventName + " data\n" + self._data)
+            logging.exception("event processing error " + self._evt + " data\n" + str(self._data))
 
 
 @singleton
@@ -85,6 +85,8 @@ class SDRReader(object):
             self._cmd.append(SDRReader.DEVICE_FLAG)
             self._cmd.append(str(s.device))
             self._sensors[s.key] = s
+
+        logging.info(str(self._sensors))
 
         # sensor data thread to fire event async
         self._dataPool = ThreadPoolExecutor(max_workers=len(self._sensors))
@@ -136,24 +138,29 @@ class SDRReader(object):
         if key in sensors:
             sensor: SensorConfig = sensors[key]
             r: BaseData = None
+            evt = None
             match sensor.dataClass:
                 case IndoorData.__name__:
                     r = json.loads(line, object_hook=IndoorData.jsonDecoder)
+                    evt = IndoorData.__name__
                 case OutdoorData.__name__:
                     r = json.loads(line, object_hook=OutdoorData.jsonDecoder)
+                    evt = OutdoorData.__name__
                 case _:
-                    logging.error("unkown impl for sensor: " + sensor)
+                    logging.error("unkown impl for sensor: " + str(sensor))
 
             if r is not None:
+
                 r.raw = json.loads(line)
                 r.config = sensor
                 reads.append(r)
-                se: SensorEvent = SensorEvent(r)
+                # EventBus.call(evt, r)
+                se: SensorEvent = SensorEvent(evt, r)
                 self._dataPool.submit(se.fire)
 
             del sensors[key]
         else:
-            logging.debug("skipping: " + line)
+            logging.warning("skipping: " + key + "\n" + line)
 
     def duration(self, start: datetime) -> int:
         """

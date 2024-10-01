@@ -90,12 +90,12 @@ class BaseData(object):
         :param self: this
         :return: the key
         """
-        key = j[BaseData.MODEL_KEY] + "|" + str(j[BaseData.ID_KEY])
+        key = "[" + j[BaseData.MODEL_KEY] + "|" + str(j[BaseData.ID_KEY])
 
         if BaseData.CHANNEL_KEY in j:
             key = key + "|" + str(j[BaseData.CHANNEL_KEY])
 
-        return key
+        return key + "]"
 
     @property
     def timeStamp(self) -> datetime:

@@ -24,10 +24,11 @@ class CleanCommand(Command):
 
     def run(self):
         os.system("py3clean -v .")
+        os.system("rm -vrf WeatherWatch.log")
         os.system("rm -vrf ./report")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
-        os.system("find . -name \"__pycache__\" -type d -exec rm -vfR {} \;")
+        os.system("find . -name \"__pycache__\" -type d -exec sudo rm -vfR {} \;")
 
 # run black isort flake8
 class FormatCommand(Command):

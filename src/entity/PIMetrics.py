@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from dataclasses import dataclass
+from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column

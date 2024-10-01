@@ -1,5 +1,7 @@
 import unittest
 
+import time
+
 from src.sensor.sdr.SDRReader import SDRReader
 
 class SDRReaderTest(unittest.TestCase):
@@ -8,6 +10,8 @@ class SDRReaderTest(unittest.TestCase):
 
         bs.read()
 
+        time.sleep(5)
+        
         self.assertTrue(len(bs.reads) > 0)
 
         for d in bs.reads:

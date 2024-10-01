@@ -44,28 +44,38 @@ class SensorSvc(object):
         logging.info("processing complete")
 
     def handleIndoor(self, data: IndoorData):
-        ent: IndoorSensor = IndoorSensor()
-        self.setBaseData(data, ent)
+        logging.info("processing " + IndoorData.__name__)
 
-        ent.channel = data.channel
+        try:
+            ent: IndoorSensor = IndoorSensor()
+            self.setBaseData(data, ent)
 
-        self._outdoorRepo.insert(ent)
+            ent.channel = data.channel
+
+            self._outdoorRepo.insert(ent)
+        except Exception:
+            logging.exception("failed to insert " + str(data))
 
     def handleOutdoor(self, data: OutdoorData):
-        ent: OutdoorSensor = OutdoorSensor()
-        self.setBaseData(data, ent)
+        logging.info("processing " + OutdoorData.__name__)
+        try:
+            ent: OutdoorSensor = OutdoorSensor()
+            self.setBaseData(data, ent)
 
-        bmp = self._bmpReader.read()
-        ent.pressure = bmp.pressure
+            bmp = self._bmpReader.read()
+            ent.pressure = bmp.pressure
+            # ent.pressure = 999.99
 
-        ent.rain_mm = data.rain_mm
-        ent.wind_avg_m_s = data.wind_avg_m_s
-        ent.wind_max_m_s = data.wind_max_m_s
-        ent.wind_dir_deg = data.wind_dir_deg
-        ent.light_lux = data.light_lux
-        ent.uv = data.uv
+            ent.rain_mm = data.rain_mm
+            ent.wind_avg_m_s = data.wind_avg_m_s
+            ent.wind_max_m_s = data.wind_max_m_s
+            ent.wind_dir_deg = data.wind_dir_deg
+            ent.light_lux = data.light_lux
+            ent.uv = data.uv
 
-        self._outdoorRepo.insert(ent)
+            self._outdoorRepo.insert(ent)
+        except Exception:
+            logging.exception("failed to insert " + str(data))
 
     def setBaseData(self, data: BaseData, ent: BaseSensor):
         ent.model = data.model

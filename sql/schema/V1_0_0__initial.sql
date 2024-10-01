@@ -11,7 +11,7 @@ CREATE TABLE `outdoor_sensor` (
     `wind_avg_m_s` DECIMAL(5,3) NOT NULL,
     `wind_max_m_s` DECIMAL(5,3) NOT NULL,
     `wind_dir_deg` SMALLINT UNSIGNED NOT NULL,
-    `light_lux` TINYINT UNSIGNED NOT NULL,
+    `light_lux` INT UNSIGNED NOT NULL,
     `uv` DECIMAL(5,3) NOT NULL,
 	  `mic` CHAR(3) NOT NULL,
 	  `mod` CHAR(3) NOT NULL,
@@ -38,7 +38,6 @@ CREATE TABLE `outdoor_sensor` (
     PARTITION p2034 VALUES LESS THAN (UNIX_TIMESTAMP('2035-01-01')),
     PARTITION future VALUES LESS THAN MAXVALUE
   );
-
 
 CREATE TABLE `indoor_sensor` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

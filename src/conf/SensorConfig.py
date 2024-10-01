@@ -97,9 +97,9 @@ class SensorConfig(object):
         :param self: this
         :return: the key
         """
-        key = self._model + "|" + str(self._id)
+        key = "[" + self._model + "|" + str(self._id)
 
         if self._channel is not None:
             key = key + "|" + str(self._channel)
 
-        return key
+        return key + "]"

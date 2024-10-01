@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from dataclasses import dataclass
+from datetime import datetime
 
 from sqlalchemy import DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column
@@ -8,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from entity.BaseEntity import BaseEntity
 
 __all__ = ["SDRMetrics"]
+
 
 @dataclass
 class SDRMetrics(BaseEntity):
