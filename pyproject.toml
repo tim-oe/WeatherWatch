@@ -16,7 +16,7 @@ dependencies = [
     "PyYAML",
     "pyaml-env",
     "SQLAlchemy",
-    "mysql-connector-python",
+    "mariadb",
     "adafruit-circuitpython-bmp3xx",
     "apscheduler",
     "python-event-bus",
