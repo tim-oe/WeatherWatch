@@ -102,7 +102,7 @@ class DockerMysqlUpCommand(Command):
         pass
 
     def run(self):
-        os.system("docker compose --file mysql-docker-compose.yml up -d")
+        os.system("docker compose --file mariadb-docker-compose.yml up -d")
 
 class DockerMysqlDownCommand(Command):
     """shutdown mysql docker container"""
@@ -116,7 +116,7 @@ class DockerMysqlDownCommand(Command):
         pass
 
     def run(self):
-        os.system("docker compose --file mysql-docker-compose.yml down")
+        os.system("docker compose --file mariadb-docker-compose.yml down")
 
 # https://www.tutorialguruji.com/python/python-package-structure-setup-py-for-running-unit-tests/
 # run tests

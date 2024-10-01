@@ -104,9 +104,13 @@ CREATE TABLE `sdr_metrics` (
 CREATE TABLE `pi_metrics` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `read_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	  `mem_info` VARCHAR(128) NOT NULL,
-	  `disk_info` VARCHAR(128) NOT NULL,
-	  `cpu_temp` VARCHAR(16) NOT NULL,
+    `mem_available` BIGINT UNSIGNED NOT NULL,
+    `mem_used` BIGINT UNSIGNED NOT NULL,
+    `mem_percent` DECIMAL(4,2) NOT NULL,
+    `disk_available` BIGINT UNSIGNED NOT NULL,
+    `disk_used` BIGINT UNSIGNED NOT NULL,
+    `disk_percent` DECIMAL(4,2) NOT NULL,
+	  `cpu_temp_c` DECIMAL(5,2) NOT NULL,
 	  PRIMARY KEY (`id`, `read_time`),
 	  UNIQUE KEY unique_sensor (read_time)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4

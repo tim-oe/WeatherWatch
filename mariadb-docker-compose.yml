@@ -2,7 +2,8 @@ services:
 
   db:
     container_name: db
-    image: mysql:8.0.39
+    # match prod
+    image: mariadb:10.11.6
     hostname: mysql
     volumes:
       - ./.docker/mysql/:/var/lib/mysql-docker/

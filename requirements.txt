@@ -13,4 +13,6 @@ mysql-connector-python==9.0.0
 apscheduler==3.10.4
 python-event-bus==1.2.0
 py-singleton==1.0.0
+psutil==6.0.0
+gpiozero==2.0.1
 

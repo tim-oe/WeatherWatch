@@ -4,6 +4,7 @@ import os
 
 from sqlalchemy import URL
 
+
 class DatabaseConfig(object):
     NAME_KEY = "name"
     DIALECT_KEY = "dialect"
@@ -54,4 +55,5 @@ class DatabaseConfig(object):
             password=self.__dict__[DatabaseConfig.PASSWORD_KEY],
             host=self.__dict__[DatabaseConfig.HOST_KEY],
             port=self.__dict__[DatabaseConfig.PORT_KEY],
-            database=self.__dict__[DatabaseConfig.NAME_KEY])
+            database=self.__dict__[DatabaseConfig.NAME_KEY],
+        )

@@ -1,9 +1,9 @@
 from py_singleton import singleton
 
-from repository.BaseRepository import BaseRepository
 from entity.PiMetrics import PIMetrics
+from repository.BaseRepository import BaseRepository
 
-__all__ = ["PiMetricsRepository"]
+__all__ = ["PIMetricsRepository"]
 
 
 @singleton
