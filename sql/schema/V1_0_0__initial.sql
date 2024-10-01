@@ -1,8 +1,8 @@
 CREATE TABLE `outdoor_sensor` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `read_time` timestamp NOT NULL,
-	`battery_ok` bit(1) NOT NULL,
-	`model` VARCHAR(64) NOT NULL,
+	  `battery_ok` bit(1) NOT NULL,
+	  `model` VARCHAR(64) NOT NULL,
     `sensor_id` SMALLINT UNSIGNED NOT NULL,
     `temperature_f` DECIMAL(5,2) NOT NULL,
     `humidity` TINYINT UNSIGNED NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE `outdoor_sensor` (
     `wind_dir_deg` SMALLINT UNSIGNED NOT NULL,
     `light_lux` TINYINT UNSIGNED NOT NULL,
     `uv` DECIMAL(5,3) NOT NULL,
-	`mic` CHAR(3) NOT NULL,
-	`mod` CHAR(3) NOT NULL,
+	  `mic` CHAR(3) NOT NULL,
+	  `mod` CHAR(3) NOT NULL,
     `freq` DECIMAL(6,3) NOT NULL,
     `snr` DECIMAL(6,3) NOT NULL,
     `noise` DECIMAL(6,3) NOT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE `outdoor_sensor` (
 CREATE TABLE `indoor_sensor` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `read_time` timestamp NOT NULL,
-	`battery_ok` bit(1) NOT NULL,
-	`model` VARCHAR(128) NOT NULL,
+	  `battery_ok` bit(1) NOT NULL,
+	  `model` VARCHAR(128) NOT NULL,
     `sensor_id` SMALLINT UNSIGNED NOT NULL,
     `channel` SMALLINT UNSIGNED NOT NULL,
     `temperature_f` DECIMAL(5,2) NOT NULL,
     `humidity` TINYINT UNSIGNED NOT NULL,
-	`mic` CHAR(3) NOT NULL,
-	`mod` CHAR(3) NOT NULL,
+	  `mic` CHAR(3) NOT NULL,
+	  `mod` CHAR(3) NOT NULL,
     `freq` DECIMAL(6,3) NOT NULL,
     `snr` DECIMAL(6,3) NOT NULL,
     `noise` DECIMAL(6,3) NOT NULL,
@@ -81,12 +81,36 @@ CREATE TABLE `sdr_metrics` (
     `end_time` timestamp NOT NULL,
     `duration_sec` SMALLINT UNSIGNED NOT NULL,
     `sensor_cnt` SMALLINT UNSIGNED NOT NULL,
-	PRIMARY KEY (`id`, `start_time`),
-	UNIQUE KEY unique_sensor (start_time, end_time),
+	  PRIMARY KEY (`id`, `start_time`),
+	  UNIQUE KEY unique_sensor (start_time, end_time),
     KEY `start_time_idx` (`start_time`),
     KEY `end_time_idx` (`end_time`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
   PARTITION BY RANGE( UNIX_TIMESTAMP(start_time) ) (
+    PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),
+    PARTITION p2025 VALUES LESS THAN (UNIX_TIMESTAMP('2026-01-01')),
+    PARTITION p2026 VALUES LESS THAN (UNIX_TIMESTAMP('2027-01-01')),
+    PARTITION p2027 VALUES LESS THAN (UNIX_TIMESTAMP('2028-01-01')),
+    PARTITION p2028 VALUES LESS THAN (UNIX_TIMESTAMP('2029-01-01')),
+    PARTITION p2029 VALUES LESS THAN (UNIX_TIMESTAMP('2030-01-01')),
+    PARTITION p2030 VALUES LESS THAN (UNIX_TIMESTAMP('2031-01-01')),
+    PARTITION p2031 VALUES LESS THAN (UNIX_TIMESTAMP('2032-01-01')),
+    PARTITION p2032 VALUES LESS THAN (UNIX_TIMESTAMP('2033-01-01')),
+    PARTITION p2033 VALUES LESS THAN (UNIX_TIMESTAMP('2034-01-01')),
+    PARTITION p2034 VALUES LESS THAN (UNIX_TIMESTAMP('2035-01-01')),
+    PARTITION future VALUES LESS THAN MAXVALUE
+  );
+
+CREATE TABLE `pi_metrics` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `read_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	  `mem_info` VARCHAR(128) NOT NULL,
+	  `disk_info` VARCHAR(128) NOT NULL,
+	  `cpu_temp` VARCHAR(16) NOT NULL,
+	  PRIMARY KEY (`id`, `read_time`),
+	  UNIQUE KEY unique_sensor (read_time)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
+  PARTITION BY RANGE( UNIX_TIMESTAMP(read_time) ) (
     PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),
     PARTITION p2025 VALUES LESS THAN (UNIX_TIMESTAMP('2026-01-01')),
     PARTITION p2026 VALUES LESS THAN (UNIX_TIMESTAMP('2027-01-01')),

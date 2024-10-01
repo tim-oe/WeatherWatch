@@ -6,9 +6,6 @@
 """
 """
 
-# https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python
-__all__ = ["SDRReader"]
-
 import datetime
 import json
 import logging

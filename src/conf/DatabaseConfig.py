@@ -2,6 +2,7 @@ __all__ = ["DatabaseConfig"]
 
 import os
 
+from sqlalchemy import URL
 
 class DatabaseConfig(object):
     NAME_KEY = "name"
@@ -19,8 +20,6 @@ class DatabaseConfig(object):
     # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
     # https://ankushkunwar7777.medium.com/connect-mysql-to-sqlalchemy-in-python-b94c34568818
     # https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
-    # dialect+driver://username:password@host:port/database
-    URL_TEMPLATE = "{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}"
 
     """
     database config data
@@ -43,18 +42,16 @@ class DatabaseConfig(object):
 
     # TODO https://docs.python.org/3/library/profile.html#module-cProfile
     @property
-    def url(self):
+    def url(self) -> URL:
         """
         name property getter
         :param self: this
         :return: the name
         """
-        return DatabaseConfig.URL_TEMPLATE.format(
-            dialect=self.__dict__[DatabaseConfig.DIALECT_KEY],
-            driver=self.__dict__[DatabaseConfig.DRIVER_KEY],
+        return URL.create(
+            self.__dict__[DatabaseConfig.DIALECT_KEY] + "+" + self.__dict__[DatabaseConfig.DRIVER_KEY],
             username=self.__dict__[DatabaseConfig.USERNAME_KEY],
             password=self.__dict__[DatabaseConfig.PASSWORD_KEY],
             host=self.__dict__[DatabaseConfig.HOST_KEY],
             port=self.__dict__[DatabaseConfig.PORT_KEY],
-            database=self.__dict__[DatabaseConfig.NAME_KEY],
-        )
+            database=self.__dict__[DatabaseConfig.NAME_KEY])
