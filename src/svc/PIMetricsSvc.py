@@ -3,7 +3,6 @@ import logging
 from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
 
-import gpiozero
 import psutil
 from py_singleton import singleton
 
@@ -40,8 +39,9 @@ class PIMetricsSvc(object):
         data.disk_percent = disk.percent
 
     def getTemp(self, data: PIMetrics):
-        cpu = gpiozero.CPUTemperature()
-        data.cpu_temp_c = cpu.temperature
+        cpu = psutil.sensors_temperatures()
+        data.cpu_temp_c = cpu['cpu_thermal'][0].current
+
 
     def process(self):
         data: PIMetrics = PIMetrics()

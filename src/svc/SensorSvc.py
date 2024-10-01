@@ -29,7 +29,7 @@ class SensorSvc(object):
     def __init__(self):
 
         self._sdrReader: SDRReader = SDRReader()
-        self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
+        #self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
 
@@ -62,9 +62,9 @@ class SensorSvc(object):
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
 
-            bmp = self._bmpReader.read()
-            ent.pressure = bmp.pressure
-            # ent.pressure = 999.99
+            #bmp = self._bmpReader.read()
+            #ent.pressure = bmp.pressure
+            ent.pressure = 999.99
 
             ent.rain_mm = data.rain_mm
             ent.wind_avg_m_s = data.wind_avg_m_s

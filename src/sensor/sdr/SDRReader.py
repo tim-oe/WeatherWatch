@@ -74,7 +74,7 @@ class SDRReader(object):
 
         self._appConfig: AppConfig = AppConfig()
 
-        self._timeout = int(self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"])
+        self._timeout = self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
 
         # sensor read pool predefined thread
         self._readPool = ThreadPoolExecutor(max_workers=1)

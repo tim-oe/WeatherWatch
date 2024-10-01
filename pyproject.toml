@@ -22,7 +22,7 @@ dependencies = [
     "python-event-bus",
     "py-singleton",
     "psutil",
-    "gpiozero"
+    "lgpio"
 ]
 requires-python = ">=3.11"
 
