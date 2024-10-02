@@ -44,7 +44,7 @@ class AppConfig(object):
 
         self._conf = parse_config(AppConfig.CONFIG_FILE)
 
-        logging.info("loaded application config file {}", AppConfig.CONFIG_FILE)
+        logging.info("loaded application config file %s", AppConfig.CONFIG_FILE)
 
         self._sensors = []
 
@@ -70,7 +70,7 @@ class AppConfig(object):
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
             logging.root.handlers = [h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
 
-        logging.info("loaded logging config file {}", AppConfig.LOG_CONFIG_FILE)
+        logging.info("loaded logging config file %s", AppConfig.LOG_CONFIG_FILE)
 
     # override
     def __str__(self):

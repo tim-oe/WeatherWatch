@@ -53,7 +53,7 @@ class PIMetricsSvc(object):
 
         futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)
 
-        logging.debug("pi metrics {}", data)
+        logging.debug("pi metrics %s", data)
 
         data.read_time = datetime.datetime.now()
 
