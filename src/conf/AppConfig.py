@@ -14,7 +14,7 @@ __all__ = ["AppConfig"]
 
 
 @singleton
-class AppConfig(object):
+class AppConfig:
 
     CONFIG_FILE = "config/weatherwatch.yml"
     LOG_CONFIG_FILE = "config/logging.yml"

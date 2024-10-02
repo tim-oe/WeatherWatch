@@ -12,7 +12,7 @@ __all__ = ["SchedulerSvc"]
 
 
 @singleton
-class SchedulerSvc(object):
+class SchedulerSvc:
     SENSOR_JOB = "sensor"
     PI_METRICS_JOB = "pi_metrics"
 
@@ -58,9 +58,6 @@ class SchedulerSvc(object):
 
     def start(self):
         self._scheduler.start()
-
-    def stop(self):
-        self._scheduler.stop()
 
     def pause(self):
         self._scheduler.pause()

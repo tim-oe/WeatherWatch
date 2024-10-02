@@ -18,7 +18,7 @@ __all__ = ["SensorSvc"]
 
 
 @singleton
-class SensorSvc(object):
+class SensorSvc:
     """
     sensor service
     this does the sensor processing
@@ -44,7 +44,7 @@ class SensorSvc(object):
         logging.info("processing complete")
 
     def handleIndoor(self, data: IndoorData):
-        logging.info("processing %s", IndoorData.__name__)
+        logging.info("processing {}", IndoorData.__name__)
 
         try:
             ent: IndoorSensor = IndoorSensor()
@@ -57,7 +57,7 @@ class SensorSvc(object):
             logging.exception("failed to insert %s", data)
 
     def handleOutdoor(self, data: OutdoorData):
-        logging.info("processing " + OutdoorData.__name__)
+        logging.info("processing %s", OutdoorData.__name__)
         try:
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)

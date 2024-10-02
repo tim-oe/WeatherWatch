@@ -28,7 +28,7 @@ __all__ = ["GPSReader"]
 
 
 @singleton
-class GPSReader(object):
+class GPSReader:
     """
     gps reader for lon lat alt
     """
@@ -80,7 +80,7 @@ class GPSReader(object):
         """
         process sensor data
         """
-        logging.debug("sensor json: " + line)
+        logging.debug("sensor json: %s", line)
         self._record = json.loads(line)
 
     def read(self):
@@ -88,7 +88,7 @@ class GPSReader(object):
         read sensor data
         this will block until all sensors are read or until timeout
         """
-        logging.info("starting cmd: " + str(GPSReader.CMD))
+        logging.info("starting cmd: %s", str(GPSReader.CMD))
 
         self.p = Popen(GPSReader.CMD, stdout=PIPE, stderr=STDOUT, close_fds=GPSReader.ON_POSIX)
 

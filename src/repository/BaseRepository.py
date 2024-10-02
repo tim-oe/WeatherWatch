@@ -50,14 +50,6 @@ class BaseRepository(Generic[T]):
         finally:
             session.close()
 
-    # TODO this seems off but it's all the examples i found
-    def update(self, o: T):
-        try:
-            session: Session = self._datastore.session
-            session.commit()
-        finally:
-            session.close()
-
     def delete(self, o: T):
         try:
             session: Session = self._datastore.session

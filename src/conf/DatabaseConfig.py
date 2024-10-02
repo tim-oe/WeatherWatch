@@ -5,7 +5,7 @@ import os
 from sqlalchemy import URL
 
 
-class DatabaseConfig(object):
+class DatabaseConfig:
     NAME_KEY = "name"
     DIALECT_KEY = "dialect"
     DRIVER_KEY = "driver"

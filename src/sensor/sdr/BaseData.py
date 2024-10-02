@@ -7,7 +7,7 @@ from conf.SensorConfig import SensorConfig
 __all__ = ["BaseData"]
 
 
-class BaseData(object):
+class BaseData:
 
     # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"

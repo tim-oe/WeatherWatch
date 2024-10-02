@@ -9,7 +9,7 @@ __all__ = ["DataStore"]
 
 
 @singleton
-class DataStore(object):
+class DataStore:
     """
     DataStore for orm
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1

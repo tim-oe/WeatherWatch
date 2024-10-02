@@ -13,9 +13,6 @@ from svc.SchedulerSvc import SchedulerSvc
 
 # actual start point
 if __name__ == "__main__":
-    """
-    application entry point
-    """
     ss: SchedulerSvc = SchedulerSvc()
 
     ss.start()

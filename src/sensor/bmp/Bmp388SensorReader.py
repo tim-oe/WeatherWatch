@@ -8,7 +8,7 @@ __all__ = ["Bmp388SensorReader"]
 
 
 @singleton
-class Bmp388SensorReader(object):
+class Bmp388SensorReader:
     """
     adafruit bmp388 sensor reader
     lib: https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX

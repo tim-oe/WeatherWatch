@@ -8,7 +8,7 @@ __all__ = ["Bmp280SensorReader"]
 
 
 @singleton
-class Bmp280SensorReader(object):
+class Bmp280SensorReader:
     """
     seeedstudio bmp280 sensor reader
     TODO: _CHIP_ID = const(0x60)

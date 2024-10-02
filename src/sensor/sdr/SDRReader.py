@@ -29,7 +29,7 @@ from sensor.sdr.OutdoorData import OutdoorData
 __all__ = ["SDRReader"]
 
 
-class SensorEvent(object):
+class SensorEvent:
     """
     class to allow for async event
     """
@@ -52,7 +52,7 @@ class SensorEvent(object):
 
 
 @singleton
-class SDRReader(object):
+class SDRReader:
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433

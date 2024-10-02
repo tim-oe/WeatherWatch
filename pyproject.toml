@@ -62,12 +62,21 @@ max-line-length = 128
 max-complexity = 18
 
 [tool.pylint.MASTER]
+init-hook = 'import sys; sys.path.append("src")'
+max-line-length=128
 load-plugins = "pylint_report"
 
 [tool.pylint.REPORTS]
 output-format = "pylint_report.CustomJsonReporter"
 
 [tool.pylint."MESSAGES CONTROL"]
-disable = '''C0103,
+disable = '''
+C0103,
+W0718,
+W0719,
+R0902,
+C0112,
+C0114,
+C0115,
+C0116,
 '''
-output-format = "json"

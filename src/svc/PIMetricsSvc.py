@@ -11,9 +11,13 @@ from repository.PIMetricsRepository import PIMetricsRepository
 
 __all__ = ["PIMetricsSvc"]
 
+"""
+Pi metric data service
+"""
+
 
 @singleton
-class PIMetricsSvc(object):
+class PIMetricsSvc:
 
     def __init__(self):
         """
