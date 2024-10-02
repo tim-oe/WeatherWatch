@@ -29,7 +29,7 @@ class SensorSvc(object):
     def __init__(self):
 
         self._sdrReader: SDRReader = SDRReader()
-        #self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
+        self._bmpReader: Bmp388SensorReader = Bmp388SensorReader()
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
 
@@ -44,7 +44,7 @@ class SensorSvc(object):
         logging.info("processing complete")
 
     def handleIndoor(self, data: IndoorData):
-        logging.info("processing " + IndoorData.__name__)
+        logging.info("processing %s", IndoorData.__name__)
 
         try:
             ent: IndoorSensor = IndoorSensor()
@@ -54,7 +54,7 @@ class SensorSvc(object):
 
             self._outdoorRepo.insert(ent)
         except Exception:
-            logging.exception("failed to insert " + str(data))
+            logging.exception("failed to insert %s", data)
 
     def handleOutdoor(self, data: OutdoorData):
         logging.info("processing " + OutdoorData.__name__)
@@ -62,9 +62,9 @@ class SensorSvc(object):
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
 
-            #bmp = self._bmpReader.read()
-            #ent.pressure = bmp.pressure
-            ent.pressure = 999.99
+            bmp = self._bmpReader.read()
+            ent.pressure = bmp.pressure
+            # ent.pressure = 999.99
 
             ent.rain_mm = data.rain_mm
             ent.wind_avg_m_s = data.wind_avg_m_s
@@ -75,7 +75,7 @@ class SensorSvc(object):
 
             self._outdoorRepo.insert(ent)
         except Exception:
-            logging.exception("failed to insert " + str(data))
+            logging.exception("failed to insert %s", data)
 
     def setBaseData(self, data: BaseData, ent: BaseSensor):
         ent.model = data.model

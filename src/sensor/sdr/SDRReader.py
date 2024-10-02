@@ -147,7 +147,7 @@ class SDRReader(object):
                     r = json.loads(line, object_hook=OutdoorData.jsonDecoder)
                     evt = OutdoorData.__name__
                 case _:
-                    logging.error("unkown impl for sensor: " + str(sensor))
+                    logging.error("unkown impl for sensor: %s", sensor)
 
             if r is not None:
 
@@ -160,7 +160,7 @@ class SDRReader(object):
 
             del sensors[key]
         else:
-            logging.warning("skipping: " + key + "\n" + line)
+            logging.warning("skipping: %s\n%s", key, line)
 
     def duration(self, start: datetime) -> int:
         """
@@ -174,7 +174,7 @@ class SDRReader(object):
         read sensor data
         this will block until all sensors are read or until timeout
         """
-        logging.debug("starting cmd: " + str(self._cmd))
+        logging.debug("starting cmd: %s", self._cmd)
 
         sensors = self._sensors.copy()
         self._reads = []
@@ -206,17 +206,17 @@ class SDRReader(object):
                 sys.stdout.flush()
                 duration = self.duration(start)
 
-                logging.debug("duration: " + str(duration) + " reads " + str(len(reads)))
+                logging.debug("duration: %s reads %s", duration, len(reads))
             self._reads = reads
             self.logMetrics(start, datetime.datetime.now(), duration, len(reads))
         except Exception:
             logging.exception("sensor read failed")
         finally:
-            logging.info("stopping reader " + str(duration) + " sec, reads " + str(len(reads)))
+            logging.info("stopping reader %s sec, reads %s", duration, len(reads))
             p.kill()
 
         for k, v in sensors.items():
-            logging.error("no data for " + k + " =\n" + str(v))
+            logging.error("no data for %s=\n%s", k, v)
 
     def logMetrics(self, startTime: datetime, endTime: datetime, duration: int, sensorCnt: int):
         try:

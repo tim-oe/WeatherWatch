@@ -15,4 +15,7 @@ python-event-bus==1.2.0
 py-singleton==1.0.0
 psutil==6.0.0
 lgpio==0.2.2.0
+numpy==1.26.4
+pylint==3.3.1
+pylint-report==2.4.0
 

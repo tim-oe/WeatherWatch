@@ -6,8 +6,8 @@ from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
 import psutil
 from py_singleton import singleton
 
-from repository.PIMetricsRepository import PIMetricsRepository
 from entity.PIMetrics import PIMetrics
+from repository.PIMetricsRepository import PIMetricsRepository
 
 __all__ = ["PIMetricsSvc"]
 
@@ -40,8 +40,7 @@ class PIMetricsSvc(object):
 
     def getTemp(self, data: PIMetrics):
         cpu = psutil.sensors_temperatures()
-        data.cpu_temp_c = cpu['cpu_thermal'][0].current
-
+        data.cpu_temp_c = cpu["cpu_thermal"][0].current
 
     def process(self):
         data: PIMetrics = PIMetrics()
@@ -54,7 +53,7 @@ class PIMetricsSvc(object):
 
         futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)
 
-        logging.debug("pi metrics" + str(data))
+        logging.debug("pi metrics {}", data)
 
         data.read_time = datetime.datetime.now()
 

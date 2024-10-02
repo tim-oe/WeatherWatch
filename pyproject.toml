@@ -22,7 +22,10 @@ dependencies = [
     "python-event-bus",
     "py-singleton",
     "psutil",
-    "lgpio"
+    "lgpio",
+    "numpy",
+    "pylint",
+    "pylint-report"
 ]
 requires-python = ">=3.11"
 
@@ -57,3 +60,14 @@ skip = [".gitignore", ".dockerignore"]
 [tool.flake8]
 max-line-length = 128
 max-complexity = 18
+
+[tool.pylint.MASTER]
+load-plugins = "pylint_report"
+
+[tool.pylint.REPORTS]
+output-format = "pylint_report.CustomJsonReporter"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = '''C0103,
+'''
+output-format = "json"
