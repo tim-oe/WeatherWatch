@@ -1,21 +1,19 @@
-import adafruit_bmp280
+import adafruit_bmp3xx
 import board
 from py_singleton import singleton
-
 from sensor.bmp.BMPData import BMPData
 
-__all__ = ["Bmp280SensorReader"]
+__all__ = ["Bmp388SensorReader"]
 
 
 @singleton
-class Bmp280SensorReader:
+class Bmp388SensorReader:
     """
-    seeedstudio bmp280 sensor reader
-    TODO: _CHIP_ID = const(0x60)
-    lib: https://github.com/adafruit/Adafruit_CircuitPython_BMP280
+    adafruit bmp388 sensor reader
+    lib: https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX
     circuitPyton: https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
-    sensor: https://www.seeedstudio.com/Grove-Barometer-Sensor-BMP280.html
-    doc: https://docs.circuitpython.org/projects/bmp280/en/latest/
+    sensor: https://learn.adafruit.com/adafruit-bmp388-bmp390-bmp3xx
+    doc: https://docs.circuitpython.org/projects/bmp3xx/en/latest/
     """
 
     def __init__(self):
@@ -24,7 +22,7 @@ class Bmp280SensorReader:
         # I2C setup
         self.i2c = board.I2C()  # uses board.SCL and board.SDA
 
-        self.bmp = adafruit_bmp280.Adafruit_BMP280_I2C(self.i2c, 0x76)
+        self.bmp = adafruit_bmp3xx.BMP3XX_I2C(self.i2c)
 
         # TODO what are these for, from sample
         self.bmp.pressure_oversampling = 8

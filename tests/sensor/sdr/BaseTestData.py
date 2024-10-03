@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from src.sensor.sdr.BaseData import BaseData
+from weatherwatch.sensor.sdr.BaseData import BaseData
 
 class BaseTestData(unittest.TestCase):
 

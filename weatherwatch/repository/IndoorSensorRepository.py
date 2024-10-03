@@ -1,17 +1,16 @@
+from entity.IndoorSensor import IndoorSensor
 from py_singleton import singleton
-
-from entity.SDRMetricts import SDRMetrics
 from repository.BaseRepository import BaseRepository
 
-__all__ = ["SDRMetricsRepository"]
+__all__ = ["IndoorSensorRepository"]
 
 
 @singleton
-class SDRMetricsRepository(BaseRepository[SDRMetrics]):
+class IndoorSensorRepository(BaseRepository[IndoorSensor]):
 
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        super().__init__(entity=SDRMetrics)
+        super().__init__(entity=IndoorSensor)

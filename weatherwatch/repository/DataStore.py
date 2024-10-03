@@ -1,9 +1,8 @@
+from conf.AppConfig import AppConfig
+from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
 from sqlalchemy import Connection, create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
-from conf.AppConfig import AppConfig
-from conf.DatabaseConfig import DatabaseConfig
 
 __all__ = ["DataStore"]
 

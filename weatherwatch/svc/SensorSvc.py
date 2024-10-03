@@ -1,11 +1,10 @@
 import logging
 
-from py_singleton import singleton
-from python_event_bus import EventBus
-
 from entity.BaseSensor import BaseSensor
 from entity.IndoorSensor import IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
+from py_singleton import singleton
+from python_event_bus import EventBus
 from repository.IndoorSensorRepository import IndoorSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from sensor.bmp.Bmp388SensorReader import Bmp388SensorReader

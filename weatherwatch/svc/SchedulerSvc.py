@@ -1,10 +1,9 @@
 import io
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from py_singleton import singleton
-
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
+from py_singleton import singleton
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 

@@ -4,9 +4,9 @@ import datetime
 
 import json
 
-from src.repository.IndoorSensorRepository import IndoorSensorRepository
-from src.entity.IndoorSensor import IndoorSensor
-from src.sensor.sdr.IndoorData import IndoorData
+from weatherwatch.repository.IndoorSensorRepository import IndoorSensorRepository
+from weatherwatch.entity.IndoorSensor import IndoorSensor
+from weatherwatch.sensor.sdr.IndoorData import IndoorData
 
 class IndoorSensorRepositoryTest(unittest.TestCase):
 

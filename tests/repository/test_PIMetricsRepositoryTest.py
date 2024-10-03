@@ -5,8 +5,8 @@ import datetime
 
 import psutil
 
-from src.repository.PIMetricsRepository import PIMetricsRepository
-from src.entity.PIMetrics import PIMetrics
+from weatherwatch.repository.PIMetricsRepository import PIMetricsRepository
+from weatherwatch.entity.PIMetrics import PIMetrics
 
 class PIMetricsRepositoryTest(unittest.TestCase):
 

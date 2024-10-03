@@ -43,9 +43,9 @@ class FormatCommand(Command):
         pass
 
     def run(self):
-        os.system("black src")
-        os.system("isort src")
-        os.system("flake8 src")
+        os.system("poetry run black weatherwatch")
+        os.system("poetry run isort weatherwatch")
+        os.system("poetry run flake8 weatherwatch")
 
 class CoverageCommand(Command):
     """
@@ -124,14 +124,8 @@ class DockerMysqlDownCommand(Command):
 # via this script
 # for single test class
 # p3 setup tests -s <fully qualified test module>
-# TODO can this be removed since it's in the toml file
 setup(
-    version="0.1",
-    description="weather watch sensor processor",
-    author="tim Cronin",
-    author_email="tecronin@gmail.com",
     packages=find_packages(),
-    test_suite="tests",
     cmdclass={"clean": CleanCommand, 
               "format": FormatCommand, 
               "cover": CoverageCommand, 

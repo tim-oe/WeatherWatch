@@ -1,9 +1,9 @@
 import unittest
 
-from src.conf.AppConfig import AppConfig
-from src.conf.SensorConfig import SensorConfig
-from src.sensor.sdr.BaseData import BaseData
-from src.sensor.sdr.IndoorData import IndoorData
+from weatherwatch.conf.AppConfig import AppConfig
+from weatherwatch.conf.SensorConfig import SensorConfig
+from weatherwatch.sensor.sdr.BaseData import BaseData
+from weatherwatch.sensor.sdr.IndoorData import IndoorData
 
 class SensorConfigTest(unittest.TestCase):
     def test(self):

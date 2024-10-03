@@ -1,6 +1,6 @@
 import json
 
-from src.sensor.sdr.IndoorData import IndoorData
+from weatherwatch.sensor.sdr.IndoorData import IndoorData
 from tests.sensor.sdr.BaseTestData import BaseTestData
 
 class IndoorDataTest(BaseTestData):

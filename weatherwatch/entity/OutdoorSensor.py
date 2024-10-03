@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
+from entity.BaseSensor import BaseSensor
 from sqlalchemy import Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
-
-from entity.BaseSensor import BaseSensor
 
 __all__ = ["OutdoorSensor"]
 

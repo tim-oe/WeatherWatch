@@ -17,9 +17,8 @@ from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from threading import Thread
 
-from py_singleton import singleton
-
 from conf.AppConfig import AppConfig
+from py_singleton import singleton
 
 __all__ = ["GPSReader"]
 

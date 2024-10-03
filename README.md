@@ -23,9 +23,7 @@ raspbery pi weather data collector using OTS parts.
 
 
 ## tests
-- python3 setup.py test -v  -s <fully qualified test class>
-    - deprected moving to tox...
-- [run single test with tox](https://stackoverflow.com/questions/35697353/how-to-run-only-one-test-in-tox)
+- poetry run pytest -v -s <path/to/test/file.py>
 
 ## build system
 - [jenkins](https://www.jenkins.io/)
@@ -41,6 +39,8 @@ raspbery pi weather data collector using OTS parts.
 
 ## faq
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
+- [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
+
 
 ## TODOs    
 - [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)

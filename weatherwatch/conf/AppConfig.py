@@ -3,12 +3,11 @@ import logging.config
 import os
 from typing import List
 
-from py_singleton import singleton
-from pyaml_env import parse_config
-
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
+from py_singleton import singleton
+from pyaml_env import parse_config
 
 __all__ = ["AppConfig"]
 

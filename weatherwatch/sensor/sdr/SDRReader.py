@@ -15,12 +15,11 @@ from queue import Empty, Queue
 from subprocess import PIPE, STDOUT, Popen
 from typing import List
 
-from py_singleton import singleton
-from python_event_bus import EventBus
-
 from conf.AppConfig import AppConfig
 from conf.SensorConfig import SensorConfig
 from entity.SDRMetricts import SDRMetrics
+from py_singleton import singleton
+from python_event_bus import EventBus
 from repository.SDRMetricsRepository import SDRMetricsRepository
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData

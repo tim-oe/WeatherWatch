@@ -1,37 +1,59 @@
-[project]
-version = "0.1"
-name = "WeatherWatch"
-description = "weather watch sensor processor"
+# https://python-poetry.org/docs/configuration/
+[tool.poetry]
+name = "weatherwatch"
+version = "0.1.0"
+description = "PI based weather station"
+authors = ["tim cronin <tecronin@gmail.com>"]
 readme = "README.md"
-authors = [
-    {name = "tim Cronin", email = "tecronin@gmail.com"},
-]
-dependencies = [
-    "setuptools",
-    "black",
-    "coverage",
-    "isort",
-    "flake8",
-    "Flake8-pyproject",         
-    "PyYAML",
-    "pyaml-env",
-    "SQLAlchemy",
-    "mariadb",
-    "adafruit-circuitpython-bmp3xx",
-    "apscheduler",
-    "python-event-bus",
-    "py-singleton",
-    "psutil",
-    "lgpio",
-    "numpy",
-    "pylint",
-    "pylint-report"
-]
-requires-python = ">=3.11"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+setuptools = "^75.1.0"
+pyyaml = "^6.0.2"
+pyaml-env = "^1.2.1"
+sqlalchemy = "^2.0.35"
+mariadb = "^1.1.10"
+apscheduler = "^3.10.4"
+python-event-bus = "^1.2.0"
+py-singleton = "^1.0.0"
+psutil = "^6.0.0"
+lgpio = "^0.2.2.0"
+adafruit-circuitpython-bmp3xx = "^1.3.19"
+
+[tool.poetry.group.test.dependencies]  
+coverage = "^7.6.1" 
+pytest = "^8.3.3"
+pytest-mock = "^3.14.0"
+    
+[tool.poetry.group.dev.dependencies]  
+black = "^24.8.0"
+isort = "^5.13.2"
+flake8 = "^7.1.1"
+flake8-pyproject = "^1.2.3"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonrypoetry config --list.api"
+
+#[tool.tox]
+# TODO no worky
+## https://tox.wiki/en/3.24.5/config.html
+## https://tox.wiki/en/3.27.1/example/basic.html
+## https://tox.wiki/en/4.18.1/user_guide.html
+#legacy_tox_ini = """
+#[tox]
+#envlist = py3x
+#skip_missing_interpreters = True
+#
+#[testenv]
+#allowlist_externals = poetry
+#deps =
+#  pytest>=8.3
+#commands_pre =
+#    poetry install --no-root --sync
+#commands =
+#    poetry run pytest tests/ --import-mode importlib
+#"""
 
 [tool.black]
 line-length = 128
@@ -53,30 +75,10 @@ py_version = 312
 profile = "black"
 line_length = 128
 remove_redundant_aliases = true
-# TODO 
+# TODO
 #formatter = "black"
 skip = [".gitignore", ".dockerignore"]
 
 [tool.flake8]
 max-line-length = 128
 max-complexity = 18
-
-[tool.pylint.MASTER]
-init-hook = 'import sys; sys.path.append("src")'
-max-line-length=128
-load-plugins = "pylint_report"
-
-[tool.pylint.REPORTS]
-output-format = "pylint_report.CustomJsonReporter"
-
-[tool.pylint."MESSAGES CONTROL"]
-disable = '''
-C0103,
-W0718,
-W0719,
-R0902,
-C0112,
-C0114,
-C0115,
-C0116,
-'''

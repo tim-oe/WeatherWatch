@@ -4,9 +4,8 @@ from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
 
 import psutil
-from py_singleton import singleton
-
 from entity.PIMetrics import PIMetrics
+from py_singleton import singleton
 from repository.PIMetricsRepository import PIMetricsRepository
 
 __all__ = ["PIMetricsSvc"]

@@ -1,11 +1,11 @@
 import unittest
 
-from src.entity.IndoorSensor import IndoorSensor
-from src.entity.OutdoorSensor import OutdoorSensor
-from src.repository.IndoorSensorRepository import IndoorSensorRepository
-from src.repository.OutdoorSensorRepository import OutdoorSensorRepository
+from weatherwatch.entity.IndoorSensor import IndoorSensor
+from weatherwatch.entity.OutdoorSensor import OutdoorSensor
+from weatherwatch.repository.IndoorSensorRepository import IndoorSensorRepository
+from weatherwatch.repository.OutdoorSensorRepository import OutdoorSensorRepository
 
-from src.svc.SensorSvc import SensorSvc
+from weatherwatch.svc.SensorSvc import SensorSvc
 
 # TODO need more thorough test to see if it actually read and inserted
 class SensorSvcTest(unittest.TestCase):

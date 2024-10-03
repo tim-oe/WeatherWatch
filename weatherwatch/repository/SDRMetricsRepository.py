@@ -1,17 +1,16 @@
+from entity.SDRMetricts import SDRMetrics
 from py_singleton import singleton
-
-from entity.PIMetrics import PIMetrics
 from repository.BaseRepository import BaseRepository
 
-__all__ = ["PIMetricsRepository"]
+__all__ = ["SDRMetricsRepository"]
 
 
 @singleton
-class PIMetricsRepository(BaseRepository[PIMetrics]):
+class SDRMetricsRepository(BaseRepository[SDRMetrics]):
 
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        super().__init__(entity=PIMetrics)
+        super().__init__(entity=SDRMetrics)

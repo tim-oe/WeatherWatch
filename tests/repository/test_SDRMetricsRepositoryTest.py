@@ -1,8 +1,8 @@
 import datetime
 import unittest
 
-from src.entity.SDRMetricts import SDRMetrics
-from src.repository.SDRMetricsRepository import SDRMetricsRepository
+from weatherwatch.entity.SDRMetricts import SDRMetrics
+from weatherwatch.repository.SDRMetricsRepository import SDRMetricsRepository
 
 
 class SDRMetrictsRepositoryTest(unittest.TestCase):

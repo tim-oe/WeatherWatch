@@ -1,6 +1,6 @@
 import unittest
 
-from src.svc.SchedulerSvc import SchedulerSvc
+from weatherwatch.svc.SchedulerSvc import SchedulerSvc
 
 
 class ScheduleSvcTest(unittest.TestCase):

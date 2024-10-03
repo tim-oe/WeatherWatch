@@ -1,10 +1,9 @@
 from typing import Generic, List, TypeVar
 
+from repository.DataStore import DataStore
 from sqlalchemy import Connection
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
-
-from repository.DataStore import DataStore
 
 __all__ = ["BaseRepository"]
 

@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from entity.BaseEntity import BaseEntity
 from sqlalchemy import DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column
-
-from entity.BaseEntity import BaseEntity
 
 __all__ = ["SDRMetrics"]
 

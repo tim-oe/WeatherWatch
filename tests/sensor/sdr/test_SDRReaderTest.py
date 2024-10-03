@@ -2,7 +2,7 @@ import unittest
 
 import time
 
-from src.sensor.sdr.SDRReader import SDRReader
+from weatherwatch.sensor.sdr.SDRReader import SDRReader
 
 class SDRReaderTest(unittest.TestCase):
     def test(self):

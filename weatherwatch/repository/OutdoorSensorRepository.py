@@ -1,6 +1,5 @@
-from py_singleton import singleton
-
 from entity.OutdoorSensor import OutdoorSensor
+from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
 
 __all__ = ["OutdoorSensorRepository"]
