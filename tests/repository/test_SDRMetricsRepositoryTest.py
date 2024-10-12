@@ -18,10 +18,13 @@ class SDRMetrictsRepositoryTest(unittest.TestCase):
         ent.sensor_cnt = 1
         
         repo.insert(ent)
+        print(str(ent))
         
         self.assertIsNotNone(ent.id)
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
+        print(str(act))
+
         # TODO not working...
         #self.assertEquals(ent, act)
         

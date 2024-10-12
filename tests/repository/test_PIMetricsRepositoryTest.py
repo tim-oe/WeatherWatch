@@ -38,5 +38,7 @@ class PIMetricsRepositoryTest(unittest.TestCase):
         
         act = repo.findById(data.id)
         self.assertIsNotNone(act)
+        print(str(act))
+        
         # not working with data class
         #self.assertEquals(data, act)

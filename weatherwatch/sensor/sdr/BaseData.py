@@ -78,9 +78,9 @@ class BaseData:
             o.noise = d[BaseData.NOISE_KEY]
             o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
-            logging.error("failed to parse " + str(d) + "\n" + str(e))
+            logging.exception("failed to parse %s", str(d))
             raise Exception(
-                "failed to parse " + str(d),
+                f"failed to parse {d}",
             ) from e
 
     @staticmethod

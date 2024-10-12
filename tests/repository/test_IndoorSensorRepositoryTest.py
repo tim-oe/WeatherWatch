@@ -22,37 +22,20 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
             
         ent: IndoorSensor = IndoorSensor()
         ent.channel = data.channel
-        ent.model = data.model
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
         ent.read_time = datetime.datetime.now()
-        ent.mic = data.mic
-        ent.mod = data.mod
-        ent.freq = data.freq
-        ent.noise = data.noise
-        ent.rssi = data.rssi
-        ent.snr = data.snr
-        ent.raw = j
-        ent.model = data.model
-        ent.temperature_f = data.temperature
-        ent.humidity = data.humidity
-        ent.sensor_id = data.id
-        ent.battery_ok = data.batteryOk
-        ent.read_time = datetime.datetime.now()
-        ent.mic = data.mic
-        ent.mod = data.mod
-        ent.freq = data.freq
-        ent.noise = data.noise
-        ent.rssi = data.rssi
-        ent.snr = data.snr
         ent.raw = j
 
         repo.insert(ent)
         
+        print(str(ent))
+        
         self.assertIsNotNone(ent.id)
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
+        print(str(act))
         # TODO not working...
-        #self.assertEquals(ent, act)
+        #self.assertEqual(ent, act)

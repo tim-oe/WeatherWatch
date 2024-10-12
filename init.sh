@@ -17,8 +17,9 @@ sudo cmake --build build --target install
 cd ..
 git clone git@github.com:tim-oe/WeatherWatch.git
 cd WeatherWatch
+# TODO need to be poetry env to properly setup everything...
 # venv won't create the activation script
-python3 -m virtualenv .venv
-pip3 install --upgrade adafruit-python-shell
+# python3 -m virtualenv .venv
+poetry add adafruit-python-shell
 wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/raspi-blinka.py
 sudo -E env PATH=$PATH python3 raspi-blinka.py

@@ -13,7 +13,7 @@ class SDRMetrics(BaseEntity):
     __tablename__ = "sdr_metrics"
     __table_args__ = {"extend_existing": True}
 
-    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    end_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    duration_sec: Mapped[int] = mapped_column(Integer, nullable=False)
-    sensor_cnt: Mapped[int] = mapped_column(Integer, nullable=False)
+    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=None)
+    end_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=None)
+    duration_sec: Mapped[int] = mapped_column(Integer, nullable=False, default=None)
+    sensor_cnt: Mapped[int] = mapped_column(Integer, nullable=False, default=None)

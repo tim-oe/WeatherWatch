@@ -12,4 +12,4 @@ class IndoorSensor(BaseSensor):
     __tablename__ = "indoor_sensor"
     __table_args__ = {"extend_existing": True}
 
-    channel: Mapped[int] = mapped_column(Integer, nullable=False)
+    channel: Mapped[int] = mapped_column(Integer, nullable=False, default=None)

@@ -43,7 +43,7 @@ class SensorSvc:
         logging.info("processing complete")
 
     def handleIndoor(self, data: IndoorData):
-        logging.info("processing {}", IndoorData.__name__)
+        logging.debug("processing %s", IndoorData.__name__)
 
         try:
             ent: IndoorSensor = IndoorSensor()
@@ -51,12 +51,12 @@ class SensorSvc:
 
             ent.channel = data.channel
 
-            self._outdoorRepo.insert(ent)
+            self._indoorRepo.insert(ent)
         except Exception:
             logging.exception("failed to insert %s", data)
 
     def handleOutdoor(self, data: OutdoorData):
-        logging.info("processing %s", OutdoorData.__name__)
+        logging.debug("processing %s", OutdoorData.__name__)
         try:
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
@@ -77,16 +77,9 @@ class SensorSvc:
             logging.exception("failed to insert %s", data)
 
     def setBaseData(self, data: BaseData, ent: BaseSensor):
-        ent.model = data.model
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
         ent.read_time = data.timeStamp
-        ent.mic = data.mic
-        ent.mod = data.mod
-        ent.freq = data.freq
-        ent.noise = data.noise
-        ent.rssi = data.rssi
-        ent.snr = data.snr
         ent.raw = data.raw

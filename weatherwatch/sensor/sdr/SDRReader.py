@@ -42,12 +42,12 @@ class SensorEvent:
         self._evt = evt
 
     def fire(self):
-        logging.debug("fire " + self._evt)
+        logging.debug("fire %s", self._evt)
 
         try:
             EventBus.call(self._evt, self._data)
         except Exception:
-            logging.exception("event processing error " + self._evt + " data\n" + str(self._data))
+            logging.exception("event processing error %s data\n%s", self._evt, self._data)
 
 
 @singleton
@@ -63,7 +63,7 @@ class SDRReader:
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
-    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "json"]
+    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "log", "-F", "json"]
 
     def __init__(self):
         """
@@ -129,7 +129,7 @@ class SDRReader:
         """
         process sensor data
         """
-        logging.debug("sensor json: " + line)
+        logging.debug("sensor json: %s", line)
         j = json.loads(line)
 
         key = BaseData.key(j)
@@ -149,7 +149,6 @@ class SDRReader:
                     logging.error("unkown impl for sensor: %s", sensor)
 
             if r is not None:
-
                 r.raw = json.loads(line)
                 r.config = sensor
                 reads.append(r)

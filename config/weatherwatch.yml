@@ -16,7 +16,7 @@ bmp:
     i2caddr: 0x76  
 sdr:
   reader:
-    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:90}
+    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
   sensors:
       - name: outdoor
         model: Cotech-367959 
