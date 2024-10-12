@@ -163,3 +163,5 @@ cython_debug/
 
 # circuit pyton setup script
 raspi-blinka.py
+
+report.html
