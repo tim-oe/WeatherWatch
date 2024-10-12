@@ -40,8 +40,8 @@ class SchedulerSvc:
 
         self._scheduler.add_job(
             self._metricsSvc.process,
-            "interval",
-            minutes=10,
+            "cron",
+            minute='3-59/10',
             max_instances=1,
             coalesce=True,
             name=SchedulerSvc.PI_METRICS_JOB,
