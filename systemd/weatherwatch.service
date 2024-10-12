@@ -22,7 +22,7 @@ Environment="WW_NO_CONSOLE=1"
 Environment="WW_LOG_LEVEL=INFO"
 # TODO need to variablize path...
 WorkingDirectory=/home/tcronin/src/WeatherWatch
-ExecStart=/home/tcronin/src/WeatherWatch/.venv/bin/python3 /home/tcronin/weatherwatch/WeatherWatch/src/main.py
+ExecStart=/home/tcronin/src/WeatherWatch/.venv/bin/python3 /home/tcronin/src/WeatherWatch/weatherwatch/sensor.py
 StandardInput=tty-force
 # tee off std IO for app log
 StandardOutput=file:/var/log/WeatherWatch_out.log

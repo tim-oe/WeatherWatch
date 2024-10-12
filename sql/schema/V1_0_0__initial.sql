@@ -14,7 +14,7 @@ CREATE TABLE `outdoor_sensor` (
     `uv` DECIMAL(5,3) NOT NULL,
     `raw` JSON NOT NULL COMMENT 'the raw json record', 
 	PRIMARY KEY (`id`, `read_time`),
-	UNIQUE KEY unique_sensor (read_time, sensor_id),
+	UNIQUE KEY out_unique_sensor (read_time, sensor_id),
     KEY `read_time_idx` (`read_time`),
     KEY `sensor_id_idx` (`sensor_id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
@@ -43,7 +43,7 @@ CREATE TABLE `indoor_sensor` (
     `humidity` TINYINT UNSIGNED NOT NULL,
     `raw` JSON NOT NULL COMMENT 'the raw json record', 
 	PRIMARY KEY (`id`, `read_time`),
-	UNIQUE KEY unique_sensor (read_time, sensor_id, channel),
+	UNIQUE KEY in_unique_sensor (read_time, sensor_id, channel),
     KEY `read_time_idx` (`read_time`),
     KEY `sensor_id_channel_idx` (`sensor_id`,`channel`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
@@ -69,7 +69,7 @@ CREATE TABLE `sdr_metrics` (
     `duration_sec` SMALLINT UNSIGNED NOT NULL,
     `sensor_cnt` SMALLINT UNSIGNED NOT NULL,
 	  PRIMARY KEY (`id`, `start_time`),
-	  UNIQUE KEY unique_sensor (start_time, end_time),
+	  UNIQUE KEY sdr_unique_sensor (start_time, end_time),
     KEY `start_time_idx` (`start_time`),
     KEY `end_time_idx` (`end_time`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
@@ -99,7 +99,7 @@ CREATE TABLE `pi_metrics` (
     `disk_percent` DECIMAL(4,2) NOT NULL,
 	  `cpu_temp_c` DECIMAL(5,2) NOT NULL,
 	  PRIMARY KEY (`id`, `read_time`),
-	  UNIQUE KEY unique_sensor (read_time)
+	  UNIQUE KEY pi_unique_sensor (read_time)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
   PARTITION BY RANGE( UNIX_TIMESTAMP(read_time) ) (
     PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),
