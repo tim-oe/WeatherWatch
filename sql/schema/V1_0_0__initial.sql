@@ -116,10 +116,11 @@ CREATE TABLE `pi_metrics` (
     PARTITION future VALUES LESS THAN MAXVALUE
   );
 
--- not working with serializing task method...
--- CREATE TABLE apscheduler_jobs (
---         id VARCHAR(191) NOT NULL,
---         next_run_time FLOAT(25),
---         job_state BLOB NOT NULL,
---         PRIMARY KEY (id)
--- )
+-- persistent job store
+-- https://apscheduler.readthedocs.io/en/3.x/modules/jobstores/sqlalchemy.html
+CREATE TABLE apscheduler_jobs (
+        id VARCHAR(191) NOT NULL,
+        next_run_time FLOAT(25),
+        job_state BLOB NOT NULL,
+        PRIMARY KEY (id)
+)
