@@ -1,14 +1,11 @@
 import io
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-
-from py_singleton import singleton
-
+from apscheduler.schedulers.background import BackgroundScheduler
 from camera.Camera import Camera
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
-from repository.DataStore import DataStore
+from py_singleton import singleton
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 
@@ -22,12 +19,14 @@ def sensor():
     sensorSvc = SensorSvc()
     sensorSvc.process()
 
+
 def camera():
     """
     schedule entry point for camera task
     """
     camera = Camera()
-    camera.snap()
+    camera.process()
+
 
 def pimetrics():
     """
@@ -35,7 +34,8 @@ def pimetrics():
     """
     metricsSvc = PIMetricsSvc()
     metricsSvc.process()
-    
+
+
 @singleton
 class SchedulerSvc:
     SENSOR_JOB = "sensor"
@@ -53,47 +53,44 @@ class SchedulerSvc:
         self._schedulerConfig: SchedulerConfig = AppConfig().scheduler
 
         # in order to use this the task functions need to be static
-        jobstores = {
-            'default': SQLAlchemyJobStore(url=AppConfig().database.url)
-        }
+        jobstores = {"default": SQLAlchemyJobStore(url=AppConfig().database.url)}
 
-        self._scheduler = BackgroundScheduler(jobstores=jobstores)
+        job_defaults = {"coalesce": True, "max_instances": 1, "replace_existing": True}
 
-        # self._scheduler = BackgroundScheduler()
-        
-        self._sensorSvc = SensorSvc()
-        self._metricsSvc = PIMetricsSvc()
-        self._camera = Camera()
+        self._scheduler = BackgroundScheduler(jobstores=jobstores, job_defaults=job_defaults)
 
         self._scheduler.add_job(
             sensor,
             "interval",
             minutes=self._schedulerConfig.sensorInterval,
-            max_instances=1,
-            coalesce=True,
             name=SchedulerSvc.SENSOR_JOB,
             id=SchedulerSvc.SENSOR_JOB,
+            coalesce=True,
+            max_instances=1,
+            replace_existing=True,
         )
 
         self._scheduler.add_job(
             pimetrics,
             "cron",
             minute=f"2-59/{self._schedulerConfig.piMetricsInterval}",
-            max_instances=1,
-            coalesce=True,
             name=SchedulerSvc.PI_METRICS_JOB,
             id=SchedulerSvc.PI_METRICS_JOB,
+            coalesce=True,
+            max_instances=1,
+            replace_existing=True,
         )
 
-        if self._camera.enable is True:
+        if Camera().enable is True:
             self._scheduler.add_job(
                 camera,
                 "cron",
                 minute=f"3-59/{self._schedulerConfig.cameraInterval}",
-                max_instances=1,
-                coalesce=True,
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
             )
 
     # override

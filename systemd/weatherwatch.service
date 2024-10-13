@@ -20,6 +20,8 @@ Environment="WW_LOG_PATH=/var/log"
 Environment="WW_NO_CONSOLE=1"
 # set logging level
 Environment="WW_LOG_LEVEL=INFO"
+# set system data dir for pix
+Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
 # TODO need to variablize path...
 WorkingDirectory=/home/tcronin/src/WeatherWatch
 ExecStart=/home/tcronin/src/WeatherWatch/.venv/bin/python3 /home/tcronin/src/WeatherWatch/weatherwatch/sensor.py

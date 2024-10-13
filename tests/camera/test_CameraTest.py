@@ -15,7 +15,7 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.snap() 
+        c.process() 
         
         found: bool = False
         
@@ -27,7 +27,7 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.snap() 
+        c.process() 
         
         found = False
         

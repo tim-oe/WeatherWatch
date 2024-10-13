@@ -26,6 +26,7 @@ class Camera:
         ctor
         :param self: this
         """
+
         self._cameraConfig: CameraConfig = AppConfig().camera
 
         self._baseDir: Path = self._cameraConfig.folder
@@ -68,12 +69,12 @@ class Camera:
 
             capture_config = self._picam2.create_still_configuration()
             self._picam2.switch_mode_and_capture_file(capture_config, self.imageFile())
-            
+
             # TODO is this needed?
             time.sleep(2)
         except Exception:
             logging.exception("failed to take pic...")
-        finally:    
+        finally:
             self._picam2.stop_preview()
             self._picam2.stop()
 
