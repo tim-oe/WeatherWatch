@@ -23,7 +23,7 @@ sdr:
   sensors:
       - name: outdoor
         model: Cotech-367959 
-        id: 128
+        id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:237}
         dataClass: OutdoorData
         device: 153
       - name: indoor_3dfloor   
