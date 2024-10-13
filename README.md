@@ -35,22 +35,26 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - [PiCamera2](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)
 
 
+## docs
+- [setup](/docs/SETUP.md)
+- [config](/docs/CONFIG.md)
+
+
 ## tests
 - all tests:   ```poetry run pytest```
 - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
 
 
 ## TODOs
-- document system setup
-- document cutomizing config
 - document service setup
 - implement UI    
 - [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
 - profiling
     - [cprofile](https://docs.python.org/3/library/profile.html#module-cProfile)
     - [guide](https://www.turing.com/kb/python-code-with-cprofile)
-
+- [linting](https://github.com/pylint-dev/pylint)
 
 ## faq
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
+- [lint sample config](https://github.com/atlassian-api/atlassian-python-api/blob/master/pyproject.toml)
