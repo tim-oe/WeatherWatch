@@ -26,7 +26,7 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - [Barometric sensor](https://learn.adafruit.com/adafruit-bmp388-bmp390-bmp3xx)
 
 
-## non pyton libs
+## non python libs
 - [rtl_433](https://github.com/merbanan/rtl_433)
 
 

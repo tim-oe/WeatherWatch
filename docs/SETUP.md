@@ -11,11 +11,11 @@
 
 
 ## Software requirements
-- (Raspberry PI OS Bookworm)[https://www.raspberrypi.com/software/operating-systems/]
+- [Raspberry PI OS Bookworm](https://www.raspberrypi.com/software/operating-systems/)
 
 
 ## setup steps
-- use [sdm](https://github.com/gitbls/sdm for buring sd image
+- use [sdm](https://github.com/gitbls/sdm) for buring sd image
     - see [sample shell script](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/sdm/image.sh)
 - use [ansible](https://docs.ansible.com/) to provision dependencies
 
