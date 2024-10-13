@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./weatherwatch"
+        "./weatherwatch",
+        "/usr/lib/python3/dist-packages/"
     ]
 }

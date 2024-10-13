@@ -115,3 +115,11 @@ CREATE TABLE `pi_metrics` (
     PARTITION p2034 VALUES LESS THAN (UNIX_TIMESTAMP('2035-01-01')),
     PARTITION future VALUES LESS THAN MAXVALUE
   );
+
+-- not working with serializing task method...
+-- CREATE TABLE apscheduler_jobs (
+--         id VARCHAR(191) NOT NULL,
+--         next_run_time FLOAT(25),
+--         job_state BLOB NOT NULL,
+--         PRIMARY KEY (id)
+-- )

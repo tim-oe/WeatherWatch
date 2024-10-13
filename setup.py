@@ -29,6 +29,7 @@ class CleanCommand(Command):
         os.system("rm -vrf ./report")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
+        os.system("rm -vrf ./pix")
         os.system("find . -name \"__pycache__\" -type d -exec sudo rm -vfR {} \;")
 
 # run black isort flake8

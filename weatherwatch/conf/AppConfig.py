@@ -3,6 +3,7 @@ import logging.config
 import os
 from typing import List
 
+from conf.CameraConfig import CameraConfig
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
@@ -24,6 +25,7 @@ class AppConfig:
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
     DATABASE_KEY = "database"
+    CAMERA_KEY = "camera"
     SCHEDULER_KEY = "scheduler"
 
     """
@@ -49,13 +51,16 @@ class AppConfig:
 
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
             self._sensors.append(SensorConfig(s))
-        logging.info("loaded sensors config")
+        logging.info("loaded %s config", AppConfig.SENSORS_KEY)
+
+        self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
+        logging.info("loaded %s config", AppConfig.CAMERA_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
-        logging.info("loaded database config")
+        logging.info("loaded %s config", AppConfig.DATABASE_KEY)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
-        logging.info("loaded scheduler config")
+        logging.info("loaded %s config", AppConfig.SCHEDULER_KEY)
 
     def initLogging(self):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
@@ -92,6 +97,15 @@ class AppConfig:
         :return: the sensors
         """
         return self._sensors
+
+    @property
+    def camera(self) -> CameraConfig:
+        """
+        camera property getter
+        :param self: this
+        :return: the camera
+        """
+        return self._camera
 
     @property
     def database(self) -> DatabaseConfig:

@@ -94,6 +94,11 @@ class SDRReader:
 
         self._sdrMetricsRepo = SDRMetricsRepository()
 
+    # override
+    def __del__(self):
+        self._readPool.shutdown()
+        self._dataPool.shutdown()
+
     @property
     def reads(self) -> List[BaseData]:
         """

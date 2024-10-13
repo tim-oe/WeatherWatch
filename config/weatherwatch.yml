@@ -1,3 +1,4 @@
+version: 1.0.0
 database:
   dialect: !ENV ${WW_DB_DIALECT:mariadb}
   driver: !ENV ${WW_DB_DRIVER:mariadbconnector}
@@ -9,11 +10,13 @@ database:
   pool:
     size: 3
     overflow: 3
-bmp:
-  388:
-    i2caddr: 0x77
-  280:
-    i2caddr: 0x76  
+camera:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
+  folder: !ENV ${WW_CAM_FOLDER:pix}
+  extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
+  tuning:
+    enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
+    file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
 sdr:
   reader:
     timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
@@ -38,3 +41,7 @@ sdr:
 scheduler:
   sensor:
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
+  pimetrics:
+    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
+  camera:
+    interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}    

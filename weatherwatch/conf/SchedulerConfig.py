@@ -3,6 +3,8 @@ __all__ = ["SchedulerConfig"]
 
 class SchedulerConfig:
     SENSOR_KEY = "sensor"
+    CAMERA_KEY = "camera"
+    PIMETRICS_KEY = "pimetrics"
     INTERVAL_KEY = "interval"
 
     """
@@ -25,8 +27,26 @@ class SchedulerConfig:
     @property
     def sensorInterval(self) -> int:
         """
-        id property getter
+        sensor inerval property getter
         :param self: this
-        :return: the id
+        :return: the sensor inerval
         """
         return self.__dict__[SchedulerConfig.SENSOR_KEY][SchedulerConfig.INTERVAL_KEY]
+
+    @property
+    def piMetricsInterval(self) -> int:
+        """
+        pimetrics inerval property getter
+        :param self: this
+        :return: the pimetrics inerval
+        """
+        return self.__dict__[SchedulerConfig.PIMETRICS_KEY][SchedulerConfig.INTERVAL_KEY]
+
+    @property
+    def cameraInterval(self) -> int:
+        """
+        camera inerval property getter
+        :param self: this
+        :return: the camera inerval
+        """
+        return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.INTERVAL_KEY]
