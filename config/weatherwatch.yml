@@ -19,12 +19,18 @@ camera:
     file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
 sdr:
   reader:
+    # this is the total time the reader will poll if not all sensors are read
     timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
   sensors:
+      # doing device reset of outdoor sensor will change the id
+      # device is the 
       - name: outdoor
+        # rtl_433 model (might not match actual sensor) 
         model: Cotech-367959 
         id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:237}
+        # class that will process the data from raw json
         dataClass: OutdoorData
+        # rtl_433 device id
         device: 153
       - name: indoor_3dfloor   
         model: Ambientweather-F007TH 
@@ -40,8 +46,11 @@ sdr:
         device: 20
 scheduler:
   sensor:
+    # sensor polling interval should not be < 5
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
   pimetrics:
+    # sensystem metrics polling for looking for resource issues
     interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
   camera:
+    # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}    

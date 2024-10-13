@@ -22,7 +22,7 @@
 ## project setup
 - project uses poetry for dependency managment
     - [local venv for service set POETRY_VIRTUALENVS_IN_PROJECT=true](https://python-poetry.org/docs/configuration/#virtualenvsin-project)
-    - [to load gobal libs like Picamera2 ](https://python-poetry.org/docs/configuration/#virtualenvsoptionssystem-site-packages)
+    - [to load gobal libs like Picamera2 set POETRY_VIRTUALENVS_OPTIONS_SYSTEM_SITE_PACKAGES=true](https://python-poetry.org/docs/configuration/#virtualenvsoptionssystem-site-packages)
 - see [init.sh](/init.sh?raw=true) for sdr and circuit python install
     - it's using pip for some local libs
 

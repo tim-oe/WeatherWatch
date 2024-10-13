@@ -47,7 +47,10 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 
 ## TODOs
 - document service setup
-- implement UI    
+- implement UI
+- time lapse video
+- image retension policy
+- extensible sensor configuration    
 - [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
 - profiling
     - [cprofile](https://docs.python.org/3/library/profile.html#module-cProfile)
