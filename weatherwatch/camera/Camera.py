@@ -19,6 +19,7 @@ class Camera:
     examples: https://github.com/raspberrypi/picamera2/tree/main/examples
     tuning: https://forums.raspberrypi.com/viewtopic.php?t=351189
     cli (for noir cam): libcamera-still --tuning-file /usr/share/libcamera/ipa/rpi/vc4/imx219_noir.json  --output preview.jpg
+    TODO: https://github.com/raspberrypi/picamera2/issues/239
     """  # noqa
 
     def __init__(self):

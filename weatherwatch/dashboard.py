@@ -9,8 +9,8 @@ dashboard application entry point
 
 from dashboard.App import App
 
+app: App = App()
 
 if __name__ == '__main__':
-    app: App = App()
     
     app.run()
