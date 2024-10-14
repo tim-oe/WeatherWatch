@@ -20,6 +20,10 @@ Environment="WW_LOG_PATH=/var/log"
 Environment="WW_NO_CONSOLE=1"
 # set logging level
 Environment="WW_LOG_LEVEL=INFO"
+# stop camera chatter
+# https://github.com/raspberrypi/libcamera?tab=readme-ov-file#basic-testing-with-cam-utility
+# https://github.com/raspberrypi/picamera2/issues/1131#issuecomment-2410391104
+Environment="Environment="LIBCAMERA_LOG_LEVELS=*:WARNING python"
 # set system data dir for pix
 Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
 # TODO need to variablize path...
