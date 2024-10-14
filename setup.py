@@ -24,7 +24,7 @@ class CleanCommand(Command):
 
     def run(self):
         os.system("py3clean -v .")
-        os.system("rm -vrf WeatherWatch.log")
+        os.system("rm -vrf WeatherWatch.log*")
         os.system("rm -vrf report.html")
         os.system("rm -vrf ./report")
         os.system("rm -vrf ./*.egg-info")

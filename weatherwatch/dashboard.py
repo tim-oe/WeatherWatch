@@ -1,11 +1,16 @@
-from dash import Dash, html
+#!/usr/bin/env python3.11
+# -*- coding: utf-8 -*-
+#
+# The MIT License (MIT)
+#
+"""
+dashboard application entry point
+"""
 
-app = Dash()
+from dashboard.App import App
 
-app.layout = [html.Div(children='Hello World')]
 
 if __name__ == '__main__':
-    app.run(
-        host="0.0.0.0",
-        port="8000",
-        debug=True)
+    app: App = App()
+    
+    app.run()

@@ -4,6 +4,7 @@ import os
 from typing import List
 
 from conf.CameraConfig import CameraConfig
+from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
@@ -27,6 +28,7 @@ class AppConfig:
     DATABASE_KEY = "database"
     CAMERA_KEY = "camera"
     SCHEDULER_KEY = "scheduler"
+    DASHBOARD_KEY = "dashboard"
 
     """
     app config data
@@ -61,6 +63,9 @@ class AppConfig:
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         logging.info("loaded %s config", AppConfig.SCHEDULER_KEY)
+
+        self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
+        logging.info("loaded %s config", AppConfig.DASHBOARD_KEY)
 
     def initLogging(self):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
@@ -124,3 +129,12 @@ class AppConfig:
         :return: the scheduler
         """
         return self._scheduler
+
+    @property
+    def dashboard(self) -> DashConfig:
+        """
+        dashboard property getter
+        :param self: this
+        :return: the dashboard
+        """
+        return self._dashboard

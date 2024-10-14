@@ -2,7 +2,7 @@ version: 1
 disable_existing_loggers: no
 formatters:
     simple:
-        format: "%(asctime)s|%(filename)s:%(lineno)d|%(levelname)s- %(message)s"
+        format: "%(asctime)s|%(name)s|%(filename)s:%(lineno)d|%(levelname)s- %(message)s"
 handlers:
     console:
         class: logging.StreamHandler
@@ -23,3 +23,6 @@ loggers:
     root:
         level: !ENV ${WW_LOG_LEVEL:DEBUG}
         handlers: [console, file]
+    # dash app spewing debug    
+    watchdog.observers.inotify_buffer:
+        level: INFO
