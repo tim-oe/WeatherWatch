@@ -45,6 +45,15 @@ class PIMetricsSvc:
         cpu = psutil.sensors_temperatures()
         data.cpu_temp_c = cpu["cpu_thermal"][0].current
 
+    def getMetrics(self) -> PIMetrics:
+        data: PIMetrics = PIMetrics()
+
+        self.getMem(data)
+        self.getDisk(data)
+        self.getTemp(data)
+
+        return data
+
     def process(self):
         data: PIMetrics = PIMetrics()
 

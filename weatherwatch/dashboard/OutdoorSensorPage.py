@@ -2,12 +2,12 @@ from dash import html
 from dashboard.BasePage import BasePage
 
 
-class OutdoorSensorPage(BasePage):    
+class OutdoorSensorPage(BasePage):
     """
-    system dash page    
+    system dash page
     """  # noqa
 
-    PATH='/OutdoorData' 
+    PATH = "/OutdoorData"
 
     def __init__(self):
         """
@@ -21,4 +21,5 @@ class OutdoorSensorPage(BasePage):
                 html.H1("Outdoor Sensor Page"),
                 html.Hr(),
                 html.P(f"name={kwargs['name']}"),
-            ])
+            ]
+        )

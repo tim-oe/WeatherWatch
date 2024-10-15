@@ -4,10 +4,10 @@ from dashboard.BasePage import BasePage
 
 class IndoorSensorPage(BasePage):
     """
-    system dash page    
+    system dash page
     """  # noqa
 
-    PATH='/IndoorData' 
+    PATH = "/IndoorData"
 
     def __init__(self):
         """
@@ -21,4 +21,5 @@ class IndoorSensorPage(BasePage):
                 html.H1("Indoor Sensor Page"),
                 html.Hr(),
                 html.P(f"name={kwargs['name']}"),
-            ])
+            ]
+        )

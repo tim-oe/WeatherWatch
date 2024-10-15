@@ -11,6 +11,6 @@ from dashboard.App import App
 
 app: App = App()
 
-if __name__ == '__main__':
-    
+if __name__ == "__main__":
+
     app.run()

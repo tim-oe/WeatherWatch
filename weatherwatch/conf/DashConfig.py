@@ -1,12 +1,9 @@
-from pathlib import Path
-
 __all__ = ["DashConfig"]
 
 
 class DashConfig:
     HOST_KEY = "host"
     PORT_KEY = "port"
- 
     """
     dash app config data
     """

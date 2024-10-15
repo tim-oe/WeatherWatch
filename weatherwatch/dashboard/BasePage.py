@@ -1,12 +1,12 @@
-from dash import html
+from abc import ABC, abstractmethod
 
 from conf.AppConfig import AppConfig
+from dash import html
 
-from abc import ABC, abstractmethod
 
 class BasePage(ABC):
     """
-    base dash page for common functionality    
+    base dash page for common functionality
     """  # noqa
 
     def __init__(self):
@@ -18,5 +18,4 @@ class BasePage(ABC):
         self._appConfig = AppConfig()
 
     @abstractmethod
-    def content(self, **kwargs) -> html.Div:
-        ...
+    def content(self, **kwargs) -> html.Div: ...
