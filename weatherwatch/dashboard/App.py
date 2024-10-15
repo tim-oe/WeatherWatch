@@ -2,6 +2,7 @@ import logging
 from urllib.parse import quote
 
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 from conf.AppConfig import AppConfig
 from conf.DashConfig import DashConfig
 from conf.SensorConfig import SensorConfig
@@ -47,6 +48,15 @@ class App:
         "padding": "2rem 1rem",
     }
 
+    # TODO need to add ability to toggle
+    # https://dash.plotly.com/dash-daq/darkthemeprovider
+    ROOT_THEME = {
+        "dark": True,
+        "detail": "#007439",
+        "primary": "#00DDEA",
+        "secondary": "#6E6E6E",
+    }
+
     def __init__(self):
         """
         ctor
@@ -58,8 +68,10 @@ class App:
 
         self._app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
+        content = html.Div([dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)])
+
         self._app.layout = html.Div(
-            [dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)]
+            id="dark-theme-components", children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)]
         )
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
@@ -79,7 +91,7 @@ class App:
 
         return html.Div(
             [
-                html.H5("Weather Watch"),
+                html.H6("Weather Watch"),
                 html.Hr(),
                 dbc.Nav(
                     links,

@@ -49,10 +49,12 @@ class AppConfig:
 
         logging.info("loaded application config file %s", AppConfig.CONFIG_FILE)
 
-        self._sensors = []
+        self._sensors = {}
 
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
-            self._sensors.append(SensorConfig(s))
+            ss: SensorConfig = SensorConfig(s)
+            self._sensors[ss.name] = ss
+
         logging.info("loaded %s config", AppConfig.SENSORS_KEY)
 
         self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
@@ -101,7 +103,10 @@ class AppConfig:
         :param self: this
         :return: the sensors
         """
-        return self._sensors
+        return list(self._sensors.values())
+
+    def getSensor(self, name: str) -> SensorConfig:
+        return self._sensors[name]
 
     @property
     def camera(self) -> CameraConfig:

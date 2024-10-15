@@ -10,6 +10,7 @@ from svc.PIMetricsSvc import PIMetricsSvc
 class SystemPage(BasePage):
     """
     system dash page
+    https://dash.plotly.com/dash-daq/thermometer
     """  # noqa
 
     PATH = "/System"
