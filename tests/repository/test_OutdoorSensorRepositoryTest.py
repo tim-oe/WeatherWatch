@@ -14,6 +14,8 @@ class OutdoorSensorRepositoryTest(unittest.TestCase):
         
         repo: OutdoorSensorRepository = OutdoorSensorRepository()
 
+        repo.exec('truncate ' + OutdoorSensor.__tablename__)
+
         with open("tests/data/outdoor.json", "r") as file:
             j = json.load(file)
 
@@ -43,8 +45,10 @@ class OutdoorSensorRepositoryTest(unittest.TestCase):
 
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
-        print(str(act))
+        self.assertIsNotNone(act)
+        self.assertEqual(ent.id, act.id)
 
-        # TODO not working...
-        #self.assertEquals(ent, act)
+        act = repo.findLatest()
+        self.assertIsNotNone(act)
+        self.assertEqual(ent.id, act.id)
         

@@ -14,6 +14,8 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         
         repo: IndoorSensorRepository = IndoorSensorRepository()
 
+        repo.exec('truncate ' + IndoorSensor.__tablename__)
+
         with open("tests/data/indoor.json", "r") as file:
             j = json.load(file)
 
@@ -36,6 +38,8 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         self.assertIsNotNone(ent.id)
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
-        print(str(act))
-        # TODO not working...
-        #self.assertEqual(ent, act)
+        self.assertEqual(ent.id, act.id)
+
+        act = repo.findLatest(ent.channel)
+        self.assertIsNotNone(act)
+        self.assertEqual(ent.id, act.id)

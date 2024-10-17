@@ -4,6 +4,7 @@ from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
 
 import psutil
+import uptime
 from entity.PIMetrics import PIMetrics
 from py_singleton import singleton
 from repository.PIMetricsRepository import PIMetricsRepository
@@ -53,6 +54,22 @@ class PIMetricsSvc:
         self.getTemp(data)
 
         return data
+
+    def getUptime(self):
+        """
+        Gets the system uptime and returns it in days, hours, minutes, and seconds.
+        """
+
+        uptime_seconds = uptime.uptime()
+
+        uptime_string = str(datetime.timedelta(seconds=uptime_seconds))
+        logging.debug("uptime %s", uptime_string)
+
+        # Splitting the string to extract days, hours, minutes, and seconds
+        days, remainder = uptime_string.split(", ", 1)
+        hours, minutes, seconds = remainder.split(":")
+
+        return int(days.split()[0]), int(hours), int(minutes), int(seconds)
 
     def process(self):
         data: PIMetrics = PIMetrics()

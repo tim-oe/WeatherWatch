@@ -29,6 +29,7 @@ class CleanCommand(Command):
         os.system("rm -vrf ./report")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
+        os.system("rm -vrf ./coverage")
         os.system("rm -vrf ./pix")
         os.system("find . -name \"__pycache__\" -type d -exec sudo rm -vfR {} \;")
 
@@ -66,7 +67,7 @@ class CoverageCommand(Command):
         pass
 
     def run(self):
-        os.system("coverage run setup.py test")
+        os.system("coverage run -m pytest")
         os.system("coverage html")
         os.system("coverage report")
 

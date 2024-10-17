@@ -103,23 +103,28 @@ class App:
         )
 
     def renderPageContent(self, href: str):
-        f: furl = furl(href)
-        logging.debug("request [%s]", f)
-        match f.path:
-            case App.ROOT_PATH:
-                return SystemPage().content()
-            case SystemPage.PATH:
-                return SystemPage().content()
-            case CameraPage.PATH:
-                return CameraPage().content()
-            case IndoorSensorPage.PATH:
-                return IndoorSensorPage().content(name=f.args["name"])
-            case OutdoorSensorPage.PATH:
-                return OutdoorSensorPage().content(name=f.args["name"])
-            case _:
-                logging.error(" unhandled request [%s]", f)
-                return self.missingPageContent(f)
-
+        try:
+            f: furl = furl(href)
+            logging.debug("request [%s]", f)
+            match f.path:
+                case App.ROOT_PATH:
+                    return SystemPage().content()
+                case SystemPage.PATH:
+                    return SystemPage().content()
+                case CameraPage.PATH:
+                    return CameraPage().content()
+                case IndoorSensorPage.PATH:
+                    return IndoorSensorPage().content(name=f.args["name"])
+                case OutdoorSensorPage.PATH:
+                    return OutdoorSensorPage().content(name=f.args["name"])
+                case _:
+                    logging.error(" unhandled request [%s]", f)
+                    return self.missingPageContent(f)
+        except Exception:
+            logging.exception("failed to render page %s", f)
+            return html.Div(html.H1("500: ERROR", className="text-danger"))
+            
+            
     def missingPageContent(self, f: furl) -> html.Div:
         return html.Div(
             [

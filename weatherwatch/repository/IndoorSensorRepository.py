@@ -1,6 +1,7 @@
 from entity.IndoorSensor import IndoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
+from sqlalchemy.orm import Session
 
 __all__ = ["IndoorSensorRepository"]
 
@@ -14,3 +15,10 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         :param self: this
         """
         super().__init__(entity=IndoorSensor)
+
+    def findLatest(self, channel: int) -> IndoorSensor:
+        try:
+            session: Session = self._datastore.session
+            return session.query(IndoorSensor).filter_by(channel=channel).order_by(IndoorSensor.read_time.desc()).first()
+        finally:
+            session.close()

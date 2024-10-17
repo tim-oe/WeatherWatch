@@ -16,7 +16,8 @@ class BaseRepository(Generic[T]):
     https://github.com/auth0-blog/sqlalchemy-orm-tutorial
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
     https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
-    """
+    TODO: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+    """  # noqa
 
     def __init__(self, entity):
         """

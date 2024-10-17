@@ -1,8 +1,8 @@
 import dash_bootstrap_components as dbc
-import dash_daq as daq
 from dash import html
 from dashboard.BasePage import BasePage
 from dashboard.component.PercentGauge import PercentGauge
+from dashboard.component.TempratureGauge import TempratureGauge
 from entity.PIMetrics import PIMetrics
 from svc.PIMetricsSvc import PIMetricsSvc
 
@@ -10,7 +10,6 @@ from svc.PIMetricsSvc import PIMetricsSvc
 class SystemPage(BasePage):
     """
     system dash page
-    https://dash.plotly.com/dash-daq/thermometer
     """  # noqa
 
     PATH = "/System"
@@ -22,36 +21,33 @@ class SystemPage(BasePage):
         """
         self._piMetricsSvc: PIMetricsSvc = PIMetricsSvc()
 
-    def content(self, **kwargs) -> html.Div:
+        super().__init__()
+
+    def content(self, **kwargs) -> dbc.Container:
         data: PIMetrics = self._piMetricsSvc.getMetrics()
 
-        return html.Div(
+        return dbc.Container(
             [
+                #dbc.Row(dbc.Col(html.Plaintext("Uptime: {0} days {1}:{2}:{3}".format(self._piMetricsSvc.getUptime())))),  # noqa
                 dbc.Row(
                     [
                         dbc.Col([PercentGauge("memory usage %", data.mem_percent, data.mem_available, data.mem_used)]),
                         dbc.Col([PercentGauge("disk usage %", data.disk_percent, data.disk_available, data.disk_used)]),
-                        dbc.Col([self.cpuTemp(data)]),
+                        dbc.Col(
+                            [
+                                TempratureGauge(
+                                    label="cpu temp c",
+                                    min=10,
+                                    max=90,
+                                    low=30,
+                                    mid=50,
+                                    high=70,
+                                    value=data.cpu_temp_c,
+                                    units="c",
+                                )
+                            ]
+                        ),
                     ]
-                )
+                ),
             ]
-        )
-
-    def cpuTemp(self, data: PIMetrics) -> daq.Thermometer:
-
-        color = "blue"
-        if data.cpu_temp_c >= 30 and data.cpu_temp_c < 60:
-            color = "yellow"
-        elif data.cpu_temp_c >= 60:
-            color = "red"
-
-        return daq.Thermometer(
-            label="cpu temp",
-            min=10,
-            max=80,
-            className="dark-theme-control",
-            color=color,
-            value=data.cpu_temp_c,
-            showCurrentValue=True,
-            units="C",
         )

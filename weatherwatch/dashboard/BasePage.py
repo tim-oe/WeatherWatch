@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
+import dash_bootstrap_components as dbc
+
 from conf.AppConfig import AppConfig
-from dash import html
 
 
 class BasePage(ABC):
@@ -18,4 +19,4 @@ class BasePage(ABC):
         self._appConfig = AppConfig()
 
     @abstractmethod
-    def content(self, **kwargs) -> html.Div: ...
+    def content(self, **kwargs) -> dbc.Container: ...

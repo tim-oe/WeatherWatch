@@ -15,6 +15,7 @@ class CameraPage(BasePage):
         ctor
         :param self: this
         """
+        super().__init__()
 
     def content(self, **kwargs) -> html.Div:
         return html.Div(
