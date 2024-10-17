@@ -2,6 +2,7 @@ import datetime
 import logging
 import time
 from pathlib import Path
+import shutil
 
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
@@ -68,11 +69,14 @@ class Camera:
             # TODO is this needed?
             time.sleep(2)
 
+            imgFile: str = self.imageFile()
             capture_config = self._picam2.create_still_configuration()
-            self._picam2.switch_mode_and_capture_file(capture_config, self.imageFile())
+            self._picam2.switch_mode_and_capture_file(capture_config, imgFile)
 
             # TODO is this needed?
             time.sleep(2)
+            # used for app view image
+            shutil.copy(imgFile, self._cameraConfig.currentFile)
         except Exception:
             logging.exception("failed to take pic...")
         finally:
@@ -82,6 +86,7 @@ class Camera:
     def imageFile(self) -> str:
         now = datetime.datetime.now()
 
-        imageName = now.strftime("%Y-%m-%d-%H-%M-%S") + self._cameraConfig.extension
+        stamp = now.strftime("%Y-%m-%d-%H-%M-%S")
+        imageName = f"{stamp}{self._cameraConfig.extension}"
 
         return str(self._baseDir / imageName)

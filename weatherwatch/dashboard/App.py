@@ -20,6 +20,9 @@ class App:
     """
     dashboard application entry point
     https://dash.plotly.com/
+    https://dash.plotly.com/dash-html-components
+    https://dash.plotly.com/dash-core-components
+    https://dash.plotly.com/dash-daq
     https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/page-2#sourceCode
 
     """  # noqa

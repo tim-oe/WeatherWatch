@@ -1,3 +1,4 @@
+from pathlib import Path
 import unittest
 
 from camera.Camera import Camera
@@ -24,6 +25,9 @@ class CameraTest(unittest.TestCase):
         
         self.assertTrue(found)
 
+        my_file = Path(cc.currentFile)
+        self.assertTrue(my_file.is_file())
+
         for f in cc.folder.iterdir():
             f.unlink()
 
@@ -35,3 +39,6 @@ class CameraTest(unittest.TestCase):
             found = True
         
         self.assertTrue(found)
+
+        my_file = Path(cc.currentFile)
+        self.assertTrue(my_file.is_file())
