@@ -19,13 +19,6 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - make hooks for additional sensor
 
 
-## Sensors
-- [Nooelec RTL-SDR v5](https://www.nooelec.com/store/nesdr-smart-sdr.html?srsltid=AfmBOooo6Krrq7dvl4eQHVzfA-Yd0QMADqy0cH9XJ5qf-dx8T5dQAby2)
-- [indoor Thermo-Hygrometer](https://www.sainlogic.com/english/additional-temperature-and-humidity-sensor-for-sainlogic-weather-station-ft0300.html)
-- [outdoor sensor](https://www.sainlogic.com/english/transmitter-for-sainlogic-weather-station-ft0310-1.html)
-- [Barometric sensor](https://learn.adafruit.com/adafruit-bmp388-bmp390-bmp3xx)
-
-
 ## non python libs
 - [rtl_433](https://github.com/merbanan/rtl_433)
 
@@ -36,6 +29,7 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 
 
 ## docs
+- [BOM](/docs/BOM.md)
 - [setup](/docs/SETUP.md)
 - [config](/docs/CONFIG.md)
 

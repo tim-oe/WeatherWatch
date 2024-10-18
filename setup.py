@@ -122,11 +122,8 @@ class DockerMysqlDownCommand(Command):
     def run(self):
         os.system("docker compose --file mariadb-docker-compose.yml down")
 
-# https://www.tutorialguruji.com/python/python-package-structure-setup-py-for-running-unit-tests/
-# run tests
-# via this script
-# for single test class
-# p3 setup tests -s <fully qualified test module>
+# test run via poetry
+# this is to hold cm util scripts
 setup(
     packages=find_packages(),
     cmdclass={"clean": CleanCommand, 

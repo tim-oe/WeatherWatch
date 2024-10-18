@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 import dash_bootstrap_components as dbc
-
 from conf.AppConfig import AppConfig
 
 

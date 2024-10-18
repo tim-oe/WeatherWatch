@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-from dash import html
 from dashboard.BasePage import BasePage
 from dashboard.component.PercentGauge import PercentGauge
 from dashboard.component.TempratureGauge import TempratureGauge
@@ -28,7 +27,7 @@ class SystemPage(BasePage):
 
         return dbc.Container(
             [
-                #dbc.Row(dbc.Col(html.Plaintext("Uptime: {0} days {1}:{2}:{3}".format(self._piMetricsSvc.getUptime())))),  # noqa
+                # dbc.Row(dbc.Col(html.Plaintext("Uptime: {0} days {1}:{2}:{3}".format(self._piMetricsSvc.getUptime())))),  # noqa
                 dbc.Row(
                     [
                         dbc.Col([PercentGauge("memory usage %", data.mem_percent, data.mem_available, data.mem_used)]),

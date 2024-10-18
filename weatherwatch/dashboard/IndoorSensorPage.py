@@ -20,10 +20,9 @@ class IndoorSensorPage(BasePage):
         :param self: this
         """
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
-        
+
         super().__init__()
-        
-        
+
     def content(self, **kwargs) -> dbc.Container:
 
         sensor: SensorConfig = self._appConfig.getSensor(kwargs["name"])
@@ -32,7 +31,10 @@ class IndoorSensorPage(BasePage):
 
         return dbc.Container(
             [
-                dbc.Row(align="stretch", children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}")))),
+                dbc.Row(
+                    align="stretch",
+                    children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}"))),
+                ),
                 dbc.Row(align="stretch", children=dbc.Col(html.Hr())),
                 dbc.Row(dbc.Col(TempHumidityGauge(data.temperature_f, data.humidity))),
             ]

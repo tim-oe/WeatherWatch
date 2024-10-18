@@ -3,6 +3,7 @@ import dash_daq as daq
 from dash import html
 from hurry.filesize import size
 
+
 class PercentGauge(dbc.Container):
     """
     percent based guage class
@@ -18,10 +19,12 @@ class PercentGauge(dbc.Container):
         ctor
         :param self: this
         """
-        super().__init__(fluid=True, children=[
+        super().__init__(
+            fluid=True,
+            children=[
                 dbc.Row(
                     dbc.Col(
-                           daq.Gauge(
+                        daq.Gauge(
                             label=label,
                             value=value,
                             color={
@@ -34,8 +37,23 @@ class PercentGauge(dbc.Container):
                             className="dark-theme-control",
                         )
                     ),
-                align="center"),
-                dbc.Row(style=PercentGauge.CONTENT_STYLE, children=[dbc.Col(align="center", width=True, children=[html.Plaintext(children="available")]), dbc.Col([html.Plaintext(children=size(available))])],align="center"),
-                dbc.Row(style=PercentGauge.CONTENT_STYLE, children=[dbc.Col(align="center", width=True, children=[html.Plaintext(children="used")]), dbc.Col([html.Plaintext(children=size(used))])],align="center"),
-            ]
+                    align="center",
+                ),
+                dbc.Row(
+                    style=PercentGauge.CONTENT_STYLE,
+                    children=[
+                        dbc.Col(align="center", width=True, children=[html.Plaintext(children="available")]),
+                        dbc.Col([html.Plaintext(children=size(available))]),
+                    ],
+                    align="center",
+                ),
+                dbc.Row(
+                    style=PercentGauge.CONTENT_STYLE,
+                    children=[
+                        dbc.Col(align="center", width=True, children=[html.Plaintext(children="used")]),
+                        dbc.Col([html.Plaintext(children=size(used))]),
+                    ],
+                    align="center",
+                ),
+            ],
         )

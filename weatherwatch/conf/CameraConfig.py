@@ -55,13 +55,13 @@ class CameraConfig:
         return self.__dict__[CameraConfig.EXTENSION_KEY]
 
     @property
-    def currentFile(self) -> str:
+    def currentFile(self) -> Path:
         """
         extension property getter
         :param self: this
         :return: the extension
         """
-        return str(self.folder / f"current{self.extension}")
+        return self.folder / f"current{self.extension}"
 
     @property
     def tuningEnable(self) -> bool:

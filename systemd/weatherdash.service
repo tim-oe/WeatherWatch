@@ -1,11 +1,11 @@
-# WeatherWatch service
-# sudo ln -s /opt/WeatherWatch/systemd/weatherwatch.service /usr/lib/systemd/system/weatherwatch.service
-# sudo systemctl enable weatherwatch.service
-# sudo systemctl start weatherwatch.service
-# sudo systemctl status weatherwatch.service
+# weatherdash service
+# sudo ln -s /opt/WeatherWatch/systemd/weatherdash.service /usr/lib/systemd/system/weatherdash.service
+# sudo systemctl enable weatherdash.service
+# sudo systemctl start weatherdash.service
+# sudo systemctl status weatherdash.service
 
 [Unit]
-Description=WeatherWatch
+Description=weatherdash
 After=multi-user.target
 Requires=network.target
 Conflicts=getty@tty1.service
@@ -16,8 +16,12 @@ Type=simple
 EnvironmentFile=/etc/environment
 # put log into standard log dir
 Environment="WW_LOG_PATH=/var/log"
+# override default name for dash app
+Environment="WW_LOG_NAME=WeatherDash"
 # this will remove console logging handler
 Environment="WW_NO_CONSOLE=1"
+# whether to run dash app in debug
+Environment="WW_DASH_DEBUG=false"
 # set logging level
 Environment="WW_LOG_LEVEL=INFO"
 # stop camera chatter
@@ -26,14 +30,14 @@ Environment="WW_LOG_LEVEL=INFO"
 # https://stackoverflow.com/questions/73573891/hide-libcamera-info-in-python
 Environment="LIBCAMERA_LOG_LEVELS=*:WARN"
 # set system data dir for pix
-Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
-# standard dir install see init.sh
+Environment="WW_CAM_FOLDER=/var/lib/weatherdash/pix"
+# TODO need to variablize path
 WorkingDirectory=/opt/WeatherWatch/src/WeatherWatch
-ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwhatch/sensor.py
+ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwhatch/dashboard.py
 StandardInput=tty-force
 # tee off std IO for app log
-StandardOutput=file:/var/log/WeatherWatch_out.log
-StandardError=file:/var/log/WeatherWatch_err.log
+StandardOutput=file:/var/log/WeatherDash_out.log
+StandardError=file:/var/log/WeatherDash_err.log
 Restart=always
 
 [Install]

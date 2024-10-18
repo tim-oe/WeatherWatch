@@ -1,8 +1,8 @@
 import datetime
 import logging
+import shutil
 import time
 from pathlib import Path
-import shutil
 
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig

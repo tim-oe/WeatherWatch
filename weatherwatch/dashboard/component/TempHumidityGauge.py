@@ -14,10 +14,16 @@ class TempHumidityGauge(dbc.Container):
         ctor
         :param self: this
         """
-        super().__init__(fluid=True,
-            children=dbc.Row(id="th-row",
-                align="stretch", children=[
-                    dbc.Col(id="th-t-col", align="stretch", width=True, 
+        super().__init__(
+            fluid=True,
+            children=dbc.Row(
+                id="th-row",
+                align="stretch",
+                children=[
+                    dbc.Col(
+                        id="th-t-col",
+                        align="stretch",
+                        width=True,
                         children=TempratureGauge(
                             label="temprature",
                             min=-10,
@@ -27,9 +33,12 @@ class TempHumidityGauge(dbc.Container):
                             high=90,
                             value=round(temprature, 1),
                             units="f",
-                        )
+                        ),
                     ),
-                    dbc.Col(id="th-h-col", align="stretch", width=True,
+                    dbc.Col(
+                        id="th-h-col",
+                        align="stretch",
+                        width=True,
                         children=daq.Gauge(
                             label="humidity",
                             value=round(humidity, 1),
@@ -38,8 +47,8 @@ class TempHumidityGauge(dbc.Container):
                             showCurrentValue=True,
                             units="%",
                             className="dark-theme-control",
-                        )
+                        ),
                     ),
-                ]
-            )
+                ],
+            ),
         )

@@ -1,4 +1,18 @@
 version: 1.0.0
+camera:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
+  folder: !ENV ${WW_CAM_FOLDER:pix}
+  extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
+  tuning:
+    enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
+    file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
+# dashboard app
+dashboard:
+  # listen host
+  host: !ENV ${WW_DASH_HOST:0.0.0.0}
+  # listen port
+  port: !ENV tag:yaml.org,2002:int ${WW_DASH_PORT:8000}
+  debug: !ENV tag:yaml.org,2002:bool ${WW_DASH_DEBUG:true}
 database:
   dialect: !ENV ${WW_DB_DIALECT:mariadb}
   driver: !ENV ${WW_DB_DRIVER:mariadbconnector}
@@ -10,13 +24,16 @@ database:
   pool:
     size: 3
     overflow: 3
-camera:
-  enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
-  folder: !ENV ${WW_CAM_FOLDER:pix}
-  extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
-  tuning:
-    enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
-    file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
+scheduler:
+  sensor:
+    # sensor polling interval should not be < 5
+    interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
+  pimetrics:
+    # sensystem metrics polling for looking for resource issues
+    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
+  camera:
+    # camera pic interval should not be < 5. can eat up disk space
+    interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
@@ -44,19 +61,3 @@ sdr:
         channel: 3 
         dataClass: IndoorData
         device: 20
-scheduler:
-  sensor:
-    # sensor polling interval should not be < 5
-    interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
-  pimetrics:
-    # sensystem metrics polling for looking for resource issues
-    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
-  camera:
-    # camera pic interval should not be < 5. can eat up disk space
-    interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
-# dashboard app
-dashboard:
-  # listen host
-  host: !ENV ${WW_DASH_HOST:0.0.0.0}
-  # listen port
-  port: !ENV tag:yaml.org,2002:int ${WW_DASH_PORT:8000}

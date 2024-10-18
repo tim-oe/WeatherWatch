@@ -1,9 +1,10 @@
+from pathlib import Path
+
 import dash_bootstrap_components as dbc
-from dash import html
 from conf.CameraConfig import CameraConfig
+from dash import html
 from dashboard.BasePage import BasePage
 
-from PIL import Image
 
 class CameraPage(BasePage):
     """
@@ -23,15 +24,16 @@ class CameraPage(BasePage):
 
         self._cameraConfig: CameraConfig = self._appConfig.camera
 
-
     def content(self, **kwargs) -> dbc.Container:
 
-        pImg = Image.open(self._cameraConfig.currentFile)
+        currImage: Path = self._cameraConfig.currentFile
 
         return dbc.Container(
-            children=dbc.Stack([
-                html.center(html.H1("Current view")),
-                html.Hr(),
-                html.Img(src=pImg),
-            ])
+            children=dbc.Stack(
+                [
+                    html.Center(html.H1("Current view")),
+                    html.Hr(),
+                    html.Img(src=f"/camera/{currImage.name}"),
+                ]
+            )
         )

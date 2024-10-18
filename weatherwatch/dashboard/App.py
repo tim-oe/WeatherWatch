@@ -1,8 +1,10 @@
 import logging
+from pathlib import Path
 from urllib.parse import quote
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import flask
 from conf.AppConfig import AppConfig
 from conf.DashConfig import DashConfig
 from conf.SensorConfig import SensorConfig
@@ -77,7 +79,14 @@ class App:
             id="dark-theme-components", children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)]
         )
 
+        self._staticFolder = Path(__file__).parent.parent.parent / "static"
+
+        logging.info("static folder: %s", self._staticFolder)
+
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
+
+        self._app.server.route("/camera/<resource>")(self.serveCamImage)
+        self._app.server.route("/static/img/<resource>")(self.serveResImage)
 
     def sidebar(self) -> html.Div:
 
@@ -125,17 +134,32 @@ class App:
                     return self.missingPageContent(f)
         except Exception:
             logging.exception("failed to render page %s", f)
-            return html.Div(html.H1("500: ERROR", className="text-danger"))
-            
-            
+            return self.serverError(f)
+
     def missingPageContent(self, f: furl) -> html.Div:
         return html.Div(
             [
-                html.H1("404: Not found", className="text-danger"),
+                html.Center(html.H1(f"404: Not found {f}", className="text-danger")),
                 html.Hr(),
-                html.P(f"request {f} was not recognised..."),
+                html.Center(html.Img(height=270, width=450, src="/static/img/error.jpg")),
             ]
         )
+
+    def serverError(self, f: furl) -> html.Div:
+        return html.Div(
+            [
+                html.Center(html.H1(f"500: server error {f}", className="text-danger")),
+                html.Hr(),
+                html.Center(html.Img(height=270, width=450, src="/static/img/error.jpg")),
+            ]
+        )
+
+    def serveCamImage(self, resource):
+        currImage: Path = self._appConfig.camera.currentFile
+        return flask.send_from_directory(currImage.parent.resolve(), resource)
+
+    def serveResImage(self, resource):
+        return flask.send_from_directory(self._staticFolder / "img", resource)
 
     def run(self):
         self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=True)
