@@ -33,7 +33,7 @@ class CameraPage(BasePage):
                 [
                     html.Center(html.H1("Current view")),
                     html.Hr(),
-                    html.Img(src=f"/camera/{currImage.name}"),
+                    html.Img(src=f"/cam/{currImage.name}"),
                 ]
             )
         )

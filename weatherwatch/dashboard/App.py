@@ -85,7 +85,7 @@ class App:
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
-        self._app.server.route("/camera/<resource>")(self.serveCamImage)
+        self._app.server.route("/cam/<resource>")(self.serveCamImage)
         self._app.server.route("/static/img/<resource>")(self.serveResImage)
 
     def sidebar(self) -> html.Div:
