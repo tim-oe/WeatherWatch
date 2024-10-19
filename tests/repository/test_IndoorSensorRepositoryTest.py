@@ -36,10 +36,13 @@ class IndoorSensorRepositoryTest(unittest.TestCase):
         print(str(ent))
         
         self.assertIsNotNone(ent.id)
+
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
 
         act = repo.findLatest(ent.channel)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)

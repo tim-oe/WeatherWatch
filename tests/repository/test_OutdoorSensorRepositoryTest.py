@@ -45,10 +45,11 @@ class OutdoorSensorRepositoryTest(unittest.TestCase):
 
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
-        self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
 
         act = repo.findLatest()
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
         

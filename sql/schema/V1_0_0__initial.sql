@@ -13,8 +13,8 @@ CREATE TABLE `outdoor_sensor` (
     `light_lux` INT UNSIGNED NOT NULL,
     `uv` DECIMAL(5,2) NOT NULL,
     `raw` JSON NOT NULL COMMENT 'the raw json record', 
-	PRIMARY KEY (`id`, `read_time`),
-	UNIQUE KEY out_unique_sensor (read_time, sensor_id),
+	  PRIMARY KEY (`id`, `read_time`),
+	  UNIQUE KEY out_unique_sensor (read_time, sensor_id),
     KEY `read_time_idx` (`read_time`),
     KEY `sensor_id_idx` (`sensor_id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
@@ -42,8 +42,8 @@ CREATE TABLE `indoor_sensor` (
     `temperature_f` DECIMAL(5,2) NOT NULL,
     `humidity` TINYINT UNSIGNED NOT NULL,
     `raw` JSON NOT NULL COMMENT 'the raw json record', 
-	PRIMARY KEY (`id`, `read_time`),
-	UNIQUE KEY in_unique_sensor (read_time, sensor_id, channel),
+	  PRIMARY KEY (`id`, `read_time`),
+	  UNIQUE KEY in_unique_sensor (read_time, sensor_id, channel),
     KEY `read_time_idx` (`read_time`),
     KEY `sensor_id_channel_idx` (`sensor_id`,`channel`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4

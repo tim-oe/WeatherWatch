@@ -21,10 +21,8 @@ class SDRMetrictsRepositoryTest(unittest.TestCase):
         print(str(ent))
         
         self.assertIsNotNone(ent.id)
+        
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
-        print(str(act))
-
-        # TODO not working...
-        #self.assertEquals(ent, act)
-        
+        self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
