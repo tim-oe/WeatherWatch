@@ -45,5 +45,6 @@ class AQISvc:
             ent.read_time = datetime.datetime.now()
 
             self._repo.insert(ent)
+            logging.info("processing aqi complete")
         except Exception:
             logging.exception("failed to process aqi data")

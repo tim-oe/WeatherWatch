@@ -3,6 +3,7 @@ import logging.config
 import os
 from typing import List
 
+from conf.AQIConfig import AQIConfig
 from conf.CameraConfig import CameraConfig
 from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
@@ -23,6 +24,7 @@ class AppConfig:
     ENVAR_NO_CONSOLE = "WW_NO_CONSOLE"
 
     SDR_KEY = "sdr"
+    AQI_KEY = "aqi"
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
     DATABASE_KEY = "database"
@@ -59,6 +61,9 @@ class AppConfig:
 
         self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
         logging.info("loaded %s config", AppConfig.CAMERA_KEY)
+
+        self._aqi = AQIConfig(self._conf[AppConfig.AQI_KEY])
+        logging.info("loaded %s config", AppConfig.AQI_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
         logging.info("loaded %s config", AppConfig.DATABASE_KEY)
@@ -116,6 +121,15 @@ class AppConfig:
         :return: the camera
         """
         return self._camera
+
+    @property
+    def aqi(self) -> AQIConfig:
+        """
+        aqi property getter
+        :param self: this
+        :return: the aqi
+        """
+        return self._aqi
 
     @property
     def database(self) -> DatabaseConfig:

@@ -6,6 +6,8 @@ from camera.Camera import Camera
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
+from sensor.aqi.Hm3301Reader import Hm3301Reader
+from svc.AQISvc import AQISvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 
@@ -19,6 +21,12 @@ def sensor():
     sensorSvc = SensorSvc()
     sensorSvc.process()
 
+def aqi():
+    """
+    schedule entry point for aqi task
+    """
+    aqiSvc = AQISvc()
+    aqiSvc.process()
 
 def camera():
     """
@@ -38,9 +46,10 @@ def pimetrics():
 
 @singleton
 class SchedulerSvc:
-    SENSOR_JOB = "sensor"
+    AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
     PI_METRICS_JOB = "pi_metrics"
+    SENSOR_JOB = "sensor"
 
     """
     SchedulerSvc service
@@ -96,9 +105,18 @@ class SchedulerSvc:
                 misfire_grace_time=60*60
             )
 
-    # override
-    def __del__(self):
-        self._scheduler.shutdown()
+        if Hm3301Reader().enable is True:
+            self._scheduler.add_job(
+                aqi,
+                "cron",
+                minute=f"4-59/{self._schedulerConfig.cameraInterval}",
+                name=SchedulerSvc.AQI_JOB,
+                id=SchedulerSvc.AQI_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60*60
+            )
 
     # override
     def __str__(self):
@@ -107,8 +125,13 @@ class SchedulerSvc:
 
         return out.getvalue()
 
+    # override
+    def __del__(self):
+        self._scheduler.shutdown()
+
     def start(self):
         self._scheduler.start()
 
     def pause(self):
         self._scheduler.pause()
+

@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.1.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
 camera:
@@ -27,15 +27,18 @@ database:
     size: 3
     overflow: 3
 scheduler:
-  sensor:
-    # sensor polling interval should not be < 5
-    interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
-  pimetrics:
-    # sensystem metrics polling for looking for resource issues
-    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
+  aqi:
+    # air quality sensor interval
+    interval: !ENV tag:yaml.org,2002:int ${WW_AQI_INTERVAL:15}
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
+  pimetrics:
+    # sensystem metrics polling for looking for resource issues
+    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
+  sensor:
+    # sensor polling interval should not be < 5
+    interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read

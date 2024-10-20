@@ -4,6 +4,7 @@ __all__ = ["SchedulerConfig"]
 class SchedulerConfig:
     SENSOR_KEY = "sensor"
     CAMERA_KEY = "camera"
+    AQI_KEY = "aqi"
     PIMETRICS_KEY = "pimetrics"
     INTERVAL_KEY = "interval"
 
@@ -23,6 +24,15 @@ class SchedulerConfig:
     # override
     def __str__(self):
         return str(self.__dict__)
+
+    @property
+    def aqiInterval(self) -> int:
+        """
+        aqi inerval property getter
+        :param self: this
+        :return: the aqi inerval
+        """
+        return self.__dict__[SchedulerConfig.AQI_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
     def sensorInterval(self) -> int:
