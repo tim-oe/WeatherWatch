@@ -42,7 +42,7 @@ scheduler:
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
-    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
+    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:120}
   sensors:
       # doing device reset of outdoor sensor will change the id
       # device is the 
