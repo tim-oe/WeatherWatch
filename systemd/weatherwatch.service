@@ -27,6 +27,8 @@ Environment="WW_LOG_LEVEL=INFO"
 Environment="LIBCAMERA_LOG_LEVELS=*:WARN"
 # set system data dir for pix
 Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
+# tunning not needed live
+Environment="WW_CAM_TUNE_ENABLE=false"
 # standard dir install see init.sh
 WorkingDirectory=/opt/WeatherWatch/src/WeatherWatch
 ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwhatch/sensor.py
