@@ -55,7 +55,7 @@ class SchedulerSvc:
         # in order to use this the task functions need to be static
         jobstores = {"default": SQLAlchemyJobStore(url=AppConfig().database.url)}
 
-        job_defaults = {"coalesce": True, "max_instances": 1, "replace_existing": True}
+        job_defaults = {"coalesce": True, "max_instances": 1, "replace_existing": True, 'misfire_grace_time': 15*60}
 
         self._scheduler = BackgroundScheduler(jobstores=jobstores, job_defaults=job_defaults)
 
