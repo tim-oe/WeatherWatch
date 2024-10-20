@@ -32,8 +32,8 @@ Environment="LIBCAMERA_LOG_LEVELS=*:WARN"
 # set system data dir for pix
 Environment="WW_CAM_FOLDER=/var/lib/weatherdash/pix"
 # TODO need to variablize path
-WorkingDirectory=/opt/WeatherWatch/src/WeatherWatch
-ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwhatch/dashboard.py
+WorkingDirectory=/opt/WeatherWatch/
+ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwatch/dashboard.py
 StandardInput=tty-force
 # tee off std IO for app log
 StandardOutput=file:/var/log/WeatherDash_out.log

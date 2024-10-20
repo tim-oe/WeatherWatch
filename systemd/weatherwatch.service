@@ -30,8 +30,8 @@ Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
 # tunning not needed live
 Environment="WW_CAM_TUNE_ENABLE=false"
 # standard dir install see init.sh
-WorkingDirectory=/opt/WeatherWatch/src/WeatherWatch
-ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwhatch/sensor.py
+WorkingDirectory=/opt/WeatherWatch/
+ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwatch/sensor.py
 StandardInput=tty-force
 # tee off std IO for app log
 StandardOutput=file:/var/log/WeatherWatch_out.log
