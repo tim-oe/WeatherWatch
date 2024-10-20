@@ -16,9 +16,9 @@ Please set the I2c speed to 20khz
 """
 
 
-from py_singleton import singleton
-from conf.AQIConfig import AQIConfig
 from conf.AppConfig import AppConfig
+from conf.AQIConfig import AQIConfig
+from py_singleton import singleton
 from sensor.aqi.Hm3301Data import Hm3301Data
 from smbus2 import SMBus, i2c_msg
 
@@ -49,7 +49,6 @@ class Hm3301Reader:
         :return: the enable
         """
         return self._aqiConfig.enable
-
 
     def read(self) -> Hm3301Data:
         # TODO what's the arg

@@ -1,9 +1,8 @@
 import datetime
 import logging
 
-from py_singleton import singleton
-
 from entity.AQISensor import AQISensor
+from py_singleton import singleton
 from repository.AQISensorRepository import AQISensorRepository
 from sensor.aqi.Hm3301Data import Hm3301Data
 from sensor.aqi.Hm3301Reader import Hm3301Reader
@@ -25,7 +24,6 @@ class AQISvc:
         self._hm3301Reader: Hm3301Reader = Hm3301Reader()
         self._repo: AQISensorRepository = AQISensorRepository()
 
-
     def process(self):
         logging.info("processing aqi")
 
@@ -41,7 +39,7 @@ class AQISvc:
             ent.pm_1_0_conctrt_atmosph = data.pm_1_0_conctrt_atmosph
             ent.pm_2_5_conctrt_atmosph = data.pm_2_5_conctrt_atmosph
             ent.pm_10_conctrt_atmosph = data.pm_10_conctrt_atmosph
-            
+
             ent.read_time = datetime.datetime.now()
 
             self._repo.insert(ent)

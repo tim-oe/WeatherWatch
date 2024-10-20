@@ -1,5 +1,3 @@
-from pathlib import Path
-
 __all__ = ["AQIConfig"]
 
 
@@ -31,4 +29,3 @@ class AQIConfig:
         :return: the enable
         """
         return self.__dict__[AQIConfig.ENABLE_KEY]
-
