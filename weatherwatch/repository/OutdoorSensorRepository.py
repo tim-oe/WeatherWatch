@@ -17,8 +17,8 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         super().__init__(entity=OutdoorSensor)
 
     def findLatest(self) -> OutdoorSensor:
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             return session.query(OutdoorSensor).order_by(OutdoorSensor.read_time.desc()).first()
         finally:
             session.close()

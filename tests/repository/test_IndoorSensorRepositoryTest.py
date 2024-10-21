@@ -4,15 +4,20 @@ import datetime
 
 import json
 
+from repository.BaseRepository import BaseRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 from weatherwatch.repository.IndoorSensorRepository import IndoorSensorRepository
 from weatherwatch.entity.IndoorSensor import IndoorSensor
 from weatherwatch.sensor.sdr.IndoorData import IndoorData
 
-class IndoorSensorRepositoryTest(unittest.TestCase):
+class IndoorSensorRepositoryTest(BaseRespositoryTest):
+
+    def getRepo(self) -> BaseRepository:
+        return IndoorSensorRepository()
 
     def test(self):
         
-        repo: IndoorSensorRepository = IndoorSensorRepository()
+        repo: IndoorSensorRepository = self.getRepo()
 
         repo.exec('truncate ' + IndoorSensor.__tablename__)
 

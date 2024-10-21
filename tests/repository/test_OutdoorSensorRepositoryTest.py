@@ -4,17 +4,20 @@ import datetime
 
 import json
 
+from repository.BaseRepository import BaseRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 from weatherwatch.repository.OutdoorSensorRepository import OutdoorSensorRepository
 from weatherwatch.entity.OutdoorSensor import OutdoorSensor
 from weatherwatch.sensor.sdr.OutdoorData import OutdoorData
 
-class OutdoorSensorRepositoryTest(unittest.TestCase):
+class OutdoorSensorRepositoryTest(BaseRespositoryTest):
+
+    def getRepo(self) -> BaseRepository:
+        return OutdoorSensorRepository()
 
     def test(self):
         
-        repo: OutdoorSensorRepository = OutdoorSensorRepository()
-
-        repo.exec('truncate ' + OutdoorSensor.__tablename__)
+        repo: OutdoorSensorRepository = self.getRepo()
 
         with open("tests/data/outdoor.json", "r") as file:
             j = json.load(file)

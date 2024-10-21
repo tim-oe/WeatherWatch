@@ -2,7 +2,7 @@ from typing import Generic, List, TypeVar
 
 from repository.DataStore import DataStore
 from sqlalchemy import Connection
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy.sql import text
 
 __all__ = ["BaseRepository"]
@@ -27,9 +27,18 @@ class BaseRepository(Generic[T]):
         self._entity = entity
         self._datastore: DataStore = DataStore()
 
+    @property
+    def entity(self) -> DeclarativeBase:
+        """
+        entity property getter
+        :param self: this
+        :return: the entity
+        """
+        return self._entity
+
     def insert(self, o: T):
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             session.add(o)
             session.commit()
             session.refresh(o)
@@ -37,31 +46,30 @@ class BaseRepository(Generic[T]):
             session.close()
 
     def findById(self, id: int) -> T:
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             return session.query(self._entity).filter_by(id=id).first()
         finally:
             session.close()
 
     def top(self, limit: int) -> List[T]:
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             return session.query(self._entity).limit(limit).all()
         finally:
             session.close()
 
     def delete(self, o: T):
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             session.delete(o)
             session.commit()
         finally:
             session.close()
 
     def exec(self, sql: str):
+        con: Connection = self._datastore.connection
         try:
-            con: Connection = self._datastore.connection
-
             con.execute(text(sql))
             con.commit()
         finally:

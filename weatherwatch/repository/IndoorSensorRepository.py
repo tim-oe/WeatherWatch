@@ -17,8 +17,8 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         super().__init__(entity=IndoorSensor)
 
     def findLatest(self, channel: int) -> IndoorSensor:
+        session: Session = self._datastore.session
         try:
-            session: Session = self._datastore.session
             return session.query(IndoorSensor).filter_by(channel=channel).order_by(IndoorSensor.read_time.desc()).first()
         finally:
             session.close()

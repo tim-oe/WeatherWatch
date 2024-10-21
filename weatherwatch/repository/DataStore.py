@@ -13,7 +13,7 @@ class DataStore:
     DataStore for orm
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
     https://docs.sqlalchemy.org/en/20/core/engines.html#creating-urls-programmatically
-    TODO pooling https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+    https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
     https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration
     """
 

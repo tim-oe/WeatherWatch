@@ -1,16 +1,19 @@
-import unittest
-
 import datetime
 
 from entity.AQISensor import AQISensor
 from repository.AQISensorRepository import AQISensorRepository
+from repository.BaseRepository import BaseRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
 
-class AQISensorRepositoryTest(unittest.TestCase):
+class AQISensorRepositoryTest(BaseRespositoryTest):
+
+    def getRepo(self) -> BaseRepository:
+        return AQISensorRepository()
 
     def test(self):
         
-        repo: AQISensorRepository = AQISensorRepository()
+        repo: AQISensorRepository = self.getRepo()
 
         data: AQISensor = AQISensor()
         data.pm_1_0_conctrt_std = 0
@@ -30,6 +33,11 @@ class AQISensorRepositoryTest(unittest.TestCase):
         self.assertIsNotNone(data.id)
         
         act = repo.findById(data.id)
+        self.assertIsNotNone(act)
+        self.assertEqual(data.id, act.id)
+        self.assertEqual(data.read_time, act.read_time)
+
+        act = repo.findLatest()
         self.assertIsNotNone(act)
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)

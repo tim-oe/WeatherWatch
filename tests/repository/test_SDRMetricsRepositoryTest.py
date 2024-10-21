@@ -1,15 +1,19 @@
 import datetime
 import unittest
 
+from repository.BaseRepository import BaseRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 from weatherwatch.entity.SDRMetricts import SDRMetrics
 from weatherwatch.repository.SDRMetricsRepository import SDRMetricsRepository
 
+class SDRMetrictsRepositoryTest(BaseRespositoryTest):
 
-class SDRMetrictsRepositoryTest(unittest.TestCase):
+    def getRepo(self) -> BaseRepository:
+        return SDRMetricsRepository()
 
     def test(self):
         
-        repo: SDRMetricsRepository = SDRMetricsRepository()
+        repo: SDRMetricsRepository = self.getRepo()
 
         ent: SDRMetrics = SDRMetrics()
         ent.start_time = datetime.datetime.now()
@@ -25,4 +29,7 @@ class SDRMetrictsRepositoryTest(unittest.TestCase):
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
-        self.assertEqual(ent.read_time, act.read_time)
+        self.assertEqual(ent.start_time, act.start_time)
+        self.assertEqual(ent.end_time, act.end_time)
+        self.assertEqual(ent.duration_sec, act.duration_sec)
+        self.assertEqual(ent.sensor_cnt, act.sensor_cnt)

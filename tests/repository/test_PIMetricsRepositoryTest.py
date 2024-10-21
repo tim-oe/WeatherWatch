@@ -5,14 +5,20 @@ import datetime
 
 import psutil
 
+from repository.BaseRepository import BaseRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 from weatherwatch.repository.PIMetricsRepository import PIMetricsRepository
 from weatherwatch.entity.PIMetrics import PIMetrics
 
-class PIMetricsRepositoryTest(unittest.TestCase):
+
+class PIMetricsRepositoryTest(BaseRespositoryTest):
+
+    def getRepo(self) -> BaseRepository:
+        return PIMetricsRepository()
 
     def test(self):
         
-        repo: PIMetricsRepository = PIMetricsRepository()
+        repo: PIMetricsRepository = self.getRepo()
 
         data: PIMetrics = PIMetrics()
         data.read_time = datetime.datetime.now()
