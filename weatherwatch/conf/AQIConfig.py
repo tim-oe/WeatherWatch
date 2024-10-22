@@ -4,6 +4,7 @@ __all__ = ["AQIConfig"]
 class AQIConfig:
     ENABLE_KEY = "enable"
     RETRY_KEY = "retry"
+    WAIT_SEC_KEY = "wait_sec"
 
     """
     aqi config data
@@ -39,3 +40,12 @@ class AQIConfig:
         :return: the retry
         """
         return self.__dict__[AQIConfig.RETRY_KEY]
+
+    @property
+    def waitSec(self) -> int:
+        """
+        waitSec property getter
+        :param self: this
+        :return: the waitSec
+        """
+        return self.__dict__[AQIConfig.WAIT_SEC_KEY]

@@ -16,6 +16,7 @@ Please set the I2c speed to 20khz
 """
 
 import logging
+import time
 
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
@@ -52,10 +53,12 @@ class Hm3301Reader:
         return self._aqiConfig.enable
 
     def read(self) -> Hm3301Data:
-        # TODO what's the arg
+        # TODO what's the arg for
         with SMBus(Hm3301Reader.SM_BUS) as bus:
             write = i2c_msg.write(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, [Hm3301Reader.SELECT_I2C_ADDR])
             bus.i2c_rdwr(write)
+
+        time.sleep(self._aqiConfig.waitSec)
 
         data: Hm3301Data = None
         cnt: int = 0
@@ -84,6 +87,7 @@ class Hm3301Reader:
 
             else:
                 logging.warning("HM3301 crc check failed")
+                time.sleep(self._aqiConfig.waitSec)
 
         if data is None:
             raise ValueError("retry exceeded")
