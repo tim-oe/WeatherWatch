@@ -1,6 +1,7 @@
 version: 1.1.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
+  retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}

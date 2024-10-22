@@ -3,6 +3,7 @@ __all__ = ["AQIConfig"]
 
 class AQIConfig:
     ENABLE_KEY = "enable"
+    RETRY_KEY = "retry"
 
     """
     aqi config data
@@ -29,3 +30,12 @@ class AQIConfig:
         :return: the enable
         """
         return self.__dict__[AQIConfig.ENABLE_KEY]
+
+    @property
+    def retry(self) -> int:
+        """
+        retry property getter
+        :param self: this
+        :return: the retry
+        """
+        return self.__dict__[AQIConfig.RETRY_KEY]

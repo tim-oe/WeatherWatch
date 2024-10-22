@@ -15,6 +15,7 @@ Please set the I2c speed to 20khz
     sudo reboot
 """
 
+import logging
 
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
@@ -56,27 +57,35 @@ class Hm3301Reader:
             write = i2c_msg.write(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, [Hm3301Reader.SELECT_I2C_ADDR])
             bus.i2c_rdwr(write)
 
-        with SMBus(Hm3301Reader.SM_BUS) as bus:
-            read = i2c_msg.read(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, Hm3301Reader.DATA_CNT)
-            bus.i2c_rdwr(read)
-            raw = list(read)
+        data: Hm3301Data = None
+        cnt: int = 0
+        while cnt < self._aqiConfig.retry and data is None:
 
-        sum = 0
-        for i in range(Hm3301Reader.DATA_CNT - 1):
-            sum += raw[i]
-        sum = sum & 0xFF
+            with SMBus(Hm3301Reader.SM_BUS) as bus:
+                read = i2c_msg.read(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, Hm3301Reader.DATA_CNT)
+                bus.i2c_rdwr(read)
+                raw = list(read)
 
-        if sum == raw[28]:
-            data: Hm3301Data = Hm3301Data()
+            sum = 0
+            for i in range(Hm3301Reader.DATA_CNT - 1):
+                sum += raw[i]
+            sum = sum & 0xFF
 
-            data.pm_1_0_conctrt_std = raw[4] << 8 | raw[5]
-            data.pm_2_5_conctrt_std = raw[6] << 8 | raw[7]
-            data.pm_10_conctrt_std = raw[8] << 8 | raw[9]
+            if sum == raw[28]:
+                data = Hm3301Data()
 
-            data.pm_1_0_conctrt_atmosph = raw[10] << 8 | raw[11]
-            data.pm_2_5_conctrt_atmosph = raw[12] << 8 | raw[13]
-            data.pm_10_conctrt_atmosph = raw[14] << 8 | raw[15]
+                data.pm_1_0_conctrt_std = raw[4] << 8 | raw[5]
+                data.pm_2_5_conctrt_std = raw[6] << 8 | raw[7]
+                data.pm_10_conctrt_std = raw[8] << 8 | raw[9]
 
-            return data
+                data.pm_1_0_conctrt_atmosph = raw[10] << 8 | raw[11]
+                data.pm_2_5_conctrt_atmosph = raw[12] << 8 | raw[13]
+                data.pm_10_conctrt_atmosph = raw[14] << 8 | raw[15]
+
+            else:
+                logging.warning("HM3301 crc check failed")
+
+        if data is None:
+            raise ValueError("retry exceeded")
         else:
-            raise ValueError("HM3301 crc check failed")
+            return data
