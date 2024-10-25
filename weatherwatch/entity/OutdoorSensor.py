@@ -14,7 +14,8 @@ class OutdoorSensor(BaseSensor):
 
     pressure: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
 
-    rain_mm: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
+    rain_cum_mm: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
+    rain_delta_mm: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
     wind_avg_m_s: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
     wind_max_m_s: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
     wind_dir_deg: Mapped[int] = mapped_column(Integer, nullable=False, default=None)

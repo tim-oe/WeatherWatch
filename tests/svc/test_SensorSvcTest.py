@@ -7,7 +7,6 @@ from weatherwatch.repository.OutdoorSensorRepository import OutdoorSensorReposit
 
 from weatherwatch.svc.SensorSvc import SensorSvc
 
-# TODO need more thorough test to see if it actually read and inserted
 class SensorSvcTest(unittest.TestCase):
     def test(self):
         svc: SensorSvc = SensorSvc()
@@ -19,6 +18,8 @@ class SensorSvcTest(unittest.TestCase):
         
         svc.process()
         
-        self.assertEqual(1, len(outdoorRepo.top(1)))
-        self.assertEqual(2, len(indoorRepo.top(2)))
+        os: OutdoorSensor = outdoorRepo.top(1)
         
+        self.assertEqual(1, len(os))
+        self.assertIsNotNone(os[0].rain_delta_mm)
+        self.assertEqual(2, len(indoorRepo.top(2)))

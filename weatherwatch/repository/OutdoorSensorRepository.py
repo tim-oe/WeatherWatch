@@ -1,3 +1,6 @@
+import datetime
+from typing import List
+
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
@@ -20,5 +23,14 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         session: Session = self._datastore.session
         try:
             return session.query(OutdoorSensor).order_by(OutdoorSensor.read_time.desc()).first()
+        finally:
+            session.close()
+
+    def findGreaterThanReadTime(self, dt: datetime) -> List[OutdoorSensor]:
+        session: Session = self._datastore.session
+        try:
+            return (
+                session.query(OutdoorSensor).filter(OutdoorSensor.read_time > dt).order_by(OutdoorSensor.read_time.desc()).all()
+            )
         finally:
             session.close()

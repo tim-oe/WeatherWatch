@@ -6,7 +6,7 @@ from hurry.filesize import size
 
 class PercentGauge(dbc.Container):
     """
-    percent based guage class
+    percent based gauge class
     https://dash.plotly.com/dash-daq/gauge
     """
 

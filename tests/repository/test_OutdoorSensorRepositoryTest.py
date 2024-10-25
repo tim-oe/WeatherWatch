@@ -1,6 +1,4 @@
-import unittest
-
-import datetime
+from datetime import datetime, timedelta
 
 import json
 
@@ -28,7 +26,7 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         ent: OutdoorSensor = OutdoorSensor()
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
-        ent.read_time = datetime.datetime.now()
+        ent.read_time = datetime.now()
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
         ent.rain_mm = data.rain_mm
@@ -56,3 +54,8 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
         
+        d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+        l = repo.findGreaterThanReadTime(d)
+        self.assertIsNotNone(act)
+        self.assertTrue(len(l) > 0)
