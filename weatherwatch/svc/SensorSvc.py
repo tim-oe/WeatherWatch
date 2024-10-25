@@ -74,9 +74,9 @@ class SensorSvc:
             if lastRead is not None:  # edge will happen with new DB
                 delta = decimal.Decimal(data.rain_mm) - lastRead.rain_cum_mm
 
-            if delta < 0: # edge case sensor reset
+            if delta < 0:  # edge case sensor reset
                 ent.rain_delta_mm = data.rain_mm
-            else:  
+            else:
                 ent.rain_delta_mm = delta
 
             ent.wind_avg_m_s = data.wind_avg_m_s
