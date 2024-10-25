@@ -1,3 +1,4 @@
+import time
 import unittest
 
 from weatherwatch.entity.IndoorSensor import IndoorSensor
@@ -23,3 +24,11 @@ class SensorSvcTest(unittest.TestCase):
         self.assertEqual(1, len(os))
         self.assertIsNotNone(os[0].rain_delta_mm)
         self.assertEqual(2, len(indoorRepo.top(2)))
+        
+        time.sleep(5)
+        
+        svc.process()
+
+        os: OutdoorSensor = outdoorRepo.findLatest()
+        self.assertIsNotNone(os)
+        self.assertIsNotNone(os.rain_delta_mm)
