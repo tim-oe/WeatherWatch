@@ -28,7 +28,7 @@ class Timelapse:
 
     def process(self, d: date = None, imgFolder: Path = None, vidFolder: Path = None) -> Path:
         if d is None:
-            d = d.today() - timedelta(days=1)
+            d = date.today() - timedelta(days=1)
 
         if imgFolder is None:
             imgFolder = self._cameraConfig.folder
