@@ -1,3 +1,5 @@
+from datetime import date
+
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from dash import html
@@ -26,6 +28,7 @@ class OutdoorSensorPage(BasePage):
     def content(self, **kwargs) -> dbc.Container:
 
         data: OutdoorSensor = self._outdoorRepo.findLatest()
+        rainFail = self._outdoorRepo.getDaysRainfall(date.today())
 
         return dbc.Container(
             [
@@ -58,8 +61,21 @@ class OutdoorSensorPage(BasePage):
                                 units="hPa",
                             ),
                         ),
+                        dbc.Col(
+                            id="out-p-col",
+                            align="stretch",
+                            children=daq.Tank(
+                                max=20,
+                                min=0,
+                                width=100,
+                                label="total rainfall",
+                                value=round(rainFail, 1),
+                                showCurrentValue=True,
+                                units="mm",
+                            ),
+                        ),
                     ],
                 ),
-                # TODO wind
+                # TODO wind in new row span
             ]
         )

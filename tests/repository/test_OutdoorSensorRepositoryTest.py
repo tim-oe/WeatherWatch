@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
+from decimal import Decimal
 import json
 
 from repository.BaseRepository import BaseRepository
@@ -29,7 +30,8 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         ent.read_time = datetime.now()
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
-        ent.rain_mm = data.rain_mm
+        ent.rain_cum_mm = data.rain_mm
+        ent.rain_delta_mm = data.rain_mm
         ent.wind_avg_m_s = data.wind_avg_m_s
         ent.wind_max_m_s = data.wind_max_m_s
         ent.wind_dir_deg = data.wind_dir_deg
@@ -42,7 +44,7 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         repo.insert(ent)
         
         self.assertIsNotNone(ent.id)
-        print(str(ent))
+        #print(str(ent))
 
         act = repo.findById(ent.id)
         self.assertIsNotNone(act)
@@ -59,3 +61,8 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         l = repo.findGreaterThanReadTime(d)
         self.assertIsNotNone(act)
         self.assertTrue(len(l) > 0)
+        
+        x = repo.getDaysRainfall(date.today())
+        
+        self.assertIsNotNone(x)
+        self.assertIsInstance(x, Decimal)
