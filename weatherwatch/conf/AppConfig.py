@@ -9,6 +9,7 @@ from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
+from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
 from pyaml_env import parse_config
 
@@ -31,6 +32,7 @@ class AppConfig:
     CAMERA_KEY = "camera"
     SCHEDULER_KEY = "scheduler"
     DASHBOARD_KEY = "dashboard"
+    TIMELAPSE_KEY = "timelapse"
 
     """
     app config data
@@ -73,6 +75,9 @@ class AppConfig:
 
         self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
         logging.info("loaded %s config", AppConfig.DASHBOARD_KEY)
+
+        self._timelapse = TimelapseConfig(self._conf[AppConfig.TIMELAPSE_KEY])
+        logging.info("loaded %s config", AppConfig.TIMELAPSE_KEY)
 
     def initLogging(self):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
@@ -121,6 +126,15 @@ class AppConfig:
         :return: the camera
         """
         return self._camera
+
+    @property
+    def timelapse(self) -> TimelapseConfig:
+        """
+        timelapse property getter
+        :param self: this
+        :return: the timelapse
+        """
+        return self._timelapse
 
     @property
     def aqi(self) -> AQIConfig:

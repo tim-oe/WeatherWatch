@@ -41,6 +41,8 @@ scheduler:
   sensor:
     # sensor polling interval should not be < 5
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
+  timelapse:
+    hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:3}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
@@ -68,3 +70,9 @@ sdr:
         channel: 3 
         dataClass: IndoorData
         device: 20
+timelapse:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}
+  folder: !ENV ${WW_TIMELAPSE_FOLDER:vid}
+  extension: !ENV ${WW_CAM_TIMELAPSE_EXT:.mp4}
+  fps: !ENV tag:yaml.org,2002:int ${WW_CAM_TIMELAPSE_FPS:10}
+  codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:mp4v}

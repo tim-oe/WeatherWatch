@@ -7,6 +7,8 @@ class SchedulerConfig:
     AQI_KEY = "aqi"
     PIMETRICS_KEY = "pimetrics"
     INTERVAL_KEY = "interval"
+    TIMELAPSE_KEY = "timelapse"
+    HOUR_KEY = "hour"
 
     """
     scheduler config data
@@ -60,3 +62,12 @@ class SchedulerConfig:
         :return: the camera inerval
         """
         return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.INTERVAL_KEY]
+
+    @property
+    def timelapseHour(self) -> int:
+        """
+        timelapse Hour property getter
+        :param self: this
+        :return: the timelapse Hour
+        """
+        return self.__dict__[SchedulerConfig.TIMELAPSE_KEY][SchedulerConfig.HOUR_KEY]
