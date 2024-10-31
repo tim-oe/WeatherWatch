@@ -8,7 +8,7 @@ class TempratureGauge(html.Div):
     https://dash.plotly.com/dash-daq/thermometer
     """
 
-    def __init__(self, label: str, units: str, value: float, min: int, max: int, low: int, mid: int, high: int):
+    def __init__(self, label: str, units: str, value: float, min: int, max: int, mid: int, high: int, size: int = 100):
         """
         ctor
         :param self: this
@@ -25,7 +25,6 @@ class TempratureGauge(html.Div):
                     label=label,
                     min=min,
                     max=max,
-                    className="dark-theme-control",
                     color=color,
                     value=value,
                     showCurrentValue=True,

@@ -4,9 +4,9 @@ from dash import html
 from hurry.filesize import size
 
 
-class PercentGauge(dbc.Container):
+class SystemResourceGauge(dbc.Container):
     """
-    percent based gauge class
+    this is for system resources like memory and disk space
     https://dash.plotly.com/dash-daq/gauge
     """
 
@@ -40,7 +40,7 @@ class PercentGauge(dbc.Container):
                     align="center",
                 ),
                 dbc.Row(
-                    style=PercentGauge.CONTENT_STYLE,
+                    style=SystemResourceGauge.CONTENT_STYLE,
                     children=[
                         dbc.Col(align="center", width=True, children=[html.Plaintext(children="available")]),
                         dbc.Col([html.Plaintext(children=size(available))]),
@@ -48,7 +48,7 @@ class PercentGauge(dbc.Container):
                     align="center",
                 ),
                 dbc.Row(
-                    style=PercentGauge.CONTENT_STYLE,
+                    style=SystemResourceGauge.CONTENT_STYLE,
                     children=[
                         dbc.Col(align="center", width=True, children=[html.Plaintext(children="used")]),
                         dbc.Col([html.Plaintext(children=size(used))]),

@@ -13,8 +13,8 @@ class CameraTest(unittest.TestCase):
         tl: Timelapse = Timelapse()
 
         vid: Path = tl.process(date(2024,10,20),
-                                 Path("tests/data/img"),
-                                 Path("."))
+            Path("tests/data/img"),
+            Path("vid"))
         
         self.assertIsNotNone(vid)
         print(vid)        

@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
+from dash import html
 from dashboard.BasePage import BasePage
-from dashboard.component.PercentGauge import PercentGauge
+from dashboard.component.SystemResourceGauge import SystemResourceGauge
 from dashboard.component.TempratureGauge import TempratureGauge
 from entity.PIMetrics import PIMetrics
 from svc.PIMetricsSvc import PIMetricsSvc
@@ -27,18 +28,20 @@ class SystemPage(BasePage):
 
         return dbc.Container(
             [
-                # dbc.Row(dbc.Col(html.Plaintext("Uptime: {0} days {1}:{2}:{3}".format(self._piMetricsSvc.getUptime())))),  # noqa
+                dbc.Row(
+                    children=dbc.Col(children=html.Center(html.H4(f" utime: {self._piMetricsSvc.getUptime()}"))),
+                ),
+                dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(
                     [
-                        dbc.Col([PercentGauge("memory usage %", data.mem_percent, data.mem_available, data.mem_used)]),
-                        dbc.Col([PercentGauge("disk usage %", data.disk_percent, data.disk_available, data.disk_used)]),
+                        dbc.Col([SystemResourceGauge("memory usage %", data.mem_percent, data.mem_available, data.mem_used)]),
+                        dbc.Col([SystemResourceGauge("disk usage %", data.disk_percent, data.disk_available, data.disk_used)]),
                         dbc.Col(
                             [
                                 TempratureGauge(
                                     label="cpu temp c",
                                     min=10,
                                     max=90,
-                                    low=30,
                                     mid=50,
                                     high=70,
                                     value=data.cpu_temp_c,

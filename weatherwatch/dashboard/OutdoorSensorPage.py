@@ -1,17 +1,20 @@
 from datetime import date
+from decimal import Decimal
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from dash import html
 from dashboard.BasePage import BasePage
-from dashboard.component.TempHumidityGauge import TempHumidityGauge
+from dashboard.component.HumidityGauge import HumidityGauge
+from dashboard.component.TempratureGauge import TempratureGauge
 from entity.OutdoorSensor import OutdoorSensor
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
 
 class OutdoorSensorPage(BasePage):
     """
-    system dash page
+    Outdoor sensor page
+    https://dash.plotly.com/dash-daq/tank
     """  # noqa
 
     PATH = "/OutdoorData"
@@ -32,25 +35,26 @@ class OutdoorSensorPage(BasePage):
 
         return dbc.Container(
             [
+                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}")))),
+                dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(
-                    align="stretch",
-                    children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}"))),
-                ),
-                dbc.Row(align="stretch", children=dbc.Col(html.Hr())),
-                dbc.Row(
-                    id="out-row",
                     align="stretch",
                     children=[
                         dbc.Col(
-                            id="out-th-col",
-                            align="stretch",
-                            width=True,
-                            children=TempHumidityGauge(data.temperature_f, data.humidity),
+                            id="out-t-col",
+                            children=TempratureGauge(
+                                label="temprature",
+                                min=-10,
+                                max=120,
+                                mid=75,
+                                high=90,
+                                value=round(data.temperature_f, 1),
+                                units="f",
+                            ),
                         ),
-                        # https://dash.plotly.com/dash-daq/tank
+                        dbc.Col(id="out-h-col", children=HumidityGauge(data.humidity)),
                         dbc.Col(
                             id="out-p-col",
-                            align="stretch",
                             children=daq.Tank(
                                 max=1050,
                                 min=950,
@@ -62,20 +66,30 @@ class OutdoorSensorPage(BasePage):
                             ),
                         ),
                         dbc.Col(
-                            id="out-p-col",
-                            align="stretch",
-                            children=daq.Tank(
-                                max=20,
-                                min=0,
-                                width=100,
-                                label="total rainfall",
-                                value=round(rainFail, 1),
-                                showCurrentValue=True,
-                                units="mm",
-                            ),
+                            id="out-r-col",
+                            children=self.rainGuage(rainFail),
                         ),
                     ],
                 ),
-                # TODO wind in new row span
+                dbc.Row(children=dbc.Col(html.Hr())),
             ]
+        )
+
+    def rainGuage(self, rain: Decimal) -> daq.Tank:
+
+        max: int = 25
+
+        if rain > 25:
+            factor: int = int(rain // 25)
+            max = 25 * (factor + 1)
+
+        return daq.Tank(
+            max=max,
+            min=0,
+            width=100,
+            scale={"interval": 5, "labelInterval": 1},
+            label="total rainfall",
+            value=round(rain, 1),
+            showCurrentValue=True,
+            units="mm",
         )

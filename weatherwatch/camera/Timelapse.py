@@ -12,6 +12,12 @@ from py_singleton import singleton
 
 @singleton
 class Timelapse:
+    """
+    makes timelapse video out for images taken by camera
+    uses opencv with h264 encoding as the default
+    requires non binary distro to use codec due to lic
+    this is memory intensive so won't work on a pi zero
+    """  # noqa
 
     def __init__(self):
         """

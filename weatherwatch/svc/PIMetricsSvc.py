@@ -55,21 +55,16 @@ class PIMetricsSvc:
 
         return data
 
-    def getUptime(self):
+    def getUptime(self) -> str:
         """
         Gets the system uptime and returns it in days, hours, minutes, and seconds.
         """
-
         uptime_seconds = uptime.uptime()
 
         uptime_string = str(datetime.timedelta(seconds=uptime_seconds))
         logging.debug("uptime %s", uptime_string)
 
-        # Splitting the string to extract days, hours, minutes, and seconds
-        days, remainder = uptime_string.split(", ", 1)
-        hours, minutes, seconds = remainder.split(":")
-
-        return int(days.split()[0]), int(hours), int(minutes), int(seconds)
+        return uptime_string
 
     def process(self):
         data: PIMetrics = PIMetrics()

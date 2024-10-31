@@ -75,4 +75,4 @@ timelapse:
   folder: !ENV ${WW_TIMELAPSE_FOLDER:vid}
   extension: !ENV ${WW_CAM_TIMELAPSE_EXT:.mp4}
   fps: !ENV tag:yaml.org,2002:int ${WW_CAM_TIMELAPSE_FPS:10}
-  codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:mp4v}
+  codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:avc1}

@@ -7,6 +7,7 @@ from conf.AppConfig import AppConfig
 class BasePage(ABC):
     """
     base dash page for common functionality
+    https://dash-bootstrap-components.opensource.faculty.ai/docs/components/layout/
     """  # noqa
 
     def __init__(self):
