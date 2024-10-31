@@ -53,7 +53,7 @@ sdr:
       - name: outdoor
         # rtl_433 model (might not match actual sensor) 
         model: Cotech-367959 
-        id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:30}
+        id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:78}
         # class that will process the data from raw json
         dataClass: OutdoorData
         # rtl_433 device id
