@@ -2,6 +2,7 @@ version: 1.1.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
+  poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
   wait_sec: !ENV tag:yaml.org,2002:int ${WW_AQI_WAIT_SEC:5}
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}

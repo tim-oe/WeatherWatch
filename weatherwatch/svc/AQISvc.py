@@ -1,6 +1,10 @@
 import datetime
 import logging
+import time
+from typing import List
 
+from conf.AppConfig import AppConfig
+from conf.AQIConfig import AQIConfig
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.AQISensorRepository import AQISensorRepository
@@ -22,13 +26,15 @@ class AQISvc:
     def __init__(self):
 
         self._hm3301Reader: Hm3301Reader = Hm3301Reader()
+        self._config: AQIConfig = AppConfig().aqi
         self._repo: AQISensorRepository = AQISensorRepository()
 
     def process(self):
         logging.info("processing aqi")
+        start = datetime.datetime.now()
 
         try:
-            data: Hm3301Data = self._hm3301Reader.read()
+            data: Hm3301Data = self.read()
 
             ent: AQISensor = AQISensor()
 
@@ -43,6 +49,31 @@ class AQISvc:
             ent.read_time = datetime.datetime.now()
 
             self._repo.insert(ent)
-            logging.info("processing aqi complete")
+            logging.info("AQI processing complete  duration %s", self.duration(start))
         except Exception:
             logging.exception("failed to process aqi data")
+
+    def read(self) -> Hm3301Data:
+        """
+        getting intermintent bad data so
+        trying to kludge it by doing mutliple reads
+        and take the lowest values of each metric
+        """
+        list: List[Hm3301Data] = []
+
+        for x in range(self._config.poll):
+            list.append(self._hm3301Reader.read())
+            time.sleep(2)
+
+        d: Hm3301Data = list[0]
+        for x in range(1, 5):
+            d.lower(list[x])
+
+        return d
+
+    def duration(self, start: datetime) -> int:
+        """
+        calculate the execution duration from start to now
+        """
+        current = datetime.datetime.now()
+        return int((current - start).total_seconds())

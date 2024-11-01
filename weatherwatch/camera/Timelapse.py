@@ -1,3 +1,4 @@
+import datetime
 import logging
 from datetime import date, timedelta
 from pathlib import Path
@@ -33,6 +34,8 @@ class Timelapse:
         self._baseDir.mkdir(parents=True, exist_ok=True)
 
     def process(self, d: date = None, imgFolder: Path = None, vidFolder: Path = None) -> Path:
+        start = datetime.datetime.now()
+
         if d is None:
             d = date.today() - timedelta(days=1)
 
@@ -69,4 +72,13 @@ class Timelapse:
             video.release()
             cv2.destroyAllWindows()
 
+        logging.info("time lapse for %s complete  duration %s", stamp, self.duration(start))
+
         return vidFile
+
+    def duration(self, start: datetime) -> int:
+        """
+        calculate the execution duration from start to now
+        """
+        current = datetime.datetime.now()
+        return int((current - start).total_seconds())
