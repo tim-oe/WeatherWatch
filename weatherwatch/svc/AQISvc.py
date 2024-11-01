@@ -1,7 +1,6 @@
 import datetime
 import logging
 import time
-from typing import List
 
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
@@ -59,15 +58,14 @@ class AQISvc:
         trying to kludge it by doing mutliple reads
         and take the lowest values of each metric
         """
-        list: List[Hm3301Data] = []
+        d: Hm3301Data = self._hm3301Reader.read()
 
-        for x in range(self._config.poll):
-            list.append(self._hm3301Reader.read())
-            time.sleep(2)
-
-        d: Hm3301Data = list[0]
-        for x in range(1, 5):
-            d.lower(list[x])
+        if d.high():
+            for x in range(self._config.poll):
+                time.sleep(2)
+                d.lower(self._hm3301Reader.read())
+                if d.high() is False:
+                    break
 
         return d
 
