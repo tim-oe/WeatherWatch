@@ -2,6 +2,7 @@ version: 1.1.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
+  poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
   wait_sec: !ENV tag:yaml.org,2002:int ${WW_AQI_WAIT_SEC:5}
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
@@ -35,12 +36,16 @@ scheduler:
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
+    start: !ENV tag:yaml.org,2002:int ${WW_CAMERA_START:5}
+    stop: !ENV tag:yaml.org,2002:int ${WW_CAMERA_STOP:21}
   pimetrics:
     # sensystem metrics polling for looking for resource issues
     interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
   sensor:
     # sensor polling interval should not be < 5
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
+  timelapse:
+    hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:3}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
@@ -51,7 +56,7 @@ sdr:
       - name: outdoor
         # rtl_433 model (might not match actual sensor) 
         model: Cotech-367959 
-        id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:30}
+        id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:78}
         # class that will process the data from raw json
         dataClass: OutdoorData
         # rtl_433 device id
@@ -68,3 +73,9 @@ sdr:
         channel: 3 
         dataClass: IndoorData
         device: 20
+timelapse:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}
+  folder: !ENV ${WW_TIMELAPSE_FOLDER:vid}
+  extension: !ENV ${WW_CAM_TIMELAPSE_EXT:.mp4}
+  fps: !ENV tag:yaml.org,2002:int ${WW_CAM_TIMELAPSE_FPS:10}
+  codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:avc1}

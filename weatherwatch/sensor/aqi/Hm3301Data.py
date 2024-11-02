@@ -1,6 +1,9 @@
 __all__ = ["Hm3301Data"]
 
 
+from typing import Self
+
+
 class Hm3301Data:
     """
     base sensor data
@@ -22,6 +25,35 @@ class Hm3301Data:
     # override
     def __str__(self):
         return str(self.__dict__)
+
+    def high(self) -> bool:
+        ceiling: int = 1000
+        if self.pm_1_0_conctrt_std > ceiling:
+            return True
+        if self.pm_2_5_conctrt_std > ceiling:
+            return True
+        if self.pm_10_conctrt_std > ceiling:
+            return True
+        if self.pm_1_0_conctrt_atmosph > ceiling:
+            return True
+        if self.pm_2_5_conctrt_atmosph > ceiling:
+            return True
+        if self.pm_10_conctrt_atmosph > ceiling:
+            return True
+
+    def lower(self, that: Self):
+        if that.pm_1_0_conctrt_std < self.pm_1_0_conctrt_std:
+            self.pm_1_0_conctrt_std = that.pm_1_0_conctrt_std
+        if that.pm_2_5_conctrt_std < self.pm_2_5_conctrt_std:
+            self.pm_2_5_conctrt_std = that.pm_2_5_conctrt_std
+        if that.pm_10_conctrt_std < self.pm_10_conctrt_std:
+            self.pm_10_conctrt_std = that.pm_10_conctrt_std
+        if that.pm_1_0_conctrt_atmosph < self.pm_1_0_conctrt_atmosph:
+            self.pm_1_0_conctrt_atmosph = that.pm_1_0_conctrt_atmosph
+        if that.pm_2_5_conctrt_atmosph < self.pm_2_5_conctrt_atmosph:
+            self.pm_2_5_conctrt_atmosph = that.pm_2_5_conctrt_atmosph
+        if that.pm_10_conctrt_atmosph < self.pm_10_conctrt_atmosph:
+            self.pm_10_conctrt_atmosph = that.pm_10_conctrt_atmosph
 
     @property
     def pm_1_0_conctrt_std(self) -> int:

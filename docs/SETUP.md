@@ -7,13 +7,14 @@
     - for dev > Pi 3B+ (remote vscode)
     - testbed > Pi zero (sensor processing and camera)
     - [grove hat](https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi_Zero/)
-    - [poe+ hat](https://www.raspberrypi.com/products/poe-plus-hat/)
-
 
 ## Software requirements
 - [Raspberry PI OS Bookworm](https://www.raspberrypi.com/software/operating-systems/)
 - see ansible playbooks for additional external dependencies
 - python lib deps from [pyproject.toml](/pyproject.toml?raw=true)
+- [opencv-python with no binary dist](https://rockyshikoku.medium.com/use-h264-codec-with-cv2-videowriter-e00145ded181)
+    - peotry install can take a while
+    - [poetry no binary dist](https://python-poetry.org/blog/announcing-poetry-1.2.0/#opting-out-of-binary-distributions)
 
 ## setup steps
 - used [sdm](https://github.com/gitbls/sdm) for burning sd image
@@ -21,8 +22,6 @@
     - [sdr playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
     - [python deps playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
     
-
-
 ## project setup
 - project uses poetry for dependency managment
     - poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)

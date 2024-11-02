@@ -7,6 +7,10 @@ class SchedulerConfig:
     AQI_KEY = "aqi"
     PIMETRICS_KEY = "pimetrics"
     INTERVAL_KEY = "interval"
+    START_KEY = "start"
+    STOP_KEY = "stop"
+    TIMELAPSE_KEY = "timelapse"
+    HOUR_KEY = "hour"
 
     """
     scheduler config data
@@ -55,8 +59,35 @@ class SchedulerConfig:
     @property
     def cameraInterval(self) -> int:
         """
-        camera inerval property getter
+        camera interval property getter
         :param self: this
-        :return: the camera inerval
+        :return: the camera interval
         """
         return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.INTERVAL_KEY]
+
+    @property
+    def cameraStart(self) -> int:
+        """
+        camera start property getter
+        :param self: this
+        :return: the camera start
+        """
+        return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.START_KEY]
+
+    @property
+    def cameraStop(self) -> int:
+        """
+        camera stop property getter
+        :param self: this
+        :return: the camera stop
+        """
+        return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.STOP_KEY]
+
+    @property
+    def timelapseHour(self) -> int:
+        """
+        timelapse Hour property getter
+        :param self: this
+        :return: the timelapse Hour
+        """
+        return self.__dict__[SchedulerConfig.TIMELAPSE_KEY][SchedulerConfig.HOUR_KEY]

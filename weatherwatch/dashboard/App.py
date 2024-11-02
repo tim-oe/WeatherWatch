@@ -86,6 +86,7 @@ class App:
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
         self._app.server.route("/cam/<resource>")(self.serveCamImage)
+        self._app.server.route("/vid/<resource>")(self.serveCamVid)
         self._app.server.route("/static/img/<resource>")(self.serveResImage)
 
     def sidebar(self) -> html.Div:
@@ -157,6 +158,11 @@ class App:
     def serveCamImage(self, resource):
         currImage: Path = self._appConfig.camera.currentFile
         return flask.send_from_directory(currImage.parent.resolve(), resource)
+
+    def serveCamVid(self, resource):
+        folder: Path = self._appConfig.timelapse.folder
+        logging.debug(str(folder.resolve() / resource))
+        return flask.send_from_directory(folder.resolve(), resource)
 
     def serveResImage(self, resource):
         return flask.send_from_directory(self._staticFolder / "img", resource)

@@ -3,10 +3,10 @@ import io
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from camera.Camera import Camera
+from camera.Timelapse import Timelapse
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
-from sensor.aqi.Hm3301Reader import Hm3301Reader
 from svc.AQISvc import AQISvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
@@ -38,6 +38,14 @@ def camera():
     camera.process()
 
 
+def timelapse():
+    """
+    schedule entry point for timelapse task
+    """
+    timelapse = Timelapse()
+    timelapse.process()
+
+
 def pimetrics():
     """
     schedule entry point for pimetrics task
@@ -52,6 +60,7 @@ class SchedulerSvc:
     CAMERA_JOB = "camera"
     PI_METRICS_JOB = "pi_metrics"
     SENSOR_JOB = "sensor"
+    TIMELAPSE_JOB = "timelapse"
 
     """
     SchedulerSvc service
@@ -61,7 +70,8 @@ class SchedulerSvc:
 
     def __init__(self):
 
-        self._schedulerConfig: SchedulerConfig = AppConfig().scheduler
+        self._appConfig = AppConfig()
+        self._schedulerConfig: SchedulerConfig = self._appConfig.scheduler
 
         # in order to use this the task functions need to be static
         jobstores = {"default": SQLAlchemyJobStore(url=AppConfig().database.url)}
@@ -94,11 +104,12 @@ class SchedulerSvc:
             misfire_grace_time=60,
         )
 
-        if Camera().enable is True:
+        if self._appConfig.camera.enable is True:
             self._scheduler.add_job(
                 camera,
                 "cron",
                 minute=f"3-59/{self._schedulerConfig.cameraInterval}",
+                hour=f"{self._schedulerConfig.cameraStart}-{self._schedulerConfig.cameraStop}",
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
                 coalesce=True,
@@ -107,7 +118,21 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if Hm3301Reader().enable is True:
+        if self._appConfig.timelapse.enable is True:
+            self._scheduler.add_job(
+                timelapse,
+                "cron",
+                hour=self._schedulerConfig.timelapseHour,
+                minute="6",
+                name=SchedulerSvc.TIMELAPSE_JOB,
+                id=SchedulerSvc.TIMELAPSE_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60,
+            )
+
+        if self._appConfig.aqi.enable is True:
             self._scheduler.add_job(
                 aqi,
                 "cron",

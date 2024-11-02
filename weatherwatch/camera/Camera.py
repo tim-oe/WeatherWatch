@@ -45,15 +45,6 @@ class Camera:
     def __del__(self):
         self._picam2.close()
 
-    @property
-    def enable(self) -> bool:
-        """
-        enable property getter
-        :param self: this
-        :return: the enable
-        """
-        return self._cameraConfig.enable
-
     def process(self):
         if self._cameraConfig.enable is False:
             logging.debug("camera not enabled")

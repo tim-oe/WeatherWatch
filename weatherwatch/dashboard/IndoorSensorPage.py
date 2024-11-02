@@ -2,7 +2,8 @@ import dash_bootstrap_components as dbc
 from conf.SensorConfig import SensorConfig
 from dash import html
 from dashboard.BasePage import BasePage
-from dashboard.component.TempHumidityGauge import TempHumidityGauge
+from dashboard.component.HumidityGauge import HumidityGauge
+from dashboard.component.TempratureGauge import TempratureGauge
 from entity.IndoorSensor import IndoorSensor
 from repository.IndoorSensorRepository import IndoorSensorRepository
 
@@ -30,12 +31,28 @@ class IndoorSensorPage(BasePage):
         data: IndoorSensor = self._indoorRepo.findLatest(sensor.channel)
 
         return dbc.Container(
-            [
+            id="in-root-cont",
+            children=[
                 dbc.Row(
-                    align="stretch",
-                    children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}"))),
+                    children=dbc.Col(children=html.Center(html.H4(f" read time: {data.read_time.isoformat()}"))),
                 ),
-                dbc.Row(align="stretch", children=dbc.Col(html.Hr())),
-                dbc.Row(dbc.Col(TempHumidityGauge(data.temperature_f, data.humidity))),
-            ]
+                dbc.Row(children=dbc.Col(children=html.Hr())),
+                dbc.Row(
+                    children=[
+                        dbc.Col(
+                            id="in-t-col",
+                            children=TempratureGauge(
+                                label="temprature",
+                                min=-10,
+                                max=120,
+                                mid=75,
+                                high=90,
+                                value=round(data.temperature_f, 1),
+                                units="f",
+                            ),
+                        ),
+                        dbc.Col(id="in-h-col", children=HumidityGauge(data.humidity)),
+                    ]
+                ),
+            ],
         )

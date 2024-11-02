@@ -43,15 +43,6 @@ class Hm3301Reader:
 
         self._aqiConfig: AQIConfig = AppConfig().aqi
 
-    @property
-    def enable(self) -> bool:
-        """
-        enable property getter
-        :param self: this
-        :return: the enable
-        """
-        return self._aqiConfig.enable
-
     def read(self) -> Hm3301Data:
 
         data: Hm3301Data = None

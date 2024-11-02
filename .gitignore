@@ -168,5 +168,6 @@ raspi-blinka.py
 # test reports
 report.html
 
-# dev pictures folder
+# dev folders
 pix/
+vid/
