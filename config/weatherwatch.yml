@@ -36,6 +36,8 @@ scheduler:
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
+    start: !ENV tag:yaml.org,2002:int ${WW_CAMERA_START:5}
+    stop: !ENV tag:yaml.org,2002:int ${WW_CAMERA_STOP:21}
   pimetrics:
     # sensystem metrics polling for looking for resource issues
     interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}

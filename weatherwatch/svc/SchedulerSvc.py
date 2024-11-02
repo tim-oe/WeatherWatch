@@ -109,6 +109,7 @@ class SchedulerSvc:
                 camera,
                 "cron",
                 minute=f"3-59/{self._schedulerConfig.cameraInterval}",
+                hour=f"{self._schedulerConfig.cameraStart}-{self._schedulerConfig.cameraStop}",
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
                 coalesce=True,
