@@ -56,7 +56,12 @@ build-backend = "poetry.core.masonrypoetry config --list.api"
 # https://coverage.readthedocs.io/en/7.6.3/
 [tool.coverage.run]
 source = ["weatherwatch"]
-omit = ["/usr/**", "weatherwatch/dashboard/*"]
+omit = ["/usr/**", 
+"weatherwatch/sensor.py",
+"weatherwatch/dashboard.py", 
+"weatherwatch/dashboard/*", 
+"weatherwatch/sensor/gps/*"
+]
 
 [tool.coverage.html]
 directory = "coverage"
