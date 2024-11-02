@@ -25,7 +25,7 @@ class AQISensorRepository(BaseRepository[AQISensor]):
             session.close()
 
     def findPrevious(self, session: Session, id: int) -> AQISensor:
-        return session.query(AQISensor).filter(AQISensor.id < id).order_by(AQISensor.id.asc()).first()
+        return session.query(AQISensor).filter(AQISensor.id < id).order_by(AQISensor.id.desc()).first()
 
     def findNext(self, session: Session, id: int) -> AQISensor:
         return session.query(AQISensor).filter(AQISensor.id > id).order_by(AQISensor.id.asc()).first()
