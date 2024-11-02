@@ -24,6 +24,10 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         finally:
             session.close()
 
+    ##################################################################
+    # below functions are for data cleaup with funky sensor readings
+    # it's a lazy kludge
+    ##################################################################
     def findPrevious(self, session: Session, id: int) -> AQISensor:
         return session.query(AQISensor).filter(AQISensor.id < id).order_by(AQISensor.id.desc()).first()
 

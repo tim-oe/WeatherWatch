@@ -77,4 +77,8 @@ class AQISvc:
         return int((current - start).total_seconds())
 
     def cleanup(self):
+        """
+        kludge for funy data....
+        """
+        
         self._repo.clean()
