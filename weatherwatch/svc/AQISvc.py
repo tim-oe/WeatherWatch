@@ -75,3 +75,6 @@ class AQISvc:
         """
         current = datetime.datetime.now()
         return int((current - start).total_seconds())
+
+    def cleanup(self):
+        self._repo.clean()

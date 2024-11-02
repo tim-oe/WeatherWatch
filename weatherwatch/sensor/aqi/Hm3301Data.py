@@ -1,6 +1,9 @@
 __all__ = ["Hm3301Data"]
 
 
+from typing import Self
+
+
 class Hm3301Data:
     """
     base sensor data
@@ -38,7 +41,7 @@ class Hm3301Data:
         if self.pm_10_conctrt_atmosph > ceiling:
             return True
 
-    def lower(self, that):
+    def lower(self, that: Self):
         if that.pm_1_0_conctrt_std < self.pm_1_0_conctrt_std:
             self.pm_1_0_conctrt_std = that.pm_1_0_conctrt_std
         if that.pm_2_5_conctrt_std < self.pm_2_5_conctrt_std:
