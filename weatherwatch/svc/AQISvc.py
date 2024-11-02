@@ -80,5 +80,5 @@ class AQISvc:
         """
         kludge for funy data....
         """
-        
+
         self._repo.clean()
