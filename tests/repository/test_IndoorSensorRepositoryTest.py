@@ -51,3 +51,11 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
+
+    def testSample(self):
+        repo: BaseRepository = self.getRepo()
+        repo.exec(f'truncate {repo.entity.__table__}')
+        
+        repo.execFile("sql/sample/indoor_sensor.sql")
+        
+        repo.exec(f'truncate {repo.entity.__table__}')

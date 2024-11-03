@@ -7,3 +7,5 @@ class ScheduleSvcTest(unittest.TestCase):
     def test(self):
         svc: SchedulerSvc = SchedulerSvc()
         print(svc)
+        svc.start()
+        svc.pause()

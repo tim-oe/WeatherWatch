@@ -66,3 +66,11 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)
+
+    def testSample(self):
+        repo: BaseRepository = self.getRepo()
+        repo.exec(f'truncate {repo.entity.__table__}')
+        
+        repo.execFile("sql/sample/outdoor_sensor.sql")
+        
+        repo.exec(f'truncate {repo.entity.__table__}')
