@@ -1,3 +1,4 @@
+import re
 from typing import Generic, List, TypeVar
 
 from repository.DataStore import DataStore
@@ -73,5 +74,22 @@ class BaseRepository(Generic[T]):
         try:
             con.execute(text(sql))
             con.commit()
+        finally:
+            con.close()
+
+    def execFile(self, f: str):
+        """
+        crude sql script processor
+        doesn't handle comments
+        """
+        con: Connection = self._datastore.connection
+        try:
+            with open(f) as file:
+                statements = re.split(r";\s*$", file.read(), flags=re.MULTILINE)
+                for statement in statements:
+                    if statement:
+                        con.execute(text(statement.strip()))
+
+                con.commit()
         finally:
             con.close()
