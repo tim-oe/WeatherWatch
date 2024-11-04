@@ -9,6 +9,12 @@ __all__ = ["TimelapseSvc"]
 
 @singleton
 class TimelapseSvc:
+    """
+    currently encountering resource leak
+    memory is not always freeing after video creation
+    trying subprocess as restarting svc clears mem
+    """
+
     ON_POSIX = "posix" in sys.builtin_module_names
 
     CMD = [sys.executable, "weatherwatch/timelapse.py"]
