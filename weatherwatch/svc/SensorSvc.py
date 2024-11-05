@@ -1,6 +1,8 @@
 import decimal
 import logging
 
+from decimal import Decimal
+
 from entity.BaseSensor import BaseSensor
 from entity.IndoorSensor import IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
@@ -58,10 +60,11 @@ class SensorSvc:
 
     def handleOutdoor(self, data: OutdoorData):
         logging.debug("processing %s", OutdoorData.__name__)
-        logging.info("read %s", data)
+        logging.debug("read %s", data)
+        
         try:
             lastRead: OutdoorSensor = self._outdoorRepo.findLatest()
-            logging.info("last %s", lastRead)
+            logging.debug("last %s", lastRead)
 
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
@@ -71,14 +74,17 @@ class SensorSvc:
 
             ent.rain_cum_mm = data.rain_mm
 
-            delta: decimal.Decimal = 0.0
+            delta: Decimal = 0.0
+
+            logging.debug("data rain %s %s", type(data.rain_mm), data.rain_mm)
 
             if lastRead is not None:  # edge will happen with new DB
-                delta = decimal.Decimal(data.rain_mm) - lastRead.rain_cum_mm
+                logging.debug("last rain %s %s", type(lastRead.rain_cum_mm), lastRead.rain_cum_mm)
+                delta = Decimal(str(data.rain_mm)) - lastRead.rain_cum_mm
 
-            logging.info("calc delta %s", delta)
+            logging.debug("calc delta %s", delta)
 
-            if delta < 0.0:  # edge case sensor reset
+            if delta < Decimal(0.0):  # edge case sensor reset
                 ent.rain_delta_mm = data.rain_mm
             else:
                 ent.rain_delta_mm = delta
