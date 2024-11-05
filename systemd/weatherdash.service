@@ -24,6 +24,10 @@ Environment="WW_NO_CONSOLE=1"
 Environment="WW_DASH_DEBUG=false"
 # set logging level
 Environment="WW_LOG_LEVEL=INFO"
+# set system data dir for pix
+Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
+# set system data dir for timelapse vids
+Environment="WW_TIMELAPSE_FOLDER=/var/lib/weatherwatch/vid"
 # stop camera chatter
 # https://github.com/raspberrypi/libcamera?tab=readme-ov-file#basic-testing-with-cam-utility
 # https://github.com/raspberrypi/picamera2/issues/1131#issuecomment-2410391104
