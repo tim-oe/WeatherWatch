@@ -1,12 +1,15 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
+from typing import List
 
 import dash_bootstrap_components as dbc
+import dash_core_components as dcc
 import dash_daq as daq
 from dash import html
 from dashboard.BasePage import BasePage
 from dashboard.component.HumidityGauge import HumidityGauge
 from dashboard.component.TempratureGauge import TempratureGauge
+from dashboard.component.WindCompass import WindCompass
 from entity.OutdoorSensor import OutdoorSensor
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
@@ -72,6 +75,8 @@ class OutdoorSensorPage(BasePage):
                     ],
                 ),
                 dbc.Row(children=dbc.Col(html.Hr())),
+                dbc.Row(children=dbc.Col(html.Center(html.H2("Wind distribution for past 7 days")))),
+                dbc.Row(children=dbc.Col(self.windCompass())),
             ]
         )
 
@@ -93,3 +98,10 @@ class OutdoorSensorPage(BasePage):
             showCurrentValue=True,
             units="mm",
         )
+
+    def windCompass(self) -> WindCompass:
+        d = date.today() - timedelta(days=7)
+
+        data: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
+        
+        return WindCompass(data)

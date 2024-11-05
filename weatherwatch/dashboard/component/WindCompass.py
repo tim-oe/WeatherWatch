@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 from entity.OutdoorSensor import OutdoorSensor
 
 
-class PercentGauge(dbc.Container):
+class WindCompass(dbc.Container):
 
     def __init__(self, data: List[OutdoorSensor]):
         """
@@ -71,7 +71,7 @@ class PercentGauge(dbc.Container):
 
         fig.update_traces(text=["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"])
         fig.update_layout(
-            title="Wind Speed Distribution Past Week",
+            #title="Wind Speed Distribution Past Week",
             # font_size=16,
             legend_font_size=16,
             # polar_radialaxis_ticksuffix='%',
@@ -134,7 +134,7 @@ class PercentGauge(dbc.Container):
 
         return units
 
-    def returnCardinalBucket(windDirection):
+    def returnCardinalBucket(self,windDirection):
         if (windDirection >= 337.5) or (windDirection < 22.5):
             return 0
         if (windDirection >= 22.5) and (windDirection < 67.5):
