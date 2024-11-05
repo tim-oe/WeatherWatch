@@ -87,7 +87,7 @@ class OutdoorSensorPage(BasePage):
             max=25 * (factor + 1),
             min=0,
             width=100,
-            scale={"interval": 5 * factor, "labelInterval": 1 + factor},
+            scale={"interval": 5 * factor, "labelInterval": 1 + (factor - 1)},
             label="total rainfall",
             value=round(rain, 1),
             showCurrentValue=True,
