@@ -1,6 +1,6 @@
 import logging
 import sys
-from subprocess import Popen
+from subprocess import Popen, TimeoutExpired
 
 from py_singleton import singleton
 
@@ -22,10 +22,14 @@ class TimelapseSvc:
     def process(self):
         logging.info("starting timelapse subprocess")
 
-        p = Popen(
+        p: Popen = Popen(
             TimelapseSvc.CMD,
             close_fds=TimelapseSvc.ON_POSIX,
         )
 
-        p.wait()
-        logging.info("timelapse subprocess complete %s", p.returncode)
+        try:
+            p.wait(timeout=60 * 15)
+            logging.info("timelapse subprocess complete %s", p.returncode)
+        except TimeoutExpired:
+            logging.exception("processe timed out")
+            p.kill()
