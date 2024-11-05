@@ -78,9 +78,9 @@ class SensorSvc:
 
             logging.info("calc delta %s", delta)
 
-            if delta < 0.0: # edge case sensor reset
+            if delta < 0.0:  # edge case sensor reset
                 ent.rain_delta_mm = data.rain_mm
-            else: 
+            else:
                 ent.rain_delta_mm = delta
 
             logging.info("rain delta %s", ent.rain_delta_mm)

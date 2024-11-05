@@ -3,7 +3,6 @@ from decimal import Decimal
 from typing import List
 
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
 import dash_daq as daq
 from dash import html
 from dashboard.BasePage import BasePage
@@ -82,9 +81,7 @@ class OutdoorSensorPage(BasePage):
 
     def rainGuage(self, rain: Decimal) -> daq.Tank:
 
-        max: int = 25
-
-        factor: int = 1        
+        factor: int = 1
         if rain > 25:
             factor = int(rain // 25)
 
@@ -92,7 +89,7 @@ class OutdoorSensorPage(BasePage):
             max=25 * (factor + 1),
             min=0,
             width=100,
-            scale={"interval": 5 * factor, "labelInterval": 1 + (factor - 1)},
+            scale={"interval": 5 * factor, "labelInterval": factor},
             label="total rainfall",
             value=round(rain, 1),
             showCurrentValue=True,
@@ -103,5 +100,5 @@ class OutdoorSensorPage(BasePage):
         d = date.today() - timedelta(days=7)
 
         data: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
-        
+
         return WindCompass(data)

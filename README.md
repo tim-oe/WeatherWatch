@@ -42,10 +42,8 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 
 
 ## TODOs
-- document service setup
-- implement UI
-    - [i18n](https://github.com/marcanuy/python-i18n-skel)
-- time lapse video
+- document service setup and overall design
+- [i18n](https://github.com/marcanuy/python-i18n-skel)
 - image retension policy
 - extensible sensor configuration    
 - [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
