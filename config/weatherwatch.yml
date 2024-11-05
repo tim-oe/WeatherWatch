@@ -17,7 +17,7 @@ dashboard:
   host: !ENV ${WW_DASH_HOST:0.0.0.0}
   # listen port
   port: !ENV tag:yaml.org,2002:int ${WW_DASH_PORT:8000}
-  debug: !ENV tag:yaml.org,2002:bool ${WW_DASH_DEBUG:true}
+  debug: !ENV tag:yaml.org,2002:bool ${WW_DASH_DEBUG:false}
 database:
   dialect: !ENV ${WW_DB_DIALECT:mariadb}
   driver: !ENV ${WW_DB_DRIVER:mariadbconnector}

@@ -169,4 +169,4 @@ class App:
         return flask.send_from_directory(self._staticFolder / "img", resource)
 
     def run(self):
-        self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=True)
+        self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=self._dashConfig.debug)

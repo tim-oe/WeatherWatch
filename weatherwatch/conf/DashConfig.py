@@ -4,6 +4,7 @@ __all__ = ["DashConfig"]
 class DashConfig:
     HOST_KEY = "host"
     PORT_KEY = "port"
+    DEBUG_KEY = "debug"
     """
     dash app config data
     """
@@ -38,3 +39,12 @@ class DashConfig:
         :return: the port
         """
         return self.__dict__[DashConfig.PORT_KEY]
+
+    @property
+    def debug(self) -> bool:
+        """
+        debug property getter
+        :param self: this
+        :return: the debug
+        """
+        return self.__dict__[DashConfig.DEBUG_KEY]
