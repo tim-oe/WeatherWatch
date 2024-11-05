@@ -44,6 +44,10 @@ class CameraPage(BasePage):
                 dbc.Row(children=html.Img(src=f"/cam/{currImage.name}")),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(
+                    children=dbc.Col(children=html.Center(html.H1("Yesterday"))),
+                ),
+                dbc.Row(children=dbc.Col(children=html.Hr())),
+                dbc.Row(
                     children=dbc.Col(
                         children=dp.DashPlayer(
                             id="player",

@@ -156,8 +156,9 @@ class App:
         )
 
     def serveCamImage(self, resource):
-        currImage: Path = self._appConfig.camera.currentFile
-        return flask.send_from_directory(currImage.parent.resolve(), resource)
+        folder: Path = self._appConfig.camera.folder
+        logging.debug(str(folder.resolve() / resource))
+        return flask.send_from_directory(folder.resolve(), resource)
 
     def serveCamVid(self, resource):
         folder: Path = self._appConfig.timelapse.folder

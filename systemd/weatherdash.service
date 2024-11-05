@@ -30,7 +30,9 @@ Environment="WW_LOG_LEVEL=INFO"
 # https://stackoverflow.com/questions/73573891/hide-libcamera-info-in-python
 Environment="LIBCAMERA_LOG_LEVELS=*:WARN"
 # set system data dir for pix
-Environment="WW_CAM_FOLDER=/var/lib/weatherdash/pix"
+Environment="WW_CAM_FOLDER=/var/lib/weatherwatch/pix"
+# set system data dir for timelapse vids
+Environment="WW_TIMELAPSE_FOLDER=/var/lib/weatherwatch/vid"
 # TODO need to variablize path
 WorkingDirectory=/opt/WeatherWatch/
 ExecStart=/opt/WeatherWatch/.venv/bin/python3 /opt/WeatherWatch/weatherwatch/dashboard.py

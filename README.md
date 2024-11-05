@@ -1,6 +1,8 @@
 # WeatherWatch
 raspbery pi based weather data collector using OTC sensors.
 
+![weather station](docs/img/station_full.jpg?raw=true)
+
 
 ## Motivation
 this was spurred by my original [weather station](https://github.com/tim-oe/SkyWeather2) built using kit from [switchdoclabs](https://github.com/switchdoclabs/SDL_Pi_SkyWeather2). Unfortunately they are no longer producing for the consumer market. The head unit died and the software will not run on latest PI OS

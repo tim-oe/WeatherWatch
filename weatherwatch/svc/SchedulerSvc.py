@@ -3,13 +3,13 @@ import io
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from camera.Camera import Camera
-from camera.Timelapse import Timelapse
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
 from svc.AQISvc import AQISvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
+from svc.TimelapseSvc import TimelapseSvc
 
 __all__ = ["SchedulerSvc"]
 
@@ -42,8 +42,8 @@ def timelapse():
     """
     schedule entry point for timelapse task
     """
-    timelapse = Timelapse()
-    timelapse.process()
+    timelapseSvc = TimelapseSvc()
+    timelapseSvc.process()
 
 
 def pimetrics():

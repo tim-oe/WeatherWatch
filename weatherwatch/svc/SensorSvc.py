@@ -58,8 +58,10 @@ class SensorSvc:
 
     def handleOutdoor(self, data: OutdoorData):
         logging.debug("processing %s", OutdoorData.__name__)
+        logging.info("read %s", data)
         try:
             lastRead: OutdoorSensor = self._outdoorRepo.findLatest()
+            logging.info("last %s", lastRead)
 
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
@@ -69,15 +71,19 @@ class SensorSvc:
 
             ent.rain_cum_mm = data.rain_mm
 
-            delta = 0.0
+            delta: decimal.Decimal = 0.0
 
             if lastRead is not None:  # edge will happen with new DB
                 delta = decimal.Decimal(data.rain_mm) - lastRead.rain_cum_mm
 
-            if delta < 0:  # edge case sensor reset
+            logging.info("calc delta %s", delta)
+
+            if delta < 0.0: # edge case sensor reset
                 ent.rain_delta_mm = data.rain_mm
-            else:
+            else: 
                 ent.rain_delta_mm = delta
+
+            logging.info("rain delta %s", ent.rain_delta_mm)
 
             ent.wind_avg_m_s = data.wind_avg_m_s
             ent.wind_max_m_s = data.wind_max_m_s
