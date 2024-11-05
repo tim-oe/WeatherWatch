@@ -79,15 +79,15 @@ class OutdoorSensorPage(BasePage):
 
         max: int = 25
 
+        factor: int = 1        
         if rain > 25:
-            factor: int = int(rain // 25)
-            max = 25 * (factor + 1)
+            factor = int(rain // 25)
 
         return daq.Tank(
-            max=max,
+            max=25 * (factor + 1),
             min=0,
             width=100,
-            scale={"interval": 5, "labelInterval": 1},
+            scale={"interval": 5 * factor, "labelInterval": 1 + factor},
             label="total rainfall",
             value=round(rain, 1),
             showCurrentValue=True,
