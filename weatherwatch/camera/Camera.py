@@ -1,9 +1,6 @@
 import datetime
-import json
 import logging
-import shutil
 import time
-import piexif
 from pathlib import Path
 
 from conf.AppConfig import AppConfig
@@ -55,34 +52,7 @@ class Camera:
     def __del__(self):
         self._picam2.close()
 
-    def process(self):
-        if self._cameraConfig.enable is False:
-            logging.debug("camera not enabled")
-            return
-
-        try:
-            self._picam2.start_preview(Preview.NULL)
-
-            preview_config = self._picam2.create_preview_configuration()
-            self._picam2.configure(preview_config)
-            
-            self._picam2.start()
-            # TODO is this needed?
-            time.sleep(1)
-
-            imgFile: str = self.imageFile()
-            capture_config = self._picam2.create_still_configuration()
-            self._picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
-
-            # used for app view image
-            shutil.copy(imgFile, self._cameraConfig.currentFile)
-        except Exception:
-            logging.exception("failed to take pic...")
-        finally:
-            self._picam2.stop_preview()
-            self._picam2.stop()
-
-    def processNight(self, exposure: int):
+    def process(self, lux: int) -> str:
         if self._cameraConfig.enable is False:
             logging.debug("camera not enabled")
             return
@@ -93,8 +63,14 @@ class Camera:
             preview_config = self._picam2.create_preview_configuration()
             self._picam2.configure(preview_config)
 
-            self._picam2.set_controls({'ExposureTime': (exposure * Camera.MICRO_SENCOND), 'AnalogueGain': 4.0})
-            
+            if lux < self._cameraConfig.luxLimit:
+                self._picam2.set_controls(
+                    {
+                        "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SENCOND),
+                        "AnalogueGain": self._cameraConfig.analogueGain,
+                    }
+                )
+
             self._picam2.start()
             # TODO is this needed?
             time.sleep(1)
@@ -103,31 +79,12 @@ class Camera:
             capture_config = self._picam2.create_still_configuration()
             self._picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
 
-            # used for app view image
-            shutil.copy(imgFile, self._cameraConfig.currentFile)
-        except Exception:
-            logging.exception("failed to take pic...")
+            return imgFile
+        except Exception as e:
+            raise Exception("failed to take pic...") from e
         finally:
             self._picam2.stop_preview()
             self._picam2.stop()
-
-    def addCustomExif(self, image_path, metadata):
-        """
-        add custom exif metadata
-        https://github.com/raspberrypi/picamera2/issues/674
-        https://stackoverflow.com/questions/76421934/adding-gps-location-to-exif-using-python-slots-not-recognised-by-windows-10-n
-        """
-        # Load the Exif data
-        exif_dict = piexif.load(image_path)
-
-        # Add custom metadata to the Exif UserComment
-        exif_dict["Exif"][piexif.ExifIFD.UserComment] = json.dumps(metadata).encode('utf-8')
-
-        # Dump the modified Exif data
-        exif_bytes = piexif.dump(exif_dict)
-
-        # Save the image with the new Exif data
-        piexif.insert(exif_bytes, image_path)
 
     def imageFile(self) -> str:
         now = datetime.datetime.now()

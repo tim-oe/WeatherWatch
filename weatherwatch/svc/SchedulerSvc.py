@@ -2,11 +2,11 @@ import io
 
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
-from camera.Camera import Camera
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
 from svc.AQISvc import AQISvc
+from svc.CameraSvc import CameraSvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 from svc.TimelapseSvc import TimelapseSvc
@@ -34,7 +34,7 @@ def camera():
     """
     schedule entry point for camera task
     """
-    camera = Camera()
+    camera = CameraSvc()
     camera.process()
 
 
@@ -109,7 +109,6 @@ class SchedulerSvc:
                 camera,
                 "cron",
                 minute=f"3-59/{self._schedulerConfig.cameraInterval}",
-                hour=f"{self._schedulerConfig.cameraStart}-{self._schedulerConfig.cameraStop}",
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
                 coalesce=True,

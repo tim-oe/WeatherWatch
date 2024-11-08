@@ -15,7 +15,7 @@ class SensorSvcTest(unittest.TestCase):
         outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
 
         indoorRepo.exec('truncate ' + IndoorSensor.__tablename__)
-        indoorRepo.exec('truncate ' + OutdoorSensor.__tablename__)
+        outdoorRepo.exec('truncate ' + OutdoorSensor.__tablename__)
         
         svc.process()
         

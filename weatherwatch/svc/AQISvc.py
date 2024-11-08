@@ -16,9 +16,9 @@ __all__ = ["AQISvc"]
 @singleton
 class AQISvc:
     """
-    sensor service
+    aqi service
     this does the sensor processing
-    1) read data from sensors
+    1) reads aqi data
     2) write data to datastore
     """
 
@@ -76,9 +76,9 @@ class AQISvc:
         current = datetime.datetime.now()
         return int((current - start).total_seconds())
 
-    def cleanup(self):
-        """
-        kludge for funy data....
-        """
+    # def cleanup(self):
+    #     """
+    #     kludge for funy data....
+    #     """
 
-        self._repo.clean()
+    #     self._repo.clean()

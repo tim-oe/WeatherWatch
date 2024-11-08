@@ -1,6 +1,4 @@
-import decimal
 import logging
-
 from decimal import Decimal
 
 from entity.BaseSensor import BaseSensor
@@ -61,7 +59,7 @@ class SensorSvc:
     def handleOutdoor(self, data: OutdoorData):
         logging.debug("processing %s", OutdoorData.__name__)
         logging.debug("read %s", data)
-        
+
         try:
             lastRead: OutdoorSensor = self._outdoorRepo.findLatest()
             logging.debug("last %s", lastRead)
