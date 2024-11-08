@@ -24,7 +24,7 @@ class Camera:
     """  # noqa
 
     # second to micro second multiplier
-    MICRO_SENCOND: int = 1000000
+    MICRO_SECOND: int = 1000000
 
     def __init__(self):
         """
@@ -42,12 +42,6 @@ class Camera:
 
         self._baseDir.mkdir(parents=True, exist_ok=True)
 
-        tuning = None
-        if self._cameraConfig.tuningEnable is True:
-            tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
-
-        self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
-
     # override
     def __del__(self):
         self._picam2.close()
@@ -58,6 +52,12 @@ class Camera:
             return
 
         try:
+            tuning = None
+            if self._cameraConfig.tuningEnable is True:
+                tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
+
+            self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
+
             self._picam2.start_preview(Preview.NULL)
 
             preview_config = self._picam2.create_preview_configuration()
@@ -66,7 +66,7 @@ class Camera:
             if lux < self._cameraConfig.luxLimit:
                 self._picam2.set_controls(
                     {
-                        "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SENCOND),
+                        "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
                         "AnalogueGain": self._cameraConfig.analogueGain,
                     }
                 )
