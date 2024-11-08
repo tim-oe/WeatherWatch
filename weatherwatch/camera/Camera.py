@@ -42,10 +42,6 @@ class Camera:
 
         self._baseDir.mkdir(parents=True, exist_ok=True)
 
-    # override
-    def __del__(self):
-        self._picam2.close()
-
     def process(self, lux: int) -> str:
         if self._cameraConfig.enable is False:
             logging.debug("camera not enabled")
@@ -56,35 +52,39 @@ class Camera:
             if self._cameraConfig.tuningEnable is True:
                 tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
 
-            self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
+            picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
 
-            self._picam2.start_preview(Preview.NULL)
+            # TODO is this needed?
+            time.sleep(1)
 
-            preview_config = self._picam2.create_preview_configuration()
-            self._picam2.configure(preview_config)
+            picam2.start_preview(Preview.NULL)
+
+            preview_config = picam2.create_preview_configuration()
+            picam2.configure(preview_config)
 
             if lux < self._cameraConfig.luxLimit:
-                self._picam2.set_controls(
+                picam2.set_controls(
                     {
                         "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
                         "AnalogueGain": self._cameraConfig.analogueGain,
                     }
                 )
 
-            self._picam2.start()
+            picam2.start()
             # TODO is this needed?
             time.sleep(1)
 
             imgFile: str = self.imageFile()
-            capture_config = self._picam2.create_still_configuration()
-            self._picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
+            capture_config = picam2.create_still_configuration()
+            picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
 
             return imgFile
         except Exception as e:
             raise Exception("failed to take pic...") from e
         finally:
-            self._picam2.stop_preview()
-            self._picam2.stop()
+            picam2.stop_preview()
+            picam2.stop()
+            picam2.close()
 
     def imageFile(self) -> str:
         now = datetime.datetime.now()
