@@ -7,6 +7,7 @@ aqi:
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}
+  lux_limit: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:200}
   extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
   tuning:
     enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
@@ -36,8 +37,8 @@ scheduler:
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
-    start: !ENV tag:yaml.org,2002:int ${WW_CAMERA_START:5}
-    stop: !ENV tag:yaml.org,2002:int ${WW_CAMERA_STOP:21}
+    start: !ENV tag:yaml.org,2002:int ${WW_CAMERA_START:4}
+    stop: !ENV tag:yaml.org,2002:int ${WW_CAMERA_STOP:23}
   pimetrics:
     # sensystem metrics polling for looking for resource issues
     interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}

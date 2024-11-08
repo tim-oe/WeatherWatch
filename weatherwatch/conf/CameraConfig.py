@@ -6,6 +6,7 @@ __all__ = ["CameraConfig"]
 class CameraConfig:
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
+    LUX_LIMIT_KEY = "lux_limit"
     EXTENSION_KEY = "extension"
     TUNING_KEY = "tuning"
     TUNING_FILE_KEY = "file"
@@ -35,6 +36,15 @@ class CameraConfig:
         :return: the enable
         """
         return self.__dict__[CameraConfig.ENABLE_KEY]
+
+    @property
+    def luxLimit(self) -> int:
+        """
+        luxLimit property getter
+        :param self: this
+        :return: the luxLimit
+        """
+        return Path(self.__dict__[CameraConfig.LUX_LIMIT_KEY])
 
     @property
     def folder(self) -> Path:
