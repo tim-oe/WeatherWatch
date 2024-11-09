@@ -1,6 +1,8 @@
 from pathlib import Path
-import time
 import unittest
+
+import piexif
+import pprint
 
 from camera.Camera import Camera
 from weatherwatch.conf.AppConfig import AppConfig
@@ -17,24 +19,56 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.luxLimit + 1) 
+        c.process(cc.luxLimit - 1) 
         
         found: bool = False
-        
+        image_path: str
+                
         for file in cc.folder.glob(f"*{cc.extension}"):       
             found = True
-        
-        self.assertTrue(found)
+            image_path = str(Path(file.absolute()).resolve())
+    
+        self.assertTrue(found)        
 
+        print(f"img {image_path}")
+    
+        exif_dict = piexif.load(image_path)
+
+        pprint.pprint(exif_dict)
+
+        num, den = exif_dict["Exif"][piexif.ExifIFD.ExposureTime]
+        print(f"ExposureTime {num}/{den} {num/den} sec")
+        self.assertGreater(num, den)
+
+        iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
+        print(f"ISOSpeedRatings {iso}")
+        self.assertGreater(iso, 400)
+        
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.luxLimit - 1) 
+        c.process(cc.luxLimit + 1) 
         
-        found = False
-        
+        found: bool = False
+        image_path: str
+                
         for file in cc.folder.glob(f"*{cc.extension}"):       
             found = True
-        
-        self.assertTrue(found)
+            image_path = str(Path(file.absolute()).resolve())
+    
+        self.assertTrue(found)        
+
+        print(f"img {image_path}")
+    
+        exif_dict = piexif.load(image_path)
+
+        pprint.pprint(exif_dict)
+
+        num, den = exif_dict["Exif"][piexif.ExifIFD.ExposureTime]
+        print(f"ExposureTime {num}/{den} {num/den} sec")
+        self.assertLess(num, den)
+
+        iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
+        print(f"ISOSpeedRatings {iso}")
+        self.assertLess(iso, 1200)
 
