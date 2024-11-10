@@ -46,7 +46,7 @@ scheduler:
     # sensor polling interval should not be < 5
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
   timelapse:
-    hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:3}
+    hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:1}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read

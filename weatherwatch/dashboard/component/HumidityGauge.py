@@ -24,7 +24,7 @@ class HumidityGauge(html.Div):
                     max=100,
                     showCurrentValue=True,
                     units="%",
-                    className="dark-theme-control",
+                    #className="dark-theme-control",
                 )
             ]
         )

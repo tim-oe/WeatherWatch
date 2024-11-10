@@ -1,14 +1,16 @@
 from datetime import date, timedelta
-from decimal import Decimal
 from typing import List
 
 import dash_bootstrap_components as dbc
-import dash_daq as daq
 from dash import html
-from dashboard.BasePage import BasePage
+from dashboard.component.BarometricPressureGauge import BarometricPressureGauge
 from dashboard.component.HumidityGauge import HumidityGauge
+from dashboard.component.RainGauge import RainGauge
 from dashboard.component.TempratureGauge import TempratureGauge
+from dashboard.component.UVGauge import UVGauge
 from dashboard.component.WindCompass import WindCompass
+from dashboard.component.WindGauge import WindGauge
+from dashboard.page.BasePage import BasePage
 from entity.OutdoorSensor import OutdoorSensor
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
@@ -55,45 +57,24 @@ class OutdoorSensorPage(BasePage):
                             ),
                         ),
                         dbc.Col(id="out-h-col", children=HumidityGauge(data.humidity)),
-                        dbc.Col(
-                            id="out-p-col",
-                            children=daq.Tank(
-                                max=1050,
-                                min=950,
-                                width=100,
-                                label="air pressure",
-                                value=round(data.pressure, 1),
-                                showCurrentValue=True,
-                                units="hPa",
-                            ),
-                        ),
+                        dbc.Col(id="out-p-col", children=BarometricPressureGauge(data.pressure)),
                         dbc.Col(
                             id="out-r-col",
-                            children=self.rainGuage(rainFail),
+                            children=RainGauge(rainFail),
                         ),
                     ],
                 ),
                 dbc.Row(children=dbc.Col(html.Hr())),
+                dbc.Row(children=[
+                        dbc.Col(UVGauge(data.uv)),
+                        dbc.Col(WindGauge(data.wind_avg_m_s, "wind ave")),
+                        dbc.Col(WindGauge(data.wind_max_m_s, "wind gust"))
+                ]),
+
+                dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(children=dbc.Col(html.Center(html.H2("Wind distribution for past 7 days")))),
                 dbc.Row(children=dbc.Col(self.windCompass())),
             ]
-        )
-
-    def rainGuage(self, rain: Decimal) -> daq.Tank:
-
-        factor: int = 1
-        if rain > 25:
-            factor = int(rain // 25)
-
-        return daq.Tank(
-            max=25 * (factor + 1),
-            min=0,
-            width=100,
-            scale={"interval": 5 * factor, "labelInterval": factor},
-            label="total rainfall",
-            value=round(rain, 1),
-            showCurrentValue=True,
-            units="mm",
         )
 
     def windCompass(self) -> WindCompass:

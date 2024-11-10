@@ -13,7 +13,11 @@ class WindCompass(dbc.Container):
         ctor
         :param self: this
         :param data 7 days of outdoor data
+        https://plotly.com/python/graph-objects/
+        direct CCP from:
+        https://github.com/switchdoclabs/SDL_Pi_SkyWeather2/blob/master/dash_app/weather_page.py#L471        
         """
+        
         self._data = data
         fig = self.figCompassRose()
 

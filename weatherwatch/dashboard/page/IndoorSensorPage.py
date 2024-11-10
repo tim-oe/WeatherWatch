@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
 from conf.SensorConfig import SensorConfig
 from dash import html
-from dashboard.BasePage import BasePage
 from dashboard.component.HumidityGauge import HumidityGauge
 from dashboard.component.TempratureGauge import TempratureGauge
+from dashboard.page.BasePage import BasePage
 from entity.IndoorSensor import IndoorSensor
 from repository.IndoorSensorRepository import IndoorSensorRepository
 

@@ -6,7 +6,7 @@ import dash_player as dp
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from dash import html
-from dashboard.BasePage import BasePage
+from dashboard.page.BasePage import BasePage
 
 
 class CameraPage(BasePage):

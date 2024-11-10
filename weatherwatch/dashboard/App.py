@@ -9,10 +9,10 @@ from conf.AppConfig import AppConfig
 from conf.DashConfig import DashConfig
 from conf.SensorConfig import SensorConfig
 from dash import Dash, Input, Output, dcc, html
-from dashboard.CameraPage import CameraPage
-from dashboard.IndoorSensorPage import IndoorSensorPage
-from dashboard.OutdoorSensorPage import OutdoorSensorPage
-from dashboard.SystemPage import SystemPage
+from dashboard.page.CameraPage import CameraPage
+from dashboard.page.IndoorSensorPage import IndoorSensorPage
+from dashboard.page.OutdoorSensorPage import OutdoorSensorPage
+from dashboard.page.SystemPage import SystemPage
 from furl import furl
 from py_singleton import singleton
 

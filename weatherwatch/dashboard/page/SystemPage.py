@@ -1,8 +1,8 @@
 import dash_bootstrap_components as dbc
 from dash import html
-from dashboard.BasePage import BasePage
 from dashboard.component.SystemResourceGauge import SystemResourceGauge
 from dashboard.component.TempratureGauge import TempratureGauge
+from dashboard.page.BasePage import BasePage
 from entity.PIMetrics import PIMetrics
 from svc.PIMetricsSvc import PIMetricsSvc
 

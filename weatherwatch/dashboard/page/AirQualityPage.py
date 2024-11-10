@@ -1,9 +1,9 @@
 import dash_bootstrap_components as dbc
-from dashboard.BasePage import BasePage
+from dashboard.page.BasePage import BasePage
 from repository.AQISensorRepository import AQISensorRepository
 
 
-class AQISensorPage(BasePage):
+class AirQualityPage(BasePage):
     """
     AQI sensor page
     """  # noqa
