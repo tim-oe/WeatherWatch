@@ -1,10 +1,10 @@
 from decimal import Decimal
 
 import dash_daq as daq
-from dash import html
+import dash_bootstrap_components as dbc
 
 
-class WindGauge(html.Div):
+class WindGauge(dbc.Container):
     """
     wind guage class
     https://dash.plotly.com/dash-daq/tank

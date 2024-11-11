@@ -25,8 +25,8 @@ class App:
     https://dash.plotly.com/dash-html-components
     https://dash.plotly.com/dash-core-components
     https://dash.plotly.com/dash-daq
+    https://github.com/ucg8j/awesome-dash
     https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/page-2#sourceCode
-
     """  # noqa
 
     ROOT_PATH = "/"
@@ -73,10 +73,11 @@ class App:
 
         self._app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
-        content = html.Div([dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)])
+        content = html.Div([dcc.Location(id="url"), self.sidebar(), 
+                            html.Div(id="page-content", style=App.CONTENT_STYLE)])
 
         self._app.layout = html.Div(
-            id="dark-theme-components", children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)]
+            children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)]
         )
 
         self._staticFolder = Path(__file__).parent.parent.parent / "static"
@@ -169,4 +170,6 @@ class App:
         return flask.send_from_directory(self._staticFolder / "img", resource)
 
     def run(self):
-        self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=self._dashConfig.debug)
+        self._app.run(host=self._dashConfig.host, 
+                      port=self._dashConfig.port, 
+                      debug=self._dashConfig.debug)

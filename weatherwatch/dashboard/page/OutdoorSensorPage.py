@@ -3,6 +3,7 @@ from typing import List
 
 import dash_bootstrap_components as dbc
 from dash import html
+from dashboard.component.Graph import Graph
 from dashboard.component.BarometricPressureGauge import BarometricPressureGauge
 from dashboard.component.HumidityGauge import HumidityGauge
 from dashboard.component.RainGauge import RainGauge
@@ -36,7 +37,9 @@ class OutdoorSensorPage(BasePage):
 
         data: OutdoorSensor = self._outdoorRepo.findLatest()
         rainFail = self._outdoorRepo.getDaysRainfall(date.today())
-
+        d = date.today() - timedelta(days=7)
+        sevenDay: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
+        
         return dbc.Container(
             [
                 dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}")))),
@@ -72,14 +75,13 @@ class OutdoorSensorPage(BasePage):
                 ]),
 
                 dbc.Row(children=dbc.Col(html.Hr())),
-                dbc.Row(children=dbc.Col(html.Center(html.H2("Wind distribution for past 7 days")))),
-                dbc.Row(children=dbc.Col(self.windCompass())),
+                dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
+
+                dbc.Row(children=dbc.Col(WindCompass(sevenDay))),                
+                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=sevenDay))),
+                dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=sevenDay))),
+                dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=sevenDay))),
+                dbc.Row(children=dbc.Col(Graph("uv", "uv", "index", "uv", data=sevenDay))),
+                dbc.Row(children=dbc.Col(Graph("sunlight", "sunlight", "lux", "light_lux", data=sevenDay))),
             ]
         )
-
-    def windCompass(self) -> WindCompass:
-        d = date.today() - timedelta(days=7)
-
-        data: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
-
-        return WindCompass(data)

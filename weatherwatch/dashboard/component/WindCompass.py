@@ -1,7 +1,7 @@
 from typing import List
 
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+from dash import dcc
 import plotly.graph_objs as go
 from entity.OutdoorSensor import OutdoorSensor
 
@@ -21,7 +21,8 @@ class WindCompass(dbc.Container):
         self._data = data
         fig = self.figCompassRose()
 
-        super().__init__(fluid=True, children=[dcc.Graph(id={"type": "WPRdynamic", "index": "compassrose"}, figure=fig)])
+        # id={"type": "WPRdynamic", "index": "compassrose"}, 
+        super().__init__(fluid=True, children=[dcc.Graph(figure=fig)])
 
     def figCompassRose(self) -> go.Figure:
         """
@@ -31,10 +32,12 @@ class WindCompass(dbc.Container):
                 color_discrete_sequence= px.colors.sequential.Plasma_r)
         """
         df = self.processWindData()
-        # print("df =", df)
         fig = go.Figure()
         fig.add_trace(
-            go.Barpolar(r=df[5], name="> " + self.returnNumberConverted(11) + " " + self.WUnits(), marker_color="rgb(40,0,163)")
+            go.Barpolar(
+                r=df[5], 
+                name="> " + self.returnNumberConverted(11) + " " + self.WUnits(), 
+                marker_color="rgb(40,0,163)")
         )
         fig.add_trace(
             go.Barpolar(
@@ -75,17 +78,13 @@ class WindCompass(dbc.Container):
 
         fig.update_traces(text=["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"])
         fig.update_layout(
-            # title="Wind Speed Distribution Past Week",
-            # font_size=16,
+            title="Wind distribution",
             legend_font_size=16,
-            # polar_radialaxis_ticksuffix='%',
-            # polar_angularaxis_rotation=90,
             font=dict(size=16),
             polar=dict(
                 radialaxis=dict(ticksuffix="%", angle=45, tickfont=dict(size=12)),
                 angularaxis=dict(direction="clockwise", tickfont=dict(size=14)),
             ),
-            # color_discrete_sequence= go.colors.sequential.Plasma_r,
             template="plotly_dark",
         )
         return fig

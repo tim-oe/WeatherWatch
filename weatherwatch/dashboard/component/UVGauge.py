@@ -1,9 +1,9 @@
 from decimal import Decimal
 import dash_daq as daq
-from dash import html
+import dash_bootstrap_components as dbc
 
 
-class UVGauge(html.Div):
+class UVGauge(dbc.Container):
     """
     uv index guage class
     https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-(uv)-index

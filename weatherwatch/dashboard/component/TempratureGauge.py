@@ -1,8 +1,8 @@
 import dash_daq as daq
-from dash import html
+import dash_bootstrap_components as dbc
 
 
-class TempratureGauge(html.Div):
+class TempratureGauge(dbc.Container):
     """
     temprature based thermometer guage class
     https://dash.plotly.com/dash-daq/thermometer
