@@ -36,13 +36,16 @@ class OutdoorSensorPage(BasePage):
     def content(self, **kwargs) -> dbc.Container:
 
         data: OutdoorSensor = self._outdoorRepo.findLatest()
-        rainFail = self._outdoorRepo.getDaysRainfall(date.today())
+        currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
+       
+        #rainFail = self._outdoorRepo.getDaysRainfall(date.today())
+        rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
         d = date.today() - timedelta(days=7)
         sevenDay: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
         
         return dbc.Container(
             [
-                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {data.read_time.isoformat()}")))),
+                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {currDate}")))),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(
                     align="stretch",

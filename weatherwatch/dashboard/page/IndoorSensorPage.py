@@ -10,7 +10,7 @@ from repository.IndoorSensorRepository import IndoorSensorRepository
 
 class IndoorSensorPage(BasePage):
     """
-    system dash page
+    indoor sensor dash page
     """  # noqa
 
     PATH = "/IndoorData"
@@ -29,12 +29,13 @@ class IndoorSensorPage(BasePage):
         sensor: SensorConfig = self._appConfig.getSensor(kwargs["name"])
 
         data: IndoorSensor = self._indoorRepo.findLatest(sensor.channel)
+        currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         return dbc.Container(
             id="in-root-cont",
             children=[
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H4(f" read time: {data.read_time.isoformat()}"))),
+                    children=dbc.Col(children=html.Center(html.H4(f" read time: {currDate}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(

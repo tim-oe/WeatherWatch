@@ -58,6 +58,5 @@ class CameraPage(BasePage):
                         ),
                     )
                 ),
-                # dbc.Row(children=dbc.Col(children=html.Video(src=f"/vid/{stamp}{self._timelapseConfig.extension}",controls=True))),
             ]
         )
