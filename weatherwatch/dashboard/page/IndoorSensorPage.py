@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from typing import List
+
 import dash_bootstrap_components as dbc
 from conf.SensorConfig import SensorConfig
 from dash import html
@@ -33,12 +34,12 @@ class IndoorSensorPage(BasePage):
 
         data: IndoorSensor = self._indoorRepo.findLatest(sensor.channel)
         currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
-        
+
         d = date.today() - timedelta(days=7)
         sevenDay: List[IndoorSensor] = self._indoorRepo.findGreaterThanReadTime(sensor.channel, d)
 
         return dbc.Container(
-            id= f"in-root-cont-{sensor.channel}",
+            id=f"in-root-cont-{sensor.channel}",
             children=[
                 dbc.Row(
                     children=dbc.Col(children=html.Center(html.H4(f" read time: {currDate}"))),

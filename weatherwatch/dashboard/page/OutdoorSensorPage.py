@@ -40,8 +40,8 @@ class OutdoorSensorPage(BasePage):
 
         rainFail = self._outdoorRepo.getDaysRainfall(date.today())
         # for lazy testing...
-        #rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
-        
+        # rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
+
         d = date.today() - timedelta(days=7)
         sevenDay: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
 

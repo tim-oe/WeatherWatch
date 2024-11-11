@@ -19,23 +19,15 @@ class TempratureGauge(dbc.Container):
         elif value >= high:
             color = "red"
 
-        scale={'start': min, 'interval': 10,
-        'labelInterval': 2, 'custom': {}}
+        scale = {"start": min, "interval": 10, "labelInterval": 2, "custom": {}}
 
         # add current instead of bottom
-        scale['custom'][f"{round(value,1)}"] = f"<----{round(value,1)}"
-        
+        scale["custom"][f"{round(value,1)}"] = f"<----{round(value,1)}"
+
         super().__init__(
             [
                 daq.Thermometer(
-                    label=label,
-                    min=min,
-                    max=max,
-                    color=color,
-                    value=value,
-                    showCurrentValue=False,
-                    units=units,
-                    scale=scale
+                    label=label, min=min, max=max, color=color, value=value, showCurrentValue=False, units=units, scale=scale
                 )
             ]
         )
