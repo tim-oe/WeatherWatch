@@ -3,8 +3,8 @@ from typing import List
 
 import dash_bootstrap_components as dbc
 from dash import html
-from dashboard.component.Graph import Graph
 from dashboard.component.BarometricPressureGauge import BarometricPressureGauge
+from dashboard.component.Graph import Graph
 from dashboard.component.HumidityGauge import HumidityGauge
 from dashboard.component.RainGauge import RainGauge
 from dashboard.component.TempratureGauge import TempratureGauge
@@ -37,12 +37,12 @@ class OutdoorSensorPage(BasePage):
 
         data: OutdoorSensor = self._outdoorRepo.findLatest()
         currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
-       
-        #rainFail = self._outdoorRepo.getDaysRainfall(date.today())
+
+        # rainFail = self._outdoorRepo.getDaysRainfall(date.today())
         rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
         d = date.today() - timedelta(days=7)
         sevenDay: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
-        
+
         return dbc.Container(
             [
                 dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {currDate}")))),
@@ -71,16 +71,16 @@ class OutdoorSensorPage(BasePage):
                     ],
                 ),
                 dbc.Row(children=dbc.Col(html.Hr())),
-                dbc.Row(children=[
+                dbc.Row(
+                    children=[
                         dbc.Col(UVGauge(data.uv)),
                         dbc.Col(WindGauge(data.wind_avg_m_s, "wind ave")),
-                        dbc.Col(WindGauge(data.wind_max_m_s, "wind gust"))
-                ]),
-
+                        dbc.Col(WindGauge(data.wind_max_m_s, "wind gust")),
+                    ]
+                ),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
-
-                dbc.Row(children=dbc.Col(WindCompass(sevenDay))),                
+                dbc.Row(children=dbc.Col(WindCompass(sevenDay))),
                 dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=sevenDay))),
                 dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=sevenDay))),
                 dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=sevenDay))),

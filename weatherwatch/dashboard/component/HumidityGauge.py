@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-import dash_daq as daq
 import dash_bootstrap_components as dbc
+import dash_daq as daq
+
 
 class HumidityGauge(dbc.Container):
     """
@@ -23,7 +24,7 @@ class HumidityGauge(dbc.Container):
                     max=100,
                     showCurrentValue=True,
                     units="%",
-                    #className="dark-theme-control",
+                    # className="dark-theme-control",
                 )
             ]
         )

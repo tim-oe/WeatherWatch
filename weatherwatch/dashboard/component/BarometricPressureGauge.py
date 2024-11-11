@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-import dash_daq as daq
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 
 
 class BarometricPressureGauge(dbc.Container):

@@ -1,8 +1,8 @@
 from typing import List
 
 import dash_bootstrap_components as dbc
-from dash import dcc
 import plotly.graph_objs as go
+from dash import dcc
 from entity.OutdoorSensor import OutdoorSensor
 
 
@@ -15,13 +15,13 @@ class WindCompass(dbc.Container):
         :param data 7 days of outdoor data
         https://plotly.com/python/graph-objects/
         direct CCP from:
-        https://github.com/switchdoclabs/SDL_Pi_SkyWeather2/blob/master/dash_app/weather_page.py#L471        
+        https://github.com/switchdoclabs/SDL_Pi_SkyWeather2/blob/master/dash_app/weather_page.py#L471
         """
-        
+
         self._data = data
         fig = self.figCompassRose()
 
-        # id={"type": "WPRdynamic", "index": "compassrose"}, 
+        # id={"type": "WPRdynamic", "index": "compassrose"},
         super().__init__(fluid=True, children=[dcc.Graph(figure=fig)])
 
     def figCompassRose(self) -> go.Figure:
@@ -34,10 +34,7 @@ class WindCompass(dbc.Container):
         df = self.processWindData()
         fig = go.Figure()
         fig.add_trace(
-            go.Barpolar(
-                r=df[5], 
-                name="> " + self.returnNumberConverted(11) + " " + self.WUnits(), 
-                marker_color="rgb(40,0,163)")
+            go.Barpolar(r=df[5], name="> " + self.returnNumberConverted(11) + " " + self.WUnits(), marker_color="rgb(40,0,163)")
         )
         fig.add_trace(
             go.Barpolar(
