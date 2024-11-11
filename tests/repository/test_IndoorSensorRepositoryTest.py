@@ -1,6 +1,4 @@
-import unittest
-
-import datetime
+from datetime import date, datetime, timedelta
 
 import json
 
@@ -33,7 +31,7 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         ent.humidity = data.humidity
         ent.sensor_id = data.id
         ent.battery_ok = data.batteryOk
-        ent.read_time = datetime.datetime.now()
+        ent.read_time = datetime.now()
         ent.raw = j
 
         repo.insert(ent)
@@ -51,6 +49,13 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
+
+        d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+        l = repo.findGreaterThanReadTime(ent.channel, d)
+        self.assertIsNotNone(act)
+        self.assertTrue(len(l) > 0)
+
 
     def testSample(self):
         repo: BaseRepository = self.getRepo()

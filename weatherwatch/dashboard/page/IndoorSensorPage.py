@@ -1,6 +1,9 @@
+from datetime import date, timedelta
+from typing import List
 import dash_bootstrap_components as dbc
 from conf.SensorConfig import SensorConfig
 from dash import html
+from dashboard.component.Graph import Graph
 from dashboard.component.HumidityGauge import HumidityGauge
 from dashboard.component.TempratureGauge import TempratureGauge
 from dashboard.page.BasePage import BasePage
@@ -30,9 +33,12 @@ class IndoorSensorPage(BasePage):
 
         data: IndoorSensor = self._indoorRepo.findLatest(sensor.channel)
         currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
+        
+        d = date.today() - timedelta(days=7)
+        sevenDay: List[IndoorSensor] = self._indoorRepo.findGreaterThanReadTime(sensor.channel, d)
 
         return dbc.Container(
-            id="in-root-cont",
+            id= f"in-root-cont-{sensor.channel}",
             children=[
                 dbc.Row(
                     children=dbc.Col(children=html.Center(html.H4(f" read time: {currDate}"))),
@@ -55,5 +61,9 @@ class IndoorSensorPage(BasePage):
                         dbc.Col(id="in-h-col", children=HumidityGauge(data.humidity)),
                     ]
                 ),
+                dbc.Row(children=dbc.Col(html.Hr())),
+                dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
+                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=sevenDay))),
+                dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=sevenDay))),
             ],
         )
