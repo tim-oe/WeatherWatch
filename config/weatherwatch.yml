@@ -7,7 +7,7 @@ aqi:
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}
-  lux_limit: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:25}
+  lux_limit: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:5}
   exposure_time: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:5}
   analogue_gain: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:12}
   extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
