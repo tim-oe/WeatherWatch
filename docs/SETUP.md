@@ -1,22 +1,28 @@
 # System setup
 
-![PI setup](img/pi.jpg?raw=true)
-
-## hardware requirements (also see sensors in README)
-- Raspberry PI > 3
-    - for dev > Pi 3B+ (remote vscode)
-    - testbed > Pi zero (sensor processing and camera)
-    - [grove hat](https://wiki.seeedstudio.com/Grove_Base_Hat_for_Raspberry_Pi_Zero/)
+## PI requirements 
+- Pi 3B+ or higher
+    - remote development via vcode
+    - timelapse video processing
+- weather only might work with zero
+    - used to some stage teting
+    - no longevity testing done
 
 ## Software requirements
 - [Raspberry PI OS Bookworm](https://www.raspberrypi.com/software/operating-systems/)
-- see ansible playbooks for additional external dependencies
-- python lib deps from [pyproject.toml](/pyproject.toml?raw=true)
+- [rtl_433 for sensor data ](https://github.com/merbanan/rtl_433)
+- [application dependencies](/pyproject.toml?raw=true)
 - [opencv-python with no binary dist](https://rockyshikoku.medium.com/use-h264-codec-with-cv2-videowriter-e00145ded181)
-    - peotry install can take a while
-    - [poetry no binary dist](https://python-poetry.org/blog/announcing-poetry-1.2.0/#opting-out-of-binary-distributions)
+    - needed to get native h264 encoding
+    - install can take a while
+    - [instructions used](https://python-poetry.org/blog/announcing-poetry-1.2.0/#opting-out-of-binary-distributions)
 
-## setup steps
+## python sensor libs
+- [BMP 3xx](https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX)
+- [GPS](https://github.com/adafruit/Adafruit_CircuitPython_GPS)
+- [PiCamera2](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)
+
+## System initialization
 - used [sdm](https://github.com/gitbls/sdm) for burning sd image
 - used [ansible](https://docs.ansible.com/) to provision dependencies
     - [sdr playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
@@ -51,3 +57,13 @@
     - [pyway](https://github.com/jasondcamp/pyway?tab=readme-ov-file#configuration)
 - initialize db ```pyway migrate``` 
     
+## tests
+- all tests:   ```poetry run pytest```
+- single test: ```poetry run pytest -v -s <path/to/test/file.py>```
+
+## faq
+- [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
+- [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
+- [lint sample config](https://github.com/atlassian-api/atlassian-python-api/blob/master/pyproject.toml)
+- [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
+- [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
