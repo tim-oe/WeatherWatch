@@ -7,7 +7,9 @@
 """
 
 import datetime
+import json
 import logging
+import pprint
 import time
 
 import adafruit_gps
@@ -62,7 +64,8 @@ class GPSReader:
 
             time.sleep(0.5)
 
-            logging.debug("latitude %s longitude %s altitude %s", gps.latitude, gps.longitude, gps.altitude_m)
+            if logging.root.isEnabledFor(logging.DEBUG):
+                pprint.pprint(gps.__dict__)
 
             return GPSData(latitude=gps.latitude, longitude=gps.longitude, altitude=gps.altitude_m)
         finally:
