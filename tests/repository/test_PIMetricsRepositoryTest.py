@@ -7,8 +7,8 @@ import psutil
 
 from repository.BaseRepository import BaseRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from weatherwatch.repository.PIMetricsRepository import PIMetricsRepository
-from weatherwatch.entity.PIMetrics import PIMetrics
+from repository.PIMetricsRepository import PIMetricsRepository
+from entity.PIMetrics import PIMetrics
 
 
 class PIMetricsRepositoryTest(BaseRespositoryTest):

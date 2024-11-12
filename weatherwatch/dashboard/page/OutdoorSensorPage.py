@@ -47,7 +47,7 @@ class OutdoorSensorPage(BasePage):
 
         return dbc.Container(
             [
-                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f" read time: {currDate}")))),
+                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {currDate}")))),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(
                     align="stretch",

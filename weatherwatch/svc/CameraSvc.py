@@ -1,5 +1,3 @@
-import datetime
-import json
 import logging
 import shutil
 
@@ -7,8 +5,13 @@ import piexif
 from camera.Camera import Camera
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
+from conf.GPSConfig import GPSConfig
 from entity.OutdoorSensor import OutdoorSensor
+from gps.DMSCoordinate import DMSCoordinate
+from gps.GPSData import GPSData
+from gps.GPSReader import GPSReader
 from py_singleton import singleton
+from pytemp import pytemp
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
 __all__ = ["CameraSvc"]
@@ -24,9 +27,12 @@ class CameraSvc:
     3) copy to current
     """
 
+    GPS_ACCURACY = 10**6
+
     def __init__(self):
         self.camera: Camera = Camera()
-        self._config: CameraConfig = AppConfig().camera
+        self._cameraConfig: CameraConfig = AppConfig().camera
+        self._gpsConfig: GPSConfig = AppConfig().gps
         self._repo: OutdoorSensorRepository = OutdoorSensorRepository()
 
     def process(self):
@@ -36,22 +42,44 @@ class CameraSvc:
         try:
             imgFile: str = self.camera.process(data.light_lux)
 
-            shutil.copy(imgFile, self._config.currentFile)
+            self.addCustomExif(imgFile, data)
+
+            shutil.copy(imgFile, self._cameraConfig.currentFile)
 
         except Exception:
             logging.exception("failed to take picture")
 
-    def addCustomExif(self, image_path, metadata):
+    def addCustomExif(self, image_path, data: OutdoorSensor):
         """
         add custom exif metadata
-        https://github.com/raspberrypi/picamera2/issues/674
+        https://exiftool.org/TagNames/EXIF.html
+        https://exiftool.org/TagNames/GPS.html
         https://stackoverflow.com/questions/76421934/adding-gps-location-to-exif-using-python-slots-not-recognised-by-windows-10-n
         """
         # Load the Exif data
         exif_dict = piexif.load(image_path)
 
         # Add custom metadata to the Exif UserComment
-        exif_dict["Exif"][piexif.ExifIFD.UserComment] = json.dumps(metadata).encode("utf-8")
+        c = pytemp(float(data.temperature_f), "f", "c")
+
+        # TODO proper value?
+        # exif_dict["0th"][piexif.ImageIFD.DocumentName] = "local weather"
+
+        # daylight
+        exif_dict["Exif"][piexif.ExifIFD.LightSource] = 1
+        exif_dict["Exif"][piexif.ExifIFD.BrightnessValue] = (int(data.light_lux), 1)
+
+        exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._cameraConfig.lensMake
+        exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._cameraConfig.lensModel
+
+        # weather
+        exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
+        exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
+        exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
+
+        self.addGPSExif(exif_dict)
+
+        # exif_dict["Exif"][piexif.ExifIFD.UserComment] = json.dumps(metadata).encode("utf-8")
 
         # Dump the modified Exif data
         exif_bytes = piexif.dump(exif_dict)
@@ -59,10 +87,30 @@ class CameraSvc:
         # Save the image with the new Exif data
         piexif.insert(exif_bytes, image_path)
 
-    def imageFile(self) -> str:
-        now = datetime.datetime.now()
+    def addGPSExif(self, exif_dict):
+        if self._gpsConfig.enable is True:
+            gpsReader: GPSReader = GPSReader()
+            data: GPSData = gpsReader.read()
+            lat: DMSCoordinate = data.latitudeDMS
+            logging.debug(f"latitudeDMS {data.latitudeDMS}")
 
-        stamp = now.strftime("%Y-%m-%d-%H-%M-%S")
-        imageName = f"{stamp}{self._cameraConfig.extension}"
+            lon: DMSCoordinate = data.longitudeDMS
+            logging.debug(f"longitudeDMS {data.longitudeDMS}")
 
-        return str(self._baseDir / imageName)
+            logging.debug(f"altitude {data.altitude}")
+            exif_dict["GPS"][piexif.GPSIFD.GPSAltitude] = (int(data.altitude), 1)
+            # above see level
+            exif_dict["GPS"][piexif.GPSIFD.GPSAltitudeRef] = 0
+
+            exif_dict["GPS"][piexif.GPSIFD.GPSLatitude] = [
+                (int(lat.degrees), 1),
+                (int(lat.minutes), 1),
+                (int(lat.seconds * CameraSvc.GPS_ACCURACY), CameraSvc.GPS_ACCURACY),
+            ]
+            exif_dict["GPS"][piexif.GPSIFD.GPSLatitudeRef] = lat.ordinal.value
+            exif_dict["GPS"][piexif.GPSIFD.GPSLongitude] = [
+                (int(lon.degrees), 1),
+                (int(lon.minutes), 1),
+                (int(lon.seconds * CameraSvc.GPS_ACCURACY), CameraSvc.GPS_ACCURACY),
+            ]
+            exif_dict["GPS"][piexif.GPSIFD.GPSLongitudeRef] = lon.ordinal.value

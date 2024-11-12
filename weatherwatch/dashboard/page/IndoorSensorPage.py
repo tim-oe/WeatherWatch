@@ -42,7 +42,7 @@ class IndoorSensorPage(BasePage):
             id=f"in-root-cont-{sensor.channel}",
             children=[
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H4(f" read time: {currDate}"))),
+                    children=dbc.Col(children=html.Center(html.H4(f"time: {currDate}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(

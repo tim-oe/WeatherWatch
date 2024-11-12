@@ -165,9 +165,6 @@ cython_debug/
 # circuit pyton setup script
 raspi-blinka.py
 
-# test reports
-report.html
-
 # dev folders
 pix/
 vid/

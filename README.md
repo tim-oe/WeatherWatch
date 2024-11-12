@@ -56,3 +56,4 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
 - [lint sample config](https://github.com/atlassian-api/atlassian-python-api/blob/master/pyproject.toml)
+- [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)

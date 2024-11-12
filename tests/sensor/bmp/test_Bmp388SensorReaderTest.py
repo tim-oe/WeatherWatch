@@ -1,7 +1,7 @@
 import unittest
 
-from weatherwatch.sensor.bmp.BMPData import BMPData
-from weatherwatch.sensor.bmp.Bmp388SensorReader import Bmp388SensorReader
+from sensor.bmp.BMPData import BMPData
+from sensor.bmp.Bmp388SensorReader import Bmp388SensorReader
 
 class Bmp388SensorReaderTest(unittest.TestCase):
 

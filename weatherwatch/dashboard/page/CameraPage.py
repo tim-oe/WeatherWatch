@@ -1,8 +1,9 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import dash_bootstrap_components as dbc
 import dash_player as dp
+import piexif
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from dash import html
@@ -18,6 +19,9 @@ class CameraPage(BasePage):
 
     PATH = "/Camera"
 
+    # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+    DATE_FORMAT = "%Y:%m:%d %H:%M:%S"
+
     def __init__(self):
         """
         ctor
@@ -32,19 +36,26 @@ class CameraPage(BasePage):
 
         currImage: Path = self._cameraConfig.currentFile
 
+        exif_dict = piexif.load(str(currImage))
+
+        imgDate: datetime = datetime.strptime(
+            exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode(), CameraPage.DATE_FORMAT
+        )
+        currDate: str = imgDate.strftime("%Y-%m-%d %H-%M-%S")
+
         d = date.today() - timedelta(days=1)
         stamp = d.strftime("%Y-%m-%d")
 
         return dbc.Container(
             children=[
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H1("Current view"))),
+                    children=dbc.Col(children=html.Center(html.H1(f"time: {currDate}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(children=html.Img(src=f"/cam/{currImage.name}")),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H1("Yesterday"))),
+                    children=dbc.Col(children=html.Center(html.H1(stamp))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(

@@ -42,12 +42,9 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)
         
-    def testSample(self):
+    def test_sample(self):
         repo: BaseRepository = self.getRepo()
-        repo.exec(f'truncate {repo.entity.__table__}')
         
         repo.execFile("sql/sample/aqi_sensor.sql")
         
         repo.clean()
-        
-        repo.exec(f'truncate {repo.entity.__table__}')

@@ -4,20 +4,17 @@ import json
 
 from repository.BaseRepository import BaseRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from weatherwatch.repository.IndoorSensorRepository import IndoorSensorRepository
-from weatherwatch.entity.IndoorSensor import IndoorSensor
-from weatherwatch.sensor.sdr.IndoorData import IndoorData
+from repository.IndoorSensorRepository import IndoorSensorRepository
+from entity.IndoorSensor import IndoorSensor
+from sensor.sdr.IndoorData import IndoorData
 
 class IndoorSensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:
         return IndoorSensorRepository()
 
-    def test(self):
-        
+    def test(self):        
         repo: IndoorSensorRepository = self.getRepo()
-
-        repo.exec('truncate ' + IndoorSensor.__tablename__)
 
         with open("tests/data/indoor.json", "r") as file:
             j = json.load(file)
@@ -57,10 +54,7 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertTrue(len(l) > 0)
 
 
-    def testSample(self):
+    def test_sample(self):
         repo: BaseRepository = self.getRepo()
-        repo.exec(f'truncate {repo.entity.__table__}')
         
         repo.execFile("sql/sample/indoor_sensor.sql")
-        
-        repo.exec(f'truncate {repo.entity.__table__}')

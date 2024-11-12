@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 
 from camera.Timelapse import Timelapse
-from weatherwatch.conf.AppConfig import AppConfig
+from conf.AppConfig import AppConfig
 
 class CameraTest(unittest.TestCase):
 
@@ -16,6 +16,13 @@ class CameraTest(unittest.TestCase):
         
         self.assertIsNotNone(vid)
         print(vid)        
+
+    def testDefault(self):        
+        tl: Timelapse = Timelapse()
+
+        vid: Path = tl.process()
+        
+        self.assertIsNone(vid)
 
     # def test2(self):
         

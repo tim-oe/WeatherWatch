@@ -3,8 +3,8 @@ import unittest
 
 from repository.BaseRepository import BaseRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from weatherwatch.entity.SDRMetricts import SDRMetrics
-from weatherwatch.repository.SDRMetricsRepository import SDRMetricsRepository
+from entity.SDRMetricts import SDRMetrics
+from repository.SDRMetricsRepository import SDRMetricsRepository
 
 class SDRMetrictsRepositoryTest(BaseRespositoryTest):
 

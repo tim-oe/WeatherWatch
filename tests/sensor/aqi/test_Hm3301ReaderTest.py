@@ -1,7 +1,7 @@
 import unittest
 
-from weatherwatch.sensor.aqi.Hm3301Data import Hm3301Data
-from weatherwatch.sensor.aqi.Hm3301Reader import Hm3301Reader
+from sensor.aqi.Hm3301Data import Hm3301Data
+from sensor.aqi.Hm3301Reader import Hm3301Reader
 
 class Hm3301ReaderTest(unittest.TestCase):
     def test(self):
@@ -18,7 +18,7 @@ class Hm3301ReaderTest(unittest.TestCase):
         self.assertTrue(data.pm_2_5_conctrt_atmosph > 0)
         self.assertTrue(data.pm_10_conctrt_atmosph > 0)
 
-    def lower(self):
+    def testLower(self):
         d1: Hm3301Data = Hm3301Data()
         d1.pm_1_0_conctrt_std = 2
         d1.pm_2_5_conctrt_std = 3

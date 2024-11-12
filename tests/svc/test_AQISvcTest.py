@@ -6,17 +6,22 @@ from repository.AQISensorRepository import AQISensorRepository
 from svc.AQISvc import AQISvc
 
 class AQISvcTest(unittest.TestCase):
-    def test(self):
-        svc: AQISvc = AQISvc()
-        repo: AQISensorRepository = AQISensorRepository()
+    def setup_method(self, test_method):
+        self.svc: AQISvc = AQISvc()
+        self.repo: AQISensorRepository = AQISensorRepository()
 
-        repo.exec('truncate ' + AQISensor.__tablename__)
+        self.repo.exec('truncate ' + AQISensor.__tablename__)
+
+    def teardown_classsvc(self):
+        AQISensorRepository().exec('truncate ' + AQISensor.__tablename__)
+    
+    def test(self):
         
         for x in range(5):
-            svc.process()
-            time.sleep(1)
+            self.svc.process()
+            time.sleep(.5)
             
-        act = repo.findLatest()
+        act = self.repo.findLatest()
         self.assertIsNotNone(act)        
         
     # def test(self):

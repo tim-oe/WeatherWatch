@@ -14,24 +14,8 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
     def getRepo(self) -> BaseRepository:
         ...
         
-    @classmethod
-    def setup_class(self): 
-        # TODO need to get transactions working...
-        # self.rds: DataStore = self.getRepo(self)._datastore
-        # self.connection = self.rds.connection
-        # self.trans = self.connection.begin()
-        # self.session = Session(bind=self.connection)
-
-        # repo: BaseRepository = self.getRepo(self)
-
-        # repo._datastore = Mock()
-        # repo._datastore.session = self.session
-        # repo._datastore.connection = self.connection
-
-        # self.patcher1 = patch("repository.DataStore", repo._datastore)
-        # self.patcher1.start()
-
-        repo: BaseRepository = self.getRepo(self)
+    def setup_method(self, test_method):
+        repo: BaseRepository = self.getRepo()
         repo.exec(f'truncate {repo.entity.__table__}')
 
     @classmethod

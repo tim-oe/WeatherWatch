@@ -78,12 +78,12 @@ class SensorSvc:
 
             if lastRead is not None:  # edge will happen with new DB
                 logging.debug("last rain %s %s", type(lastRead.rain_cum_mm), lastRead.rain_cum_mm)
-                delta = Decimal(str(data.rain_mm)) - lastRead.rain_cum_mm
+                delta = round(Decimal(str(data.rain_mm)) - lastRead.rain_cum_mm, 2)
 
             logging.debug("calc delta %s", delta)
 
             if delta < Decimal(0.0):  # edge case sensor reset
-                ent.rain_delta_mm = data.rain_mm
+                ent.rain_delta_mm = round(data.rain_mm, 2)
             else:
                 ent.rain_delta_mm = delta
 

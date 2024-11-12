@@ -5,8 +5,8 @@ import piexif
 import pprint
 
 from camera.Camera import Camera
-from weatherwatch.conf.AppConfig import AppConfig
-from weatherwatch.conf.CameraConfig import CameraConfig
+from conf.AppConfig import AppConfig
+from conf.CameraConfig import CameraConfig
 
 class CameraTest(unittest.TestCase):
 

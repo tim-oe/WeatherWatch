@@ -14,6 +14,9 @@ camera:
   tuning:
     enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
     file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
+  lens:
+    make: !ENV ${WW_CAM_LENS_MAKE:Arducam}
+    model: !ENV ${WW_CAM_LENS_MODEL:120 Degree Wide Angle M12}
 # dashboard app
 dashboard:
   # listen host
@@ -32,6 +35,11 @@ database:
   pool:
     size: 3
     overflow: 3
+gps:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
+  serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
+  baud_rate: !ENV tag:yaml.org,2002:int ${WW_GPS_SER_BAUD:9600}
+  init_timeout: !ENV tag:yaml.org,2002:int ${WW_GPS_INIT_TIMEOUT:240}
 scheduler:
   aqi:
     # air quality sensor interval

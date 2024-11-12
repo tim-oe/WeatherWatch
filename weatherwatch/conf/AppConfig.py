@@ -7,6 +7,7 @@ from conf.AQIConfig import AQIConfig
 from conf.CameraConfig import CameraConfig
 from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
+from conf.GPSConfig import GPSConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
 from conf.TimelapseConfig import TimelapseConfig
@@ -25,6 +26,7 @@ class AppConfig:
     ENVAR_NO_CONSOLE = "WW_NO_CONSOLE"
 
     SDR_KEY = "sdr"
+    GPS_KEY = "gps"
     AQI_KEY = "aqi"
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
@@ -66,6 +68,9 @@ class AppConfig:
 
         self._aqi = AQIConfig(self._conf[AppConfig.AQI_KEY])
         logging.info("loaded %s config", AppConfig.AQI_KEY)
+
+        self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
+        logging.info("loaded %s config", AppConfig.GPS_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
         logging.info("loaded %s config", AppConfig.DATABASE_KEY)
@@ -144,6 +149,15 @@ class AppConfig:
         :return: the aqi
         """
         return self._aqi
+
+    @property
+    def gps(self) -> AQIConfig:
+        """
+        gps property getter
+        :param self: this
+        :return: the gps
+        """
+        return self._gps
 
     @property
     def database(self) -> DatabaseConfig:

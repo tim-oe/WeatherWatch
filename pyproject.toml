@@ -51,8 +51,13 @@ pyway = "^0.3.30"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonrypoetry config --list.api"
 
-#[pytest]
-#generate_report_on_test = True
+[tool.pytest.ini_options]
+# https://betterstack.com/community/questions/how-to-solve-the-modulenotfounderror-with-pytest/ 
+pythonpath = "weatherwatch"
+addopts = [
+    "--import-mode=importlib",
+    "--html=reports/test.html"
+]
 
 # https://coverage.readthedocs.io/en/7.6.3/
 [tool.coverage.run]
@@ -60,12 +65,12 @@ source = ["weatherwatch"]
 omit = ["/usr/**", 
 "weatherwatch/sensor.py",
 "weatherwatch/dashboard.py", 
-"weatherwatch/dashboard/*", 
-"weatherwatch/sensor/gps/*"
+"weatherwatch/timelapse.py", 
+"weatherwatch/dashboard/*"
 ]
 
 [tool.coverage.html]
-directory = "coverage"
+directory = "reports/coverage"
 
 [tool.black]
 line-length = 128

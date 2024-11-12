@@ -1,6 +1,6 @@
 import unittest
 
-from weatherwatch.svc.PIMetricsSvc import PIMetricsSvc
+from svc.PIMetricsSvc import PIMetricsSvc
 
 
 class ScheduleSvcTest(unittest.TestCase):

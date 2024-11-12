@@ -12,6 +12,9 @@ class CameraConfig:
     EXTENSION_KEY = "extension"
     TUNING_KEY = "tuning"
     TUNING_FILE_KEY = "file"
+    LENS_KEY = "lens"
+    MAKE_KEY = "make"
+    MODEL_KEY = "model"
 
     """
     camera config data
@@ -110,3 +113,21 @@ class CameraConfig:
         :return: the tuningFile
         """
         return self.__dict__[CameraConfig.TUNING_KEY][CameraConfig.TUNING_FILE_KEY]
+
+    @property
+    def lensMake(self) -> str:
+        """
+        lensMake property getter
+        :param self: this
+        :return: the lensMake
+        """
+        return self.__dict__[CameraConfig.LENS_KEY][CameraConfig.MAKE_KEY]
+
+    @property
+    def lensModel(self) -> str:
+        """
+        lensModel property getter
+        :param self: this
+        :return: the lensModel
+        """
+        return self.__dict__[CameraConfig.LENS_KEY][CameraConfig.MODEL_KEY]

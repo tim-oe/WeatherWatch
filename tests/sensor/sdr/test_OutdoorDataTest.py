@@ -1,7 +1,8 @@
+from datetime import datetime
 import json
 
-from weatherwatch.sensor.sdr.IndoorData import IndoorData
-from weatherwatch.sensor.sdr.OutdoorData import OutdoorData
+from sensor.sdr.IndoorData import IndoorData
+from sensor.sdr.OutdoorData import OutdoorData
 from tests.sensor.sdr.BaseTestData import BaseTestData
 
 class OutdoorDataTest(BaseTestData):
@@ -22,3 +23,16 @@ class OutdoorDataTest(BaseTestData):
         self.assertEqual(expected[OutdoorData.WIND_DIR_KEY], record.wind_dir_deg)
         self.assertEqual(expected[OutdoorData.LUX_KEY], record.light_lux)
         self.assertEqual(expected[OutdoorData.UV_KEY], record.uv)
+
+    @staticmethod
+    def getSample() -> OutdoorData:
+        with open("tests/data/outdoor.json", "r") as file:
+            j = json.load(file)
+
+        with open("tests/data/outdoor.json", "r") as file:
+            data: OutdoorData = json.load(file, object_hook=OutdoorData.jsonDecoder)
+            
+        data.timeStamp = datetime.now()
+        data.raw = j
+        
+        return data
