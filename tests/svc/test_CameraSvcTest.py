@@ -61,8 +61,8 @@ class SensorSvcTest(unittest.TestCase):
         self.assertTrue(piexif.ExifIFD.Pressure in exif_dict["Exif"])
 
         # GPS
-        #num, den = exif_dict['GPS'][piexif.GPSIFD.GPSAltitude]
-        #self.assertGreater(num, den)
+        num, den = exif_dict['GPS'][piexif.GPSIFD.GPSAltitude]
+        self.assertGreater(num, den)
 
         self.assertTrue(piexif.GPSIFD.GPSLatitude in exif_dict["GPS"])
         self.assertTrue(piexif.GPSIFD.GPSLongitude in exif_dict["GPS"])
