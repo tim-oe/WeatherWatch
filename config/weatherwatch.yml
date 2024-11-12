@@ -1,4 +1,4 @@
-version: 1.1.0
+version: 1.0.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
@@ -8,8 +8,8 @@ camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}
   lux_limit: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:5}
-  exposure_time: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:5}
-  analogue_gain: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:12}
+  exposure_time: !ENV tag:yaml.org,2002:int ${WW_CAM_EXP_TIME:5}
+  analogue_gain: !ENV tag:yaml.org,2002:int ${WW_CAM_ISO_GAIN:12}
   extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
   tuning:
     enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
@@ -39,7 +39,7 @@ gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
   serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
   baud_rate: !ENV tag:yaml.org,2002:int ${WW_GPS_SER_BAUD:9600}
-  init_timeout: !ENV tag:yaml.org,2002:int ${WW_GPS_INIT_TIMEOUT:240}
+  init_timeout: !ENV tag:yaml.org,2002:int ${WW_GPS_INIT_TIMEOUT:30}
 scheduler:
   aqi:
     # air quality sensor interval

@@ -6,7 +6,8 @@ CREATE TABLE `outdoor_sensor` (
     `temperature_f` DECIMAL(5,2) NOT NULL,
     `humidity` TINYINT UNSIGNED NOT NULL,
     `pressure` DECIMAL(6,2) NOT NULL,
-    `rain_mm` DECIMAL(7,2) NOT NULL,
+    `rain_cum_mm` DECIMAL(7,2) NOT NULL comment 'cumulative rain in mm since last reset',
+    `rain_delta_mm` DECIMAL(7,2) NOT NULL comment 'rain in mm since the last sensor read',
     `wind_avg_m_s` DECIMAL(5,2) NOT NULL,
     `wind_max_m_s` DECIMAL(5,2) NOT NULL,
     `wind_dir_deg` SMALLINT UNSIGNED NOT NULL,
@@ -32,6 +33,11 @@ CREATE TABLE `outdoor_sensor` (
     PARTITION p2034 VALUES LESS THAN (UNIX_TIMESTAMP('2035-01-01')),
     PARTITION future VALUES LESS THAN MAXVALUE
   );
+
+-- rain delta fix up.
+-- update outdoor_sensor curr
+-- inner join outdoor_sensor prev on (curr.id-1) = prev.id
+-- set curr.rain_delta_mm = if (curr.rain_cum_mm - prev.rain_cum_mm >= 0, curr.rain_cum_mm - prev.rain_cum_mm,  curr.rain_cum_mm)  
 
 CREATE TABLE `indoor_sensor` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -101,6 +107,33 @@ CREATE TABLE `pi_metrics` (
 	  PRIMARY KEY (`id`, `read_time`),
 	  UNIQUE KEY pi_unique_sensor (read_time)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4
+  PARTITION BY RANGE( UNIX_TIMESTAMP(read_time) ) (
+    PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),
+    PARTITION p2025 VALUES LESS THAN (UNIX_TIMESTAMP('2026-01-01')),
+    PARTITION p2026 VALUES LESS THAN (UNIX_TIMESTAMP('2027-01-01')),
+    PARTITION p2027 VALUES LESS THAN (UNIX_TIMESTAMP('2028-01-01')),
+    PARTITION p2028 VALUES LESS THAN (UNIX_TIMESTAMP('2029-01-01')),
+    PARTITION p2029 VALUES LESS THAN (UNIX_TIMESTAMP('2030-01-01')),
+    PARTITION p2030 VALUES LESS THAN (UNIX_TIMESTAMP('2031-01-01')),
+    PARTITION p2031 VALUES LESS THAN (UNIX_TIMESTAMP('2032-01-01')),
+    PARTITION p2032 VALUES LESS THAN (UNIX_TIMESTAMP('2033-01-01')),
+    PARTITION p2033 VALUES LESS THAN (UNIX_TIMESTAMP('2034-01-01')),
+    PARTITION p2034 VALUES LESS THAN (UNIX_TIMESTAMP('2035-01-01')),
+    PARTITION future VALUES LESS THAN MAXVALUE
+  );
+
+CREATE TABLE `aqi_sensor` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `read_time` timestamp NOT NULL,
+    `pm_1_0_conctrt_std` INT UNSIGNED NOT NULL,
+    `pm_2_5_conctrt_std` INT UNSIGNED NOT NULL,
+    `pm_10_conctrt_std` INT UNSIGNED NOT NULL,
+    `pm_1_0_conctrt_atmosph` INT UNSIGNED NOT NULL,
+    `pm_2_5_conctrt_atmosph` INT UNSIGNED NOT NULL,
+    `pm_10_conctrt_atmosph` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`, `read_time`),
+	  UNIQUE KEY out_unique_sensor (read_time)
+  )  ENGINE=INNODB DEFAULT CHARSET=utf8mb4
   PARTITION BY RANGE( UNIX_TIMESTAMP(read_time) ) (
     PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),
     PARTITION p2025 VALUES LESS THAN (UNIX_TIMESTAMP('2026-01-01')),
