@@ -64,6 +64,27 @@ files = [
 Adafruit-Blinka = "*"
 
 [[package]]
+name = "adafruit-circuitpython-gps"
+version = "3.11.0"
+description = "CircuitPython library for GPS modules."
+optional = false
+python-versions = "*"
+files = [
+    {file = "adafruit_circuitpython_gps-3.11.0-py3-none-any.whl", hash = "sha256:88e69d5f6a4d83544a5f3b89d33f6fcd4b7ba34b6ec9e602f363d0412f3803f9"},
+    {file = "adafruit_circuitpython_gps-3.11.0.tar.gz", hash = "sha256:305b2f456888fb82d458acaf9795178db7494e47c892a047fc2499f233c627e4"},
+]
+
+[package.dependencies]
+Adafruit-Blinka = "*"
+adafruit-circuitpython-busdevice = "*"
+adafruit-circuitpython-typing = "*"
+pyserial = "*"
+typing-extensions = ">=4.0,<5.0"
+
+[package.extras]
+optional = ["adafruit-circuitpython-sd", "covdefaults", "coverage", "freezegun", "pytest"]
+
+[[package]]
 name = "adafruit-circuitpython-requests"
 version = "4.1.8"
 description = "A requests-like library for web interfacing"
@@ -2393,4 +2414,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "83cfda757caf52b799cb9c0da983d1f9800411eff5369fd77714b57f78127aec"
+content-hash = "1a9593576b6065b499fdc5067c85edfb5db6c9a17230335f4234d5982c458943"

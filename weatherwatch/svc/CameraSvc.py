@@ -97,10 +97,10 @@ class CameraSvc:
             lon: DMSCoordinate = data.longitudeDMS
             logging.debug(f"longitudeDMS {data.longitudeDMS}")
 
-            logging.debug(f"altitude {data.altitude}")
-            exif_dict["GPS"][piexif.GPSIFD.GPSAltitude] = (int(data.altitude), 1)
+            # logging.debug(f"altitude {data.altitude}")
+            # exif_dict["GPS"][piexif.GPSIFD.GPSAltitude] = (int(data.altitude), 1)
             # above see level
-            exif_dict["GPS"][piexif.GPSIFD.GPSAltitudeRef] = 0
+            # exif_dict["GPS"][piexif.GPSIFD.GPSAltitudeRef] = 0
 
             exif_dict["GPS"][piexif.GPSIFD.GPSLatitude] = [
                 (int(lat.degrees), 1),
