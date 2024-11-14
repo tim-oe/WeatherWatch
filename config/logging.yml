@@ -2,7 +2,7 @@ version: 1
 disable_existing_loggers: no
 formatters:
     simple:
-        format: "%(asctime)s|%(name)s|%(filename)s:%(lineno)d|%(levelname)s- %(message)s"
+        format: "%(asctime)s|%(filename)s:%(lineno)d|%(levelname)s- %(message)s"
 handlers:
     console:
         class: logging.StreamHandler

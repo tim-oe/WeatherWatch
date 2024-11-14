@@ -5,7 +5,7 @@ from typing import List
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import DATE, cast, func
+from sqlalchemy import DATE, Row, cast, func
 from sqlalchemy.orm import Session
 
 __all__ = ["OutdoorSensorRepository"]
@@ -44,7 +44,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         """
         session: Session = self._datastore.session
         try:
-            r = (
+            r: Row = (
                 session.query(func.sum(OutdoorSensor.rain_delta_mm).label("total"))
                 .filter(cast(OutdoorSensor.read_time, DATE) == date)
                 .group_by(cast(OutdoorSensor.read_time, DATE))

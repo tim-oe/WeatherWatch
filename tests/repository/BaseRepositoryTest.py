@@ -23,6 +23,7 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
         repo: BaseRepository = self.getRepo(self)
         repo.exec(f'truncate {repo.entity.__table__}')
         
+        # TODO transactions.
         # self.getRepo(self)._datastore.stop()
         # self.trans.rollback()
         # self.session.close()

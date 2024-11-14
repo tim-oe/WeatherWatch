@@ -33,6 +33,7 @@ def createSql(table_name: str, d: date, repo):
         shutil.copy(Path(src), outFile)
         filereplace(outFile.resolve(), "__YYYY_MM_DD__", stamp)
         repo.execFile(outFile.resolve())
+        outFile.unlink()
 
         d = d + timedelta(days=1)
 
