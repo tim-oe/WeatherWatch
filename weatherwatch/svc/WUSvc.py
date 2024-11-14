@@ -5,7 +5,8 @@ from datetime import date
 
 from conf.AppConfig import AppConfig
 from conf.WUConfig import WUConfig
-from entity.IndoorSensor import AQISensor, IndoorSensor
+from entity.AQISensor import AQISensor
+from entity.IndoorSensor import IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from repository.AQISensorRepository import AQISensorRepository
