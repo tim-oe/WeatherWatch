@@ -3,7 +3,9 @@ raspbery pi based weather data collector using OTC sensors.
 
 ![weather station](docs/img/station_full.jpg?raw=true)
 
-![sample vid](tests/data/vids/2024-11-12.mp4?raw=true)
+<video width="320" height="240" controls>
+  <source src="tests/data/vids/2024-11-12.mp4?raw=true" type="video/mp4">
+</video>
 
 ## Motivation
 this was spurred by my original [weather station](https://github.com/tim-oe/SkyWeather2) built using a kit from [switchdoclabs](https://github.com/switchdoclabs/SDL_Pi_SkyWeather2). Unfortunately they are no longer producing for the consumer market. The head unit died and the software will not run on latest PI OS. There was certain features and functionality that I wanted to better understand and hopefully improve in.
