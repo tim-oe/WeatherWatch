@@ -100,9 +100,7 @@ class AppConfig:
 
         # https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
-            logging.root.handlers = [
-                h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)
-            ]
+            logging.root.handlers = [h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
 
         logging.info("loaded logging config file %s", AppConfig.LOG_CONFIG_FILE)
 

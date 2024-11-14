@@ -5,9 +5,10 @@ from datetime import date
 
 from conf.AppConfig import AppConfig
 from conf.WUConfig import WUConfig
-from entity.IndoorSensor import IndoorSensor
+from entity.IndoorSensor import AQISensor, IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
+from repository.AQISensorRepository import AQISensorRepository
 from repository.IndoorSensorRepository import IndoorSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from util.Converter import Converter
@@ -31,6 +32,7 @@ class WUSvc:
         self._config: WUConfig = AppConfig().wu
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
+        self._aqiRepo: AQISensorRepository = AQISensorRepository()
 
     def process(self):
         self.logger.info("processing weather underground upload")
@@ -39,6 +41,7 @@ class WUSvc:
             rainFail_mm = float(self._outdoorRepo.getDaysRainfall(date.today()))
 
             outData: OutdoorSensor = self._outdoorRepo.findLatest()
+            aqiData: AQISensor = self._aqiRepo.findLatest()
 
             data: WUData = WUData(
                 winddir=outData.wind_dir_deg,
@@ -52,6 +55,8 @@ class WUSvc:
                 uv=outData.uv,
                 indoortempf=round(inData.temperature_f, 2),
                 indoorhumidity=inData.humidity,
+                aqpm2_5=aqiData.pm_2_5_conctrt_std,
+                aqpm10=aqiData.pm_1_0_conctrt_std,
             )
 
             self._client.post(outData.read_time, data)

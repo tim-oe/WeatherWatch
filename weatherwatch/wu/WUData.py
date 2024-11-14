@@ -25,6 +25,8 @@ class WUData:
         uv,
         indoortempf,
         indoorhumidity,
+        aqpm2_5,
+        aqpm10,
     ):
         self.action = "updateraw"
         self.ID = None
@@ -42,6 +44,10 @@ class WUData:
         self.UV = str(uv)
         self.indoortempf = str(indoortempf)
         self.indoorhumidity = str(indoorhumidity)
+
+        # AQI
+        self.__dict__["AqPM2.5"] = aqpm2_5
+        self.AqPM10 = aqpm10
 
     def stationId(self, stationId: str):
         self.ID = stationId

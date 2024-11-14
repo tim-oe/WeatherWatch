@@ -40,7 +40,6 @@ class DatabaseConfig:
         if DatabaseConfig.USERNAME_ENVAR not in os.environ or DatabaseConfig.PASSWORD_ENVAR not in os.environ:
             raise Exception("missing env var " + DatabaseConfig.USERNAME_ENVAR + "," + DatabaseConfig.PASSWORD_ENVAR)
 
-
     @property
     def production(self) -> bool:
         """
