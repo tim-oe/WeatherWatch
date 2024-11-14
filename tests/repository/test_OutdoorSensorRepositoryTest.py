@@ -39,8 +39,13 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         l = repo.findGreaterThanReadTime(d)
         self.assertIsNotNone(act)
         self.assertTrue(len(l) > 0)
-        
+
         x = repo.getDaysRainfall(date.today())
+        
+        self.assertIsNotNone(x)
+        self.assertIsInstance(x, Decimal)
+        
+        x = repo.getDaysRainfall(date.today() + timedelta(days=1))
         
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)

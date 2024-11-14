@@ -12,6 +12,9 @@ class WUData:
     https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
     """
 
+    AQI_AQPM2_5_KEY = "aqpm2.5"
+    AQI_AQPM10_KEY = "aqpm10"
+
     def __init__(
         self,
         winddir: int,
@@ -25,8 +28,6 @@ class WUData:
         uv,
         indoortempf,
         indoorhumidity,
-        aqpm2_5,
-        aqpm10,
     ):
         self.action = "updateraw"
         self.ID = None
@@ -45,10 +46,6 @@ class WUData:
         self.indoortempf = str(indoortempf)
         self.indoorhumidity = str(indoorhumidity)
 
-        # AQI
-        self.__dict__["AqPM2.5"] = aqpm2_5
-        self.AqPM10 = aqpm10
-
     def stationId(self, stationId: str):
         self.ID = stationId
 
@@ -57,3 +54,9 @@ class WUData:
 
     def readTime(self, readTime: datetime):
         self.dateutc = readTime.strftime("%Y-%m-%d %H:%M:%S")
+
+    def aqpm2_5(self, aqpm2_5):
+        setattr(self, WUData.AQI_AQPM2_5_KEY, aqpm2_5)
+
+    def aqpm10(self, aqpm10):
+        setattr(self, WUData.AQI_AQPM10_KEY, aqpm10)

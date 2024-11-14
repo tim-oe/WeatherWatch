@@ -13,19 +13,20 @@ class WUClientTest(unittest.TestCase):
         client: WUClient = WUClient()        
 
         data: WUData = WUData(
-                winddir=180, 
-                windspeedmph=Decimal('1.2'), 
-                windgustmph=Decimal('2.3'),
-                humidity=55,
-                tempf=Decimal('70.72'),
-                dailyrainin=Decimal('0.3'),
-                baromin=Decimal('29.89'),
-                solarradiation=Decimal('1.2'),
-                uv=Decimal('1.1'),
-                indoortempf=Decimal('68.3'),
-                indoorhumidity=40,
-                aqpm2_5=3,
-                aqpm10=2)
+            winddir=180, 
+            windspeedmph=Decimal('1.2'), 
+            windgustmph=Decimal('2.3'),
+            humidity=55,
+            tempf=Decimal('70.72'),
+            dailyrainin=Decimal('0.3'),
+            baromin=Decimal('29.89'),
+            solarradiation=Decimal('1.2'),
+            uv=Decimal('1.1'),
+            indoortempf=Decimal('68.3'),
+            indoorhumidity=40)
+
+        data.aqpm2_5(2)
+        data.aqpm10(3)
 
         print(str(data))
 

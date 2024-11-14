@@ -4,6 +4,7 @@ __all__ = ["WUSvc"]
 from datetime import date
 
 from conf.AppConfig import AppConfig
+from conf.AQIConfig import AQIConfig
 from conf.WUConfig import WUConfig
 from entity.AQISensor import AQISensor
 from entity.IndoorSensor import IndoorSensor
@@ -30,6 +31,7 @@ class WUSvc:
     def __init__(self):
 
         self._client: WUClient = WUClient()
+        self._aqiConfig: AQIConfig = AppConfig().aqi
         self._config: WUConfig = AppConfig().wu
         self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
@@ -42,7 +44,6 @@ class WUSvc:
             rainFail_mm = float(self._outdoorRepo.getDaysRainfall(date.today()))
 
             outData: OutdoorSensor = self._outdoorRepo.findLatest()
-            aqiData: AQISensor = self._aqiRepo.findLatest()
 
             data: WUData = WUData(
                 winddir=outData.wind_dir_deg,
@@ -56,10 +57,16 @@ class WUSvc:
                 uv=outData.uv,
                 indoortempf=round(inData.temperature_f, 2),
                 indoorhumidity=inData.humidity,
-                aqpm2_5=aqiData.pm_2_5_conctrt_std,
-                aqpm10=aqiData.pm_1_0_conctrt_std,
             )
+
+            self.setAQI(data)
 
             self._client.post(outData.read_time, data)
         except Exception:
             self.logger.exception("failed to upload data to weather underground")
+
+    def setAQI(self, data: WUData):
+        if self._aqiConfig.enable:
+            aqiData: AQISensor = self._aqiRepo.findLatest()
+            data.aqpm2_5(aqiData.pm_2_5_conctrt_std)
+            data.aqpm10(aqiData.pm_1_0_conctrt_std)

@@ -38,14 +38,21 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
             session.close()
 
     def getDaysRainfall(self, date: date) -> Decimal:
+        """
+        theres an edge case of just after midnight where there will not be
+        data for the current day yet
+        """
         session: Session = self._datastore.session
         try:
-            return (
+            r = (
                 session.query(func.sum(OutdoorSensor.rain_delta_mm).label("total"))
                 .filter(cast(OutdoorSensor.read_time, DATE) == date)
                 .group_by(cast(OutdoorSensor.read_time, DATE))
                 .first()
-                .total
             )
+            if r is not None:
+                return r.total
+            else:
+                return Decimal(0.0)
         finally:
             session.close()

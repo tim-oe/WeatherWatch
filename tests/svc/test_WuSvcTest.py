@@ -15,8 +15,8 @@ from wu.WUData import WUData
 class WuSvcTest(unittest.TestCase):
 
     def post(self, readTime: datetime, data: WUData, endPoint: ParseResult = WUClient.END_POINT_URL):
-        self.readTime = readTime
-        self.data = data  
+        self._readTime = readTime
+        self._data = data  
 
     def setup_method(self, test_method):
         self.svc: WUSvc = WUSvc()
@@ -39,8 +39,8 @@ class WuSvcTest(unittest.TestCase):
         with mock.patch.object(WUClient, 'post', self.post):
             self.svc.process()
             
-            self.assertIsNotNone(self.readTime)
-            print(f"{self.readTime}")
-            self.assertIsNotNone(self.data)
-            print(f"{self.data}")
+            self.assertIsNotNone(self._readTime)
+            print(f"{self._readTime}")
+            self.assertIsNotNone(self._data)
+            print(f"{self._data}")
             
