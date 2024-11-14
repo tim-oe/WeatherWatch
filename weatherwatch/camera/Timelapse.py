@@ -1,5 +1,4 @@
 import datetime
-import logging
 from datetime import date, timedelta
 from pathlib import Path
 from typing import List
@@ -9,8 +8,10 @@ from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
+from util.Logger import logger
 
 
+@logger
 @singleton
 class Timelapse:
     """
@@ -50,7 +51,7 @@ class Timelapse:
         images: List[Path] = sorted(imgFolder.glob(f"{stamp}*{self._cameraConfig.extension}"))
 
         if not images:
-            logging.warning("No images for %s found in: %s", stamp, imgFolder)
+            self.logger.warning("No images for %s found in: %s", stamp, imgFolder)
             return
 
         img = cv2.imread(images[0].resolve())
@@ -72,7 +73,7 @@ class Timelapse:
             video.release()
             cv2.destroyAllWindows()
 
-        logging.info("time lapse for %s complete  duration %s", stamp, self.duration(start))
+        self.logger.info("time lapse for %s complete  duration %s", stamp, self.duration(start))
 
         return vidFile
 

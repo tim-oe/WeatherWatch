@@ -1,7 +1,6 @@
 #!/usr/bin/env python3.11
 # -*- coding: utf-8 -*-
 #
-# The MIT License (MIT)
 #
 """
 application entry point

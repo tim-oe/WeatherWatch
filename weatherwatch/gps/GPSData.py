@@ -1,8 +1,10 @@
 from gps.DMSCoordinate import DMSCoordinate
+from util.Logger import logger
 
 __all__ = ["GPSData"]
 
 
+@logger
 class GPSData:
     """
     bp388 sensor data
@@ -12,10 +14,6 @@ class GPSData:
         self._latitude = latitude
         self._longitude = longitude
         self._altitude = altitude
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def latitude(self):

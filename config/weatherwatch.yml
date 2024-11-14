@@ -32,6 +32,7 @@ database:
   name: !ENV ${WW_DB_NAME:weather}
   username: !ENV ${WW_DB_USERNAME}
   password: !ENV ${WW_DB_PASSWORD}
+  production: !ENV tag:yaml.org,2002:bool ${WW_DB_PROD:true}
   pool:
     size: 3
     overflow: 3
@@ -55,6 +56,8 @@ scheduler:
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
   timelapse:
     hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:1}
+  weather_undergound:
+    interval: !ENV tag:yaml.org,2002:int ${WW_WU_INTERVAL:10}
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
@@ -88,3 +91,9 @@ timelapse:
   extension: !ENV ${WW_CAM_TIMELAPSE_EXT:.mp4}
   fps: !ENV tag:yaml.org,2002:int ${WW_CAM_TIMELAPSE_FPS:10}
   codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:avc1}
+weather_undergound:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_WU_ENABLE:true}
+  station_id: !ENV ${WW_WU_STATION_ID}
+  station_key: !ENV ${WW_WU_STATION_KEY}
+  api_key: !ENV ${WW_WU_API_KEY}
+  indoor_channel: !ENV tag:yaml.org,2002:int ${WW_WU_INDOOR_CHANNEL:2}

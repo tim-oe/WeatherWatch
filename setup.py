@@ -26,11 +26,12 @@ class CleanCommand(Command):
         os.system("py3clean -v .")
         os.system("rm -vrf WeatherWatch.log*")
         os.system("rm -vrf report.html")
-        os.system("rm -vrf ./report")
+        os.system("rm -vrf ./reports")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
         os.system("rm -vrf ./coverage")
         os.system("rm -vrf ./pix")
+        os.system("rm -vrf ./vid")
         os.system("find . -name \"__pycache__\" -type d -exec sudo rm -vfR {} \;")
 
 # run black isort flake8
@@ -94,6 +95,21 @@ class SonarCommand(Command):
                   "-Dsonar.host.url=http://sonarqube " + 
                   "-Dsonar.login=sqp_71c96d128c55d2c7ecb534b89a9cfa35fe67a130")
 
+# load sample data
+class SQLInitCommand(Command):
+    """loads 8 days of sample data into tables"""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system("python3 weatherwatch/SampleLoader.py")
+
 class DockerMysqlUpCommand(Command):
     """launch mysql docker container"""
 
@@ -130,6 +146,7 @@ setup(
               "format": FormatCommand, 
               "cover": CoverageCommand, 
               "sonar": SonarCommand,
+              "dbInit": SQLInitCommand,
               'mysqlUp': DockerMysqlUpCommand,
               'mysqlDown': DockerMysqlDownCommand},
 )

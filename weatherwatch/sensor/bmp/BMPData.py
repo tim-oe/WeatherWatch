@@ -1,6 +1,9 @@
+from util.Logger import logger
+
 __all__ = ["BMPData"]
 
 
+@logger
 class BMPData:
     """
     bp388 sensor data
@@ -10,10 +13,6 @@ class BMPData:
         self._temperature = temperature
         self._pressure = pressure
         self._altitude = altitude
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def temperature(self):

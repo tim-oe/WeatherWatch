@@ -1,12 +1,13 @@
 import json
-import logging
 from datetime import datetime
 
 from conf.SensorConfig import SensorConfig
+from util.Logger import logger
 
 __all__ = ["BaseData"]
 
 
+@logger
 class BaseData:
 
     # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
@@ -60,10 +61,6 @@ class BaseData:
         self.raw = raw
         self.config = config
 
-    # override
-    def __str__(self):
-        return str(self.__dict__)
-
     @staticmethod
     def baseDecoder(o: "BaseData", d: dict):
         try:
@@ -78,7 +75,6 @@ class BaseData:
             o.noise = d[BaseData.NOISE_KEY]
             o.snr = d[BaseData.SNR_KEY]
         except Exception as e:
-            logging.exception("failed to parse %s", str(d))
             raise Exception(
                 f"failed to parse {d}",
             ) from e

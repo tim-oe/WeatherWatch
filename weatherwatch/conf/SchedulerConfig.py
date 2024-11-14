@@ -1,15 +1,20 @@
 __all__ = ["SchedulerConfig"]
 
 
+from util.Logger import logger
+
+
+@logger
 class SchedulerConfig:
     SENSOR_KEY = "sensor"
     CAMERA_KEY = "camera"
     AQI_KEY = "aqi"
     PIMETRICS_KEY = "pimetrics"
+    TIMELAPSE_KEY = "timelapse"
+    WU_KEY = "weather_undergound"
     INTERVAL_KEY = "interval"
     START_KEY = "start"
     STOP_KEY = "stop"
-    TIMELAPSE_KEY = "timelapse"
     HOUR_KEY = "hour"
 
     """
@@ -24,10 +29,6 @@ class SchedulerConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def aqiInterval(self) -> int:
@@ -46,6 +47,15 @@ class SchedulerConfig:
         :return: the sensor inerval
         """
         return self.__dict__[SchedulerConfig.SENSOR_KEY][SchedulerConfig.INTERVAL_KEY]
+
+    @property
+    def wuInterval(self) -> int:
+        """
+        weather underground inerval property getter
+        :param self: this
+        :return: the weather underground inerval
+        """
+        return self.__dict__[SchedulerConfig.WU_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
     def piMetricsInterval(self) -> int:

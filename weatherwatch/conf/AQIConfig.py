@@ -1,6 +1,9 @@
 __all__ = ["AQIConfig"]
 
+from util.Logger import logger
 
+
+@logger
 class AQIConfig:
     ENABLE_KEY = "enable"
     RETRY_KEY = "retry"
@@ -19,10 +22,6 @@ class AQIConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def enable(self) -> bool:

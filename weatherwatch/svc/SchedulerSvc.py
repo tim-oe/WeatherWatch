@@ -10,6 +10,7 @@ from svc.CameraSvc import CameraSvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 from svc.TimelapseSvc import TimelapseSvc
+from svc.WUSvc import WUSvc
 
 __all__ = ["SchedulerSvc"]
 
@@ -18,40 +19,48 @@ def sensor():
     """
     schedule entry point for sensor task
     """
-    sensorSvc = SensorSvc()
-    sensorSvc.process()
+    svc = SensorSvc()
+    svc.process()
+
+
+def wu():
+    """
+    schedule entry point for sensor task
+    """
+    svc = WUSvc()
+    svc.process()
 
 
 def aqi():
     """
     schedule entry point for aqi task
     """
-    aqiSvc = AQISvc()
-    aqiSvc.process()
+    svc = AQISvc()
+    svc.process()
 
 
 def camera():
     """
     schedule entry point for camera task
     """
-    camera = CameraSvc()
-    camera.process()
+    svc = CameraSvc()
+    svc.process()
 
 
 def timelapse():
     """
     schedule entry point for timelapse task
     """
-    timelapseSvc = TimelapseSvc()
-    timelapseSvc.process()
+    svc = TimelapseSvc()
+    svc.process()
 
 
 def pimetrics():
     """
     schedule entry point for pimetrics task
     """
-    metricsSvc = PIMetricsSvc()
-    metricsSvc.process()
+    svc = PIMetricsSvc()
+    svc.process()
 
 
 @singleton
@@ -61,6 +70,7 @@ class SchedulerSvc:
     PI_METRICS_JOB = "pi_metrics"
     SENSOR_JOB = "sensor"
     TIMELAPSE_JOB = "timelapse"
+    WU_JOB = "weather_underground"
 
     """
     SchedulerSvc service
@@ -138,6 +148,19 @@ class SchedulerSvc:
                 minute=f"4-59/{self._schedulerConfig.cameraInterval}",
                 name=SchedulerSvc.AQI_JOB,
                 id=SchedulerSvc.AQI_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60,
+            )
+
+        if self._appConfig.wu.enable is True:
+            self._scheduler.add_job(
+                wu,
+                "interval",
+                minutes=self._schedulerConfig.wuInterval,
+                name=SchedulerSvc.WU_JOB,
+                id=SchedulerSvc.WU_JOB,
                 coalesce=True,
                 max_instances=1,
                 replace_existing=True,

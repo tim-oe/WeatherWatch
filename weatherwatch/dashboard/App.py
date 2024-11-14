@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from urllib.parse import quote
 
@@ -15,8 +14,10 @@ from dashboard.page.OutdoorSensorPage import OutdoorSensorPage
 from dashboard.page.SystemPage import SystemPage
 from furl import furl
 from py_singleton import singleton
+from util.Logger import logger
 
 
+@logger
 @singleton
 class App:
     """
@@ -79,7 +80,7 @@ class App:
 
         self._staticFolder = Path(__file__).parent.parent.parent / "static"
 
-        logging.info("static folder: %s", self._staticFolder)
+        self.logger.info("static folder: %s", self._staticFolder)
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
@@ -116,7 +117,7 @@ class App:
     def renderPageContent(self, href: str):
         try:
             f: furl = furl(href)
-            logging.debug("request [%s]", f)
+            self.logger.debug("request [%s]", f)
             match f.path:
                 case App.ROOT_PATH:
                     return SystemPage().content()
@@ -129,10 +130,10 @@ class App:
                 case OutdoorSensorPage.PATH:
                     return OutdoorSensorPage().content(name=f.args["name"])
                 case _:
-                    logging.error(" unhandled request [%s]", f)
+                    self.logger.error(" unhandled request [%s]", f)
                     return self.missingPageContent(f)
         except Exception:
-            logging.exception("failed to render page %s", f)
+            self.logger.exception("failed to render page %s", f)
             return self.serverError(f)
 
     def missingPageContent(self, f: furl) -> html.Div:
@@ -155,12 +156,12 @@ class App:
 
     def serveCamImage(self, resource):
         folder: Path = self._appConfig.camera.folder
-        logging.debug(str(folder.resolve() / resource))
+        self.logger.debug(str(folder.resolve() / resource))
         return flask.send_from_directory(folder.resolve(), resource)
 
     def serveCamVid(self, resource):
         folder: Path = self._appConfig.timelapse.folder
-        logging.debug(str(folder.resolve() / resource))
+        self.logger.debug(str(folder.resolve() / resource))
         return flask.send_from_directory(folder.resolve(), resource)
 
     def serveResImage(self, resource):

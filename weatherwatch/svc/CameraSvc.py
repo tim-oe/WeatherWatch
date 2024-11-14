@@ -1,4 +1,3 @@
-import logging
 import shutil
 
 import piexif
@@ -13,10 +12,12 @@ from gps.GPSReader import GPSReader
 from py_singleton import singleton
 from pytemp import pytemp
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
+from util.Logger import logger
 
 __all__ = ["CameraSvc"]
 
 
+@logger
 @singleton
 class CameraSvc:
     """
@@ -36,7 +37,7 @@ class CameraSvc:
         self._repo: OutdoorSensorRepository = OutdoorSensorRepository()
 
     def process(self):
-        logging.info("processing camera")
+        self.logger.info("processing camera")
         data: OutdoorSensor = self._repo.findLatest()
 
         try:
@@ -46,7 +47,7 @@ class CameraSvc:
 
             shutil.copy(imgFile, self._cameraConfig.currentFile)
         except Exception:
-            logging.exception("failed to take picture")
+            self.logger.exception("failed to take picture")
 
     def addCustomExif(self, image_path, data: OutdoorSensor):
         """
@@ -88,19 +89,19 @@ class CameraSvc:
             # Save the image with the new Exif data
             piexif.insert(exif_bytes, image_path)
         except Exception:
-            logging.exception("failed to set exif data")
+            self.logger.exception("failed to set exif data")
 
     def addGPSExif(self, exif_dict):
         if self._gpsConfig.enable is True:
             gpsReader: GPSReader = GPSReader()
             data: GPSData = gpsReader.read()
             lat: DMSCoordinate = data.latitudeDMS
-            logging.debug(f"latitudeDMS {data.latitudeDMS}")
+            self.logger.debug(f"latitudeDMS {data.latitudeDMS}")
 
             lon: DMSCoordinate = data.longitudeDMS
-            logging.debug(f"longitudeDMS {data.longitudeDMS}")
+            self.logger.debug(f"longitudeDMS {data.longitudeDMS}")
 
-            logging.debug(f"altitude {data.altitude}")
+            self.logger.debug(f"altitude {data.altitude}")
             # seen issue with value being not set and taking cycles to become accurate
             if data.altitude is not None and data.altitude > 0:
                 exif_dict["GPS"][piexif.GPSIFD.GPSAltitude] = (int(data.altitude), 1)

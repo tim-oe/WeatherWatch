@@ -1,5 +1,4 @@
 import datetime
-import logging
 from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
 
@@ -8,6 +7,7 @@ import uptime
 from entity.PIMetrics import PIMetrics
 from py_singleton import singleton
 from repository.PIMetricsRepository import PIMetricsRepository
+from util.Logger import logger
 
 __all__ = ["PIMetricsSvc"]
 
@@ -16,6 +16,7 @@ Pi metric data service
 """
 
 
+@logger
 @singleton
 class PIMetricsSvc:
 
@@ -62,7 +63,7 @@ class PIMetricsSvc:
         uptime_seconds = uptime.uptime()
 
         uptime_string = str(datetime.timedelta(seconds=uptime_seconds))
-        logging.debug("uptime %s", uptime_string)
+        self.logger.debug("uptime %s", uptime_string)
 
         return uptime_string
 
@@ -77,7 +78,7 @@ class PIMetricsSvc:
 
         futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)
 
-        logging.debug("pi metrics %s", data)
+        self.logger.debug("pi metrics %s", data)
 
         data.read_time = datetime.datetime.now()
 

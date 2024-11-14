@@ -1,5 +1,3 @@
-import logging
-
 from sensor.sdr.BaseData import BaseData
 
 __all__ = ["IndoorData"]
@@ -32,7 +30,6 @@ class IndoorData(BaseData):
             data.humidity = d[IndoorData.HUMID_KEY]
             return data
         except Exception as e:
-            logging.error("failed to parse " + str(d) + "\n" + str(e))
             raise Exception("failed to parse " + str(d)) from e
 
     @property

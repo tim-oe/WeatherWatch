@@ -7,7 +7,6 @@
 """
 
 import datetime
-import logging
 import pprint
 import time
 
@@ -17,11 +16,13 @@ from conf.AppConfig import AppConfig
 from conf.GPSConfig import GPSConfig
 from gps.GPSData import GPSData
 from py_singleton import singleton
+from util.Logger import logger
 
 # https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python
 __all__ = ["GPSReader"]
 
 
+@logger
 @singleton
 class GPSReader:
     """
@@ -56,15 +57,14 @@ class GPSReader:
                 time.sleep(0.5)
                 gps.update()
                 duration = self.duration(start)
-                logging.debug("waiting on GPS %s", duration)
+                self.logger.debug("waiting on GPS %s", duration)
 
             if not gps.has_fix:
                 raise IOError("initialize gps timeout")
 
             time.sleep(0.5)
 
-            if logging.root.isEnabledFor(logging.DEBUG):
-                pprint.pprint(gps.__dict__)
+            self.logger.debug(f"GPS {pprint.pformat(gps.__dict__)}")
 
             return GPSData(latitude=gps.latitude, longitude=gps.longitude, altitude=gps.altitude_m)
         finally:

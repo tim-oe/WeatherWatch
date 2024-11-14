@@ -1,5 +1,4 @@
 import datetime
-import logging
 import time
 from pathlib import Path
 
@@ -8,8 +7,10 @@ from conf.CameraConfig import CameraConfig
 from picamera2 import Picamera2, Preview
 from picamera2.allocators import PersistentAllocator
 from py_singleton import singleton
+from util.Logger import logger
 
 
+@logger
 @singleton
 class Camera:
     """
@@ -44,7 +45,7 @@ class Camera:
 
     def process(self, lux: int) -> str:
         if self._cameraConfig.enable is False:
-            logging.debug("camera not enabled")
+            self.logger.debug("camera not enabled")
             return
 
         try:

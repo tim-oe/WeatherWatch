@@ -1,6 +1,10 @@
 __all__ = ["GPSConfig"]
 
 
+from util.Logger import logger
+
+
+@logger
 class GPSConfig:
     ENABLE_KEY = "enable"
     SERIAL_DEV_KEY = "serial_dev"
@@ -19,10 +23,6 @@ class GPSConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def enable(self) -> bool:

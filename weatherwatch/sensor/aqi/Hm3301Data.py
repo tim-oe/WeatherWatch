@@ -3,7 +3,10 @@ __all__ = ["Hm3301Data"]
 
 from typing import Self
 
+from util.Logger import logger
 
+
+@logger
 class Hm3301Data:
     """
     base sensor data
@@ -21,10 +24,6 @@ class Hm3301Data:
         self.pm_1_0_conctrt_atmosph = 0
         self.pm_2_5_conctrt_atmosph = 0
         self.pm_10_conctrt_atmosph = 0
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     def high(self) -> bool:
         ceiling: int = 1000

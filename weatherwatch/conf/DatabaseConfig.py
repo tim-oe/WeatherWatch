@@ -3,8 +3,10 @@ __all__ = ["DatabaseConfig"]
 import os
 
 from sqlalchemy import URL
+from util.Logger import logger
 
 
+@logger
 class DatabaseConfig:
     NAME_KEY = "name"
     DIALECT_KEY = "dialect"
@@ -13,6 +15,7 @@ class DatabaseConfig:
     PORT_KEY = "port"
     USERNAME_KEY = "username"
     PASSWORD_KEY = "password"
+    PRODUCTION_KEY = "production"
 
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
@@ -37,11 +40,18 @@ class DatabaseConfig:
         if DatabaseConfig.USERNAME_ENVAR not in os.environ or DatabaseConfig.PASSWORD_ENVAR not in os.environ:
             raise Exception("missing env var " + DatabaseConfig.USERNAME_ENVAR + "," + DatabaseConfig.PASSWORD_ENVAR)
 
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
-    # TODO https://docs.python.org/3/library/profile.html#module-cProfile
+    @property
+    def production(self) -> bool:
+        """
+        production property getter
+        this defaults to true and is a weak
+        mechanism to prevent bad stuff running on prod
+        :param self: this
+        :return: the production
+        """
+        return self.__dict__[DatabaseConfig.PRODUCTION_KEY]
+
     @property
     def url(self) -> URL:
         """

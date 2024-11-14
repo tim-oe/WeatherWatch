@@ -1,4 +1,3 @@
-import logging
 import logging.config
 import os
 from typing import List
@@ -11,12 +10,15 @@ from conf.GPSConfig import GPSConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
 from conf.TimelapseConfig import TimelapseConfig
+from conf.WUConfig import WUConfig
 from py_singleton import singleton
 from pyaml_env import parse_config
+from util.Logger import logger
 
 __all__ = ["AppConfig"]
 
 
+@logger
 @singleton
 class AppConfig:
 
@@ -35,6 +37,7 @@ class AppConfig:
     SCHEDULER_KEY = "scheduler"
     DASHBOARD_KEY = "dashboard"
     TIMELAPSE_KEY = "timelapse"
+    WU_KEY = "weather_undergound"
 
     """
     app config data
@@ -53,7 +56,7 @@ class AppConfig:
 
         self._conf = parse_config(AppConfig.CONFIG_FILE)
 
-        logging.info("loaded application config file %s", AppConfig.CONFIG_FILE)
+        self.logger.info("loaded application config file %s", AppConfig.CONFIG_FILE)
 
         self._sensors = {}
 
@@ -61,32 +64,35 @@ class AppConfig:
             ss: SensorConfig = SensorConfig(s)
             self._sensors[ss.name] = ss
 
-        logging.info("loaded %s config", AppConfig.SENSORS_KEY)
+        self.logger.info("loaded %s config", AppConfig.SENSORS_KEY)
 
         self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
-        logging.info("loaded %s config", AppConfig.CAMERA_KEY)
+        self.logger.info("loaded %s config", AppConfig.CAMERA_KEY)
 
         self._aqi = AQIConfig(self._conf[AppConfig.AQI_KEY])
-        logging.info("loaded %s config", AppConfig.AQI_KEY)
+        self.logger.info("loaded %s config", AppConfig.AQI_KEY)
 
         self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
-        logging.info("loaded %s config", AppConfig.GPS_KEY)
+        self.logger.info("loaded %s config", AppConfig.GPS_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
-        logging.info("loaded %s config", AppConfig.DATABASE_KEY)
+        self.logger.info("loaded %s config", AppConfig.DATABASE_KEY)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
-        logging.info("loaded %s config", AppConfig.SCHEDULER_KEY)
+        self.logger.info("loaded %s config", AppConfig.SCHEDULER_KEY)
 
         self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
-        logging.info("loaded %s config", AppConfig.DASHBOARD_KEY)
+        self.logger.info("loaded %s config", AppConfig.DASHBOARD_KEY)
 
         self._timelapse = TimelapseConfig(self._conf[AppConfig.TIMELAPSE_KEY])
-        logging.info("loaded %s config", AppConfig.TIMELAPSE_KEY)
+        self.logger.info("loaded %s config", AppConfig.TIMELAPSE_KEY)
+
+        self._wu = WUConfig(self._conf[AppConfig.WU_KEY])
+        self.logger.info("loaded %s config", AppConfig.WU_KEY)
 
     def initLogging(self):
         # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
-        # https://docs.python.org/3/library/logging.html#logrecord-attributes
+        # https://docs.python.org/3/library/self.logger.html#logrecord-attributes
         # https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
         lc: dict = parse_config(AppConfig.LOG_CONFIG_FILE)
 
@@ -94,13 +100,11 @@ class AppConfig:
 
         # https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":
-            logging.root.handlers = [h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
+            logging.root.handlers = [
+                h for h in logging.root.handlers if isinstance(h, logging.handlers.RotatingFileHandler)
+            ]
 
         logging.info("loaded logging config file %s", AppConfig.LOG_CONFIG_FILE)
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def conf(self) -> dict:
@@ -185,3 +189,12 @@ class AppConfig:
         :return: the dashboard
         """
         return self._dashboard
+
+    @property
+    def wu(self) -> WUConfig:
+        """
+        wu property getter
+        :param self: this
+        :return: the wu
+        """
+        return self._wu

@@ -1,7 +1,10 @@
 __all__ = ["SensorConfig"]
 
 
-# not singleton...
+from util.Logger import logger
+
+
+@logger
 class SensorConfig:
     NAME_KEY = "name"
     DEVICE_KEY = "device"
@@ -22,10 +25,6 @@ class SensorConfig:
         # optional config
         if "_channel" not in self.__dict__:
             self._channel = None
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def name(self):

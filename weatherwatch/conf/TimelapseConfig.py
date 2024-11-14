@@ -3,7 +3,10 @@ __all__ = ["TimelapseConfig"]
 
 from pathlib import Path
 
+from util.Logger import logger
 
+
+@logger
 class TimelapseConfig:
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
@@ -23,10 +26,6 @@ class TimelapseConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def enable(self) -> bool:

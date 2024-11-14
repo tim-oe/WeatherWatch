@@ -1,5 +1,4 @@
 import datetime
-import logging
 import time
 
 from conf.AppConfig import AppConfig
@@ -9,10 +8,12 @@ from py_singleton import singleton
 from repository.AQISensorRepository import AQISensorRepository
 from sensor.aqi.Hm3301Data import Hm3301Data
 from sensor.aqi.Hm3301Reader import Hm3301Reader
+from util.Logger import logger
 
 __all__ = ["AQISvc"]
 
 
+@logger
 @singleton
 class AQISvc:
     """
@@ -29,7 +30,7 @@ class AQISvc:
         self._repo: AQISensorRepository = AQISensorRepository()
 
     def process(self):
-        logging.info("processing aqi")
+        self.logger.info("processing aqi")
         start = datetime.datetime.now()
 
         try:
@@ -48,9 +49,9 @@ class AQISvc:
             ent.read_time = datetime.datetime.now()
 
             self._repo.insert(ent)
-            logging.info("AQI processing complete  duration %s", self.duration(start))
+            self.logger.info("AQI processing complete  duration %s", self.duration(start))
         except Exception:
-            logging.exception("failed to process aqi data")
+            self.logger.exception("failed to process aqi data")
 
     def read(self) -> Hm3301Data:
         """

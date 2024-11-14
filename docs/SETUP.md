@@ -27,7 +27,11 @@
 - used [ansible](https://docs.ansible.com/) to provision dependencies
     - [sdr playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
     - [python deps playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
-    
+
+## weather undergrount data upload
+- [register](https://www.wunderground.com/signup)
+- [upload protocol](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
+
 ## project setup
 - project uses poetry for dependency managment
     - poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)
@@ -45,8 +49,8 @@
 - external/prod setup configuration
     - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/apps/mysql.yml)
     - create db ```create database weather;``` 
-    - ```CREATE user 'weather'@'%' identified by 'weather';``` 
-    - ```GRANT lock tables, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
+    - create user ```CREATE user 'weather'@'%' identified by 'weather';``` 
+    - grant privileges ```GRANT lock tables, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
     - might want to lock down host to source
 - pyway user (for managing DDL)
     - ```CREATE user 'pyway'@'%' identified by 'pyway';``` 
@@ -57,7 +61,7 @@
     - [pyway](https://github.com/jasondcamp/pyway?tab=readme-ov-file#configuration)
 - initialize db ```pyway migrate``` 
     
-## tests
+## running tests
 - all tests:   ```poetry run pytest```
 - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
 

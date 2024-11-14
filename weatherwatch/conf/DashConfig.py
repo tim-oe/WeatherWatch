@@ -1,6 +1,10 @@
 __all__ = ["DashConfig"]
 
 
+from util.Logger import logger
+
+
+@logger
 class DashConfig:
     HOST_KEY = "host"
     PORT_KEY = "port"
@@ -17,10 +21,6 @@ class DashConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def host(self) -> str:

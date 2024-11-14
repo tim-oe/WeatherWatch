@@ -25,6 +25,7 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
         - gps data
         - weather information
 - roll up images into daily timelapse video        
+- post weather data to [Weather Underground](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
 
 ## Objectivs
 - improve python development knowledge

@@ -1,5 +1,3 @@
-import logging
-
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 
@@ -54,7 +52,6 @@ class OutdoorData(IndoorData):
             data.uv = d[OutdoorData.UV_KEY]
             return data
         except Exception as e:
-            logging.error("failed to parse " + str(d) + "\n" + str(e))
             raise Exception("failed to parse " + str(d)) from e
 
     @property

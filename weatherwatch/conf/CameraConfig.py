@@ -1,8 +1,11 @@
 from pathlib import Path
 
+from util.Logger import logger
+
 __all__ = ["CameraConfig"]
 
 
+@logger
 class CameraConfig:
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
@@ -28,10 +31,6 @@ class CameraConfig:
 
         for key in config:
             self.__dict__[key] = config[key]
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def enable(self) -> bool:

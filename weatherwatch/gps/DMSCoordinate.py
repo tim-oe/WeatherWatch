@@ -1,6 +1,8 @@
 import math
 from enum import Enum
 
+from util.Logger import logger
+
 __all__ = ["DMSCoordinate", "Ordinal"]
 
 
@@ -11,6 +13,7 @@ class Ordinal(Enum):
     WEST = "W"
 
 
+@logger
 class DMSCoordinate:
     """
     deg min sec geo coordinates
@@ -32,10 +35,6 @@ class DMSCoordinate:
             self._ordinal = Ordinal.WEST
         if isLat is False and neg is False:
             self._ordinal = Ordinal.EAST
-
-    # override
-    def __str__(self):
-        return str(self.__dict__)
 
     @property
     def degrees(self):

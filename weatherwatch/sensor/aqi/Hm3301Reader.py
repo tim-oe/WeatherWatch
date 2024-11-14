@@ -15,7 +15,6 @@ Please set the I2c speed to 20khz
     sudo reboot
 """
 
-import logging
 import time
 
 from conf.AppConfig import AppConfig
@@ -23,10 +22,12 @@ from conf.AQIConfig import AQIConfig
 from py_singleton import singleton
 from sensor.aqi.Hm3301Data import Hm3301Data
 from smbus2 import SMBus, i2c_msg
+from util.Logger import logger
 
 __all__ = ["Hm3301Reader"]
 
 
+@logger
 @singleton
 class Hm3301Reader:
 
@@ -78,7 +79,7 @@ class Hm3301Reader:
                 data.pm_10_conctrt_atmosph = raw[14] << 8 | raw[15]
 
             else:
-                logging.warning("HM3301 crc check failed")
+                self.logger.warning("HM3301 crc check failed")
 
         if data is None:
             raise ValueError("retry exceeded")

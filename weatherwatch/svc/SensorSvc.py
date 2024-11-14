@@ -1,4 +1,3 @@
-import logging
 from decimal import Decimal
 
 from entity.BaseSensor import BaseSensor
@@ -13,10 +12,12 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from sensor.sdr.SDRReader import SDRReader
+from util.Logger import logger
 
 __all__ = ["SensorSvc"]
 
 
+@logger
 @singleton
 class SensorSvc:
     """
@@ -37,14 +38,14 @@ class SensorSvc:
         EventBus.subscribe(OutdoorData.__name__, self.handleOutdoor)
 
     def process(self):
-        logging.info("processing sensors")
+        self.logger.info("processing sensors")
 
         self._sdrReader.read()
 
-        logging.info("processing complete")
+        self.logger.info("processing complete")
 
     def handleIndoor(self, data: IndoorData):
-        logging.debug("processing %s", IndoorData.__name__)
+        self.logger.debug("processing %s", IndoorData.__name__)
 
         try:
             ent: IndoorSensor = IndoorSensor()
@@ -54,15 +55,15 @@ class SensorSvc:
 
             self._indoorRepo.insert(ent)
         except Exception:
-            logging.exception("failed to insert %s", data)
+            self.logger.exception("failed to insert %s", data)
 
     def handleOutdoor(self, data: OutdoorData):
-        logging.debug("processing %s", OutdoorData.__name__)
-        logging.debug("read %s", data)
+        self.logger.debug("processing %s", OutdoorData.__name__)
+        self.logger.debug("read %s", data)
 
         try:
             lastRead: OutdoorSensor = self._outdoorRepo.findLatest()
-            logging.debug("last %s", lastRead)
+            self.logger.debug("last %s", lastRead)
 
             ent: OutdoorSensor = OutdoorSensor()
             self.setBaseData(data, ent)
@@ -74,20 +75,17 @@ class SensorSvc:
 
             delta: Decimal = 0.0
 
-            logging.debug("data rain %s %s", type(data.rain_mm), data.rain_mm)
-
             if lastRead is not None:  # edge will happen with new DB
-                logging.debug("last rain %s %s", type(lastRead.rain_cum_mm), lastRead.rain_cum_mm)
                 delta = round(Decimal(str(data.rain_mm)) - lastRead.rain_cum_mm, 2)
 
-            logging.debug("calc delta %s", delta)
+            self.logger.debug("calc delta %s", delta)
 
             if delta < Decimal(0.0):  # edge case sensor reset
                 ent.rain_delta_mm = round(data.rain_mm, 2)
             else:
                 ent.rain_delta_mm = delta
 
-            logging.info("rain delta %s", ent.rain_delta_mm)
+            self.logger.debug("rain delta %s", ent.rain_delta_mm)
 
             ent.wind_avg_m_s = data.wind_avg_m_s
             ent.wind_max_m_s = data.wind_max_m_s
@@ -97,7 +95,7 @@ class SensorSvc:
 
             self._outdoorRepo.insert(ent)
         except Exception:
-            logging.exception("failed to insert %s", data)
+            self.logger.exception("failed to insert %s", data)
 
     def setBaseData(self, data: BaseData, ent: BaseSensor):
         ent.temperature_f = data.temperature
