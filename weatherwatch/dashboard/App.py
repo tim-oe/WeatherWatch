@@ -3,9 +3,7 @@ from urllib.parse import quote
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from waitress import serve
 import flask
-from flask import Flask
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
 from conf.DashConfig import DashConfig
@@ -16,13 +14,15 @@ from dashboard.page.CameraPage import CameraPage
 from dashboard.page.IndoorSensorPage import IndoorSensorPage
 from dashboard.page.OutdoorSensorPage import OutdoorSensorPage
 from dashboard.page.SystemPage import SystemPage
+from flask import Flask
 from furl import furl
 from py_singleton import singleton
 from util.Logger import logger
+from waitress import serve
 
 
 @logger
-#@singleton
+@singleton
 class App:
     """
     dashboard application entry point
@@ -78,11 +78,9 @@ class App:
         self._dashConfig: DashConfig = self._appConfig.dashboard
 
         self._server = Flask(__name__)
-                
-        self._app = Dash(__name__,
-                         server=self._server, 
-                         external_stylesheets=[dbc.themes.DARKLY])
-        
+
+        self._app = Dash(__name__, server=self._server, external_stylesheets=[dbc.themes.DARKLY])
+
         content = html.Div([dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)])
 
         self._app.layout = html.Div(children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)])
@@ -93,7 +91,7 @@ class App:
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
-        #self._server.route("/")(self._app.index())
+        # self._server.route("/")(self._app.index())
         self._server.route("/cam/<resource>")(self.serveCamImage)
         self._server.route("/vid/<resource>")(self.serveCamVid)
         self._server.route("/static/img/<resource>")(self.serveResImage)
@@ -184,15 +182,10 @@ class App:
 
     @property
     def server(self):
-        return 
+        return
 
     def run(self):
         if self._dashConfig.debug:
-            self._app.run(host=self._dashConfig.host, 
-                          port=self._dashConfig.port, 
-                          debug=self._dashConfig.debug)
-        else:    
-            serve(self._server, 
-                host=self._dashConfig.host, 
-                port=self._dashConfig.port)    
-
+            self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=self._dashConfig.debug)
+        else:
+            serve(self._server, host=self._dashConfig.host, port=self._dashConfig.port)
