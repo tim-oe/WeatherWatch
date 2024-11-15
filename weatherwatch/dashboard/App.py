@@ -3,7 +3,9 @@ from urllib.parse import quote
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+from waitress import serve
 import flask
+from flask import Flask
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
 from conf.DashConfig import DashConfig
@@ -20,7 +22,7 @@ from util.Logger import logger
 
 
 @logger
-@singleton
+#@singleton
 class App:
     """
     dashboard application entry point
@@ -75,12 +77,12 @@ class App:
         self._aqiConfig: AQIConfig = self._appConfig.aqi
         self._dashConfig: DashConfig = self._appConfig.dashboard
 
-        # TODO get wsgi server working...
-        # self._server = Flask(__name__)
-        # server=self._server
-
-        self._app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
-
+        self._server = Flask(__name__)
+                
+        self._app = Dash(__name__,
+                         server=self._server, 
+                         external_stylesheets=[dbc.themes.DARKLY])
+        
         content = html.Div([dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)])
 
         self._app.layout = html.Div(children=[daq.DarkThemeProvider(theme=App.ROOT_THEME, children=content)])
@@ -91,11 +93,10 @@ class App:
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
-        # self._app.server.route("/")(self._app.index())
-
-        self._app.server.route("/cam/<resource>")(self.serveCamImage)
-        self._app.server.route("/vid/<resource>")(self.serveCamVid)
-        self._app.server.route("/static/img/<resource>")(self.serveResImage)
+        #self._server.route("/")(self._app.index())
+        self._server.route("/cam/<resource>")(self.serveCamImage)
+        self._server.route("/vid/<resource>")(self.serveCamVid)
+        self._server.route("/static/img/<resource>")(self.serveResImage)
 
     def sidebar(self) -> html.Div:
 
@@ -181,13 +182,17 @@ class App:
     def serveResImage(self, resource):
         return flask.send_from_directory(self._staticFolder / "img", resource)
 
-    # @property
-    # def app(self):
-    #     self._app
-
-    # @property
-    # def server(self):
-    #     self._server
+    @property
+    def server(self):
+        return 
 
     def run(self):
-        self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=self._dashConfig.debug)
+        if self._dashConfig.debug:
+            self._app.run(host=self._dashConfig.host, 
+                          port=self._dashConfig.port, 
+                          debug=self._dashConfig.debug)
+        else:    
+            serve(self._server, 
+                host=self._dashConfig.host, 
+                port=self._dashConfig.port)    
+
