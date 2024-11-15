@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import List
+
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
@@ -21,6 +24,13 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         session: Session = self._datastore.session
         try:
             return session.query(AQISensor).order_by(AQISensor.read_time.desc()).first()
+        finally:
+            session.close()
+
+    def findGreaterThanReadTime(self, dt: datetime) -> List[AQISensor]:
+        session: Session = self._datastore.session
+        try:
+            return session.query(AQISensor).filter(AQISensor.read_time > dt).order_by(AQISensor.read_time.desc()).all()
         finally:
             session.close()
 

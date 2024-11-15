@@ -1,4 +1,4 @@
-import datetime
+from datetime import timedelta, datetime
 
 from entity.AQISensor import AQISensor
 from repository.AQISensorRepository import AQISensorRepository
@@ -24,7 +24,7 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         data.pm_2_5_conctrt_atmosph = 0
         data.pm_10_conctrt_atmosph = 0
         
-        data.read_time = datetime.datetime.now()
+        data.read_time = datetime.now()
         
         print(str(data))
         
@@ -41,7 +41,13 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(act)
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)
-        
+
+        d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+        l = repo.findGreaterThanReadTime(d)
+        self.assertIsNotNone(l)
+        self.assertTrue(len(l) > 0)
+
     def test_sample(self):
         repo: BaseRepository = self.getRepo()
         

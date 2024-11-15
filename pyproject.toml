@@ -71,6 +71,7 @@ omit = ["/usr/**",
 "weatherwatch/sensor.py",
 "weatherwatch/dashboard.py", 
 "weatherwatch/timelapse.py", 
+"weatherwatch/SampleLoader.py", 
 "weatherwatch/dashboard/*"
 ]
 

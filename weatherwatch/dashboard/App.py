@@ -5,9 +5,11 @@ import dash_bootstrap_components as dbc
 import dash_daq as daq
 import flask
 from conf.AppConfig import AppConfig
+from conf.AQIConfig import AQIConfig
 from conf.DashConfig import DashConfig
 from conf.SensorConfig import SensorConfig
 from dash import Dash, Input, Output, dcc, html
+from dashboard.page.AirQualityPage import AirQualityPage
 from dashboard.page.CameraPage import CameraPage
 from dashboard.page.IndoorSensorPage import IndoorSensorPage
 from dashboard.page.OutdoorSensorPage import OutdoorSensorPage
@@ -70,7 +72,12 @@ class App:
         """
 
         self._appConfig = AppConfig()
+        self._aqiConfig: AQIConfig = self._appConfig.aqi
         self._dashConfig: DashConfig = self._appConfig.dashboard
+
+        # TODO get wsgi server working...
+        # self._server = Flask(__name__)
+        # server=self._server
 
         self._app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
@@ -84,6 +91,8 @@ class App:
 
         self._app.callback(Output("page-content", "children"), [Input("url", "href")])(self.renderPageContent)
 
+        # self._app.server.route("/")(self._app.index())
+
         self._app.server.route("/cam/<resource>")(self.serveCamImage)
         self._app.server.route("/vid/<resource>")(self.serveCamVid)
         self._app.server.route("/static/img/<resource>")(self.serveResImage)
@@ -94,6 +103,9 @@ class App:
 
         links.append(dbc.NavLink("system", id=SystemPage.__name__, href=SystemPage.PATH, active="exact"))
         links.append(dbc.NavLink("camera", id=CameraPage.__name__, href=CameraPage.PATH, active="exact"))
+
+        if self._aqiConfig.enable:
+            links.append(dbc.NavLink("air quality", id=AirQualityPage.__name__, href=AirQualityPage.PATH, active="exact"))
 
         s: SensorConfig
         for s in self._appConfig.sensors:
@@ -125,6 +137,8 @@ class App:
                     return SystemPage().content()
                 case CameraPage.PATH:
                     return CameraPage().content()
+                case AirQualityPage.PATH:
+                    return AirQualityPage().content()
                 case IndoorSensorPage.PATH:
                     return IndoorSensorPage().content(name=f.args["name"])
                 case OutdoorSensorPage.PATH:
@@ -166,6 +180,14 @@ class App:
 
     def serveResImage(self, resource):
         return flask.send_from_directory(self._staticFolder / "img", resource)
+
+    # @property
+    # def app(self):
+    #     self._app
+
+    # @property
+    # def server(self):
+    #     self._server
 
     def run(self):
         self._app.run(host=self._dashConfig.host, port=self._dashConfig.port, debug=self._dashConfig.debug)

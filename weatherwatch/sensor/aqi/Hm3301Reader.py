@@ -8,6 +8,9 @@ AQI sensor
 https://wiki.seeedstudio.com/Grove-Laser_PM2.5_Sensor-HM3301/
 code is mostly ccp from https://github.com/Seeed-Studio/grove.py
 https://github.com/Seeed-Studio/grove.py/blob/master/grove/grove_PM2_5_HM3301.py
+TODO sensor still is wanky
+getting lots of crc fail and data that goes out of range
+currently doing multiple reading to get something that seems valid
 
 Please set the I2c speed to 20khz
     sudo vim /boot/config.txt

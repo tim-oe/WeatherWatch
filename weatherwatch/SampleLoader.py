@@ -13,7 +13,9 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from conf.AppConfig import AppConfig
+from conf.CameraConfig import CameraConfig
 from conf.DatabaseConfig import DatabaseConfig
+from conf.TimelapseConfig import TimelapseConfig
 from pyutil import filereplace
 from repository.AQISensorRepository import AQISensorRepository
 from repository.IndoorSensorRepository import IndoorSensorRepository
@@ -38,9 +40,28 @@ def createSql(table_name: str, d: date, repo):
         d = d + timedelta(days=1)
 
 
+def init_files():
+    cameraConfig: CameraConfig = AppConfig().camera
+    picDir: Path = cameraConfig.folder
+    picDir.mkdir(parents=True, exist_ok=True)
+
+    imgFile: Path = Path("tests/data/img/current.jpg")
+    shutil.copy(imgFile, picDir)
+
+    timelapseConfig: TimelapseConfig = AppConfig().timelapse
+    vidDir: Path = timelapseConfig.folder
+    vidDir.mkdir(parents=True, exist_ok=True)
+    vidFile: Path = Path("tests/data/vids/2024-11-12.mp4")
+
+    d = date.today() - timedelta(days=1)
+    stamp = d.strftime("%Y-%m-%d")
+
+    tgtFile = vidDir / f"{stamp}{timelapseConfig.extension}"
+    shutil.copy(vidFile, tgtFile)
+
+
 # actual start point
 if __name__ == "__main__":
-    pass
     dbConfig: DatabaseConfig = AppConfig().database
     if dbConfig.production:
         raise Exception("DO NOT RUN ON PROD!!!!")
@@ -64,3 +85,5 @@ if __name__ == "__main__":
     createSql("aqi_sensor", date.today() - timedelta(days=3), aqiRepo)
 
     outdoorRepo.execFile("tests/data/db/finalize.sql")
+
+    init_files()

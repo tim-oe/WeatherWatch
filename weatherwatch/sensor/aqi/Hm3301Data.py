@@ -98,7 +98,7 @@ class Hm3301Data:
     def pm_10_conctrt_std(self) -> int:
         """
         pm_10_conctrt_std property getter
-        PM10  Standard particulate matter concentration Unit:ug/m3
+        PM10 Standard particulate matter concentration Unit:ug/m3
         :param self: this
         :return: the pm_10_conctrt_std
         """

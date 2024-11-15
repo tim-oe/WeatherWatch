@@ -6,7 +6,7 @@ import dash_daq as daq
 
 class BarometricPressureGauge(dbc.Container):
     """
-    humidity guage class
+    barometric pressure guage class
     https://dash.plotly.com/dash-daq/tank
     https://science.howstuffworks.com/nature/climate-weather/meteorological-instruments/barometric-pressure.htm
     https://learn.weatherstem.com/modules/learn/lessons/125/18.html

@@ -20,25 +20,25 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
             
         ent: OutdoorSensor = OutdoorSensorRepositoryTest.getSample()
 
-        # repo.insert(ent)
+        repo.insert(ent)
         
-        # self.assertIsNotNone(ent.id)
+        self.assertIsNotNone(ent.id)
 
-        # act = repo.findById(ent.id)
-        # self.assertIsNotNone(act)
-        # self.assertEqual(ent.id, act.id)
-        # self.assertEqual(ent.read_time, act.read_time)
+        act = repo.findById(ent.id)
+        self.assertIsNotNone(act)
+        self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
 
-        # act = repo.findLatest()
-        # self.assertIsNotNone(act)
-        # self.assertEqual(ent.id, act.id)
-        # self.assertEqual(ent.read_time, act.read_time)
+        act = repo.findLatest()
+        self.assertIsNotNone(act)
+        self.assertEqual(ent.id, act.id)
+        self.assertEqual(ent.read_time, act.read_time)
         
-        # d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        # l = repo.findGreaterThanReadTime(d)
-        # self.assertIsNotNone(l)
-        # self.assertTrue(len(l) > 0)
+        l = repo.findGreaterThanReadTime(d)
+        self.assertIsNotNone(l)
+        self.assertTrue(len(l) > 0)
 
         x = repo.getDaysRainfall(date.today())
         
