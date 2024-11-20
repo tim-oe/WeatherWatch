@@ -63,7 +63,7 @@ class Camera:
             preview_config = picam2.create_preview_configuration()
             picam2.configure(preview_config)
 
-            if lux < self._cameraConfig.luxLimit:
+            if lux <= self._cameraConfig.luxLimit:
                 picam2.set_controls(
                     {
                         "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),

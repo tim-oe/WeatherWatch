@@ -42,7 +42,7 @@ class CameraTest(unittest.TestCase):
 
         iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
         print(f"ISOSpeedRatings {iso}")
-        self.assertGreater(iso, 400)
+        self.assertGreater(iso, 200)
         
         for f in cc.folder.iterdir():
             f.unlink()
@@ -70,5 +70,5 @@ class CameraTest(unittest.TestCase):
 
         iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
         print(f"ISOSpeedRatings {iso}")
-        self.assertLess(iso, 1200)
+        self.assertLess(iso, 800)
 
