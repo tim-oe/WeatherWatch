@@ -1,7 +1,9 @@
+from typing import Any
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
-from sqlalchemy import Connection, create_engine
+from sqlalchemy import Column, Connection, create_engine, MetaData, Table, inspect
+
 from sqlalchemy.orm import Session, sessionmaker
 
 __all__ = ["DataStore"]
@@ -45,3 +47,30 @@ class DataStore:
         :return: the session
         """
         return self._engine.connect()
+
+    def get_table_def(self, table_name: str):
+
+        # Reflect the database metadata
+        metadata = MetaData()
+        metadata.reflect(self._engine)
+
+        table: Table = Table(table_name, metadata, autoload_with=self._engine)
+
+        # Access table columns
+        #columns: ReadOnlyColumnCollection[str, Column[Any]] = table.columns
+        columns = table.columns
+
+        for column in columns:
+            print(column.name, column.type)
+
+        # Inspect the database for more detailed metadata
+        inspector = inspect(self._engine)
+
+        # Get all table names
+        print(inspector.get_table_names())
+
+        # Get primary keys for a table
+        print(inspector.get_pk_constraint(table_name))
+
+        # Get foreign keys for a table
+        print(inspector.get_foreign_keys(table_name))

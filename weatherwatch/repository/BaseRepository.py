@@ -1,6 +1,9 @@
+from datetime import date
 import re
 from typing import Generic, List, TypeVar
 
+from conf.AppConfig import AppConfig
+from conf.DatabaseConfig import DatabaseConfig
 from repository.DataStore import DataStore
 from sqlalchemy import Connection
 from sqlalchemy.orm import DeclarativeBase, Session
@@ -27,6 +30,7 @@ class BaseRepository(Generic[T]):
         :param self: this
         """
         self._entity = entity
+        self._config: DatabaseConfig = AppConfig().database
         self._datastore: DataStore = DataStore()
 
     @property
@@ -93,3 +97,8 @@ class BaseRepository(Generic[T]):
                 con.commit()
         finally:
             con.close()
+
+    def backup(self, from_d: date, to_d: date):
+        cmd = self._config.backup.replace("_TABLE_", self.entity.__table__)
+        cmd = cmd.replace("_FROM_DATE_", from_d.strftime("%Y-%m-%d"))
+        cmd = cmd.replace("_TO_DATE_", to_d.strftime("%Y-%m-%d"))        

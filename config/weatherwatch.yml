@@ -36,6 +36,9 @@ database:
   pool:
     size: 3
     overflow: 3
+  backup:  
+    enable: !ENV tag:yaml.org,2002:bool ${WW_DB_BACKUP_ENABLE:true}
+    folder: !ENV ${WW_DB_BACKUP_FOLDER:backup}
 gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
   serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
