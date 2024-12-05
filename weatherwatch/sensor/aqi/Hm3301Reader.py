@@ -24,8 +24,12 @@ from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
 from py_singleton import singleton
 from sensor.aqi.Hm3301Data import Hm3301Data
-from smbus2 import SMBus, i2c_msg
 from util.Logger import logger
+
+import board
+import busio
+from adafruit_pm25.i2c import PM25_I2C
+
 
 __all__ = ["Hm3301Reader"]
 
@@ -49,42 +53,22 @@ class Hm3301Reader:
 
     def read(self) -> Hm3301Data:
 
-        data: Hm3301Data = None
-        cnt: int = 0
-        while cnt < self._aqiConfig.retry and data is None:
+        reset_pin = None
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+        pm25 = PM25_I2C(i2c, reset_pin, address=Hm3301Reader.HM3301_DEFAULT_I2C_ADDR)
 
-            # TODO what's the arg for
-            with SMBus(Hm3301Reader.SM_BUS) as bus:
-                write = i2c_msg.write(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, [Hm3301Reader.SELECT_I2C_ADDR])
-                bus.i2c_rdwr(write)
+        time.sleep(1)
 
-            time.sleep(self._aqiConfig.waitSec)
+        aqdata = pm25.read()
 
-            with SMBus(Hm3301Reader.SM_BUS) as bus:
-                read = i2c_msg.read(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, Hm3301Reader.DATA_CNT)
-                bus.i2c_rdwr(read)
-                raw = list(read)
+        data = Hm3301Data()
 
-            sum = 0
-            for i in range(Hm3301Reader.DATA_CNT - 1):
-                sum += raw[i]
-            sum = sum & 0xFF
+        data.pm_1_0_conctrt_std = aqdata["pm10 standard"]
+        data.pm_2_5_conctrt_std = aqdata["pm25 standard"]
+        data.pm_10_conctrt_std = aqdata["pm100 standard"]
 
-            if sum == raw[28]:
-                data = Hm3301Data()
+        data.pm_1_0_conctrt_atmosph = aqdata["pm10 env"]
+        data.pm_2_5_conctrt_atmosph = aqdata["pm25 env"]
+        data.pm_10_conctrt_atmosph = aqdata["pm100 env"]
 
-                data.pm_1_0_conctrt_std = raw[4] << 8 | raw[5]
-                data.pm_2_5_conctrt_std = raw[6] << 8 | raw[7]
-                data.pm_10_conctrt_std = raw[8] << 8 | raw[9]
-
-                data.pm_1_0_conctrt_atmosph = raw[10] << 8 | raw[11]
-                data.pm_2_5_conctrt_atmosph = raw[12] << 8 | raw[13]
-                data.pm_10_conctrt_atmosph = raw[14] << 8 | raw[15]
-
-            else:
-                self.logger.warning("HM3301 crc check failed")
-
-        if data is None:
-            raise ValueError("retry exceeded")
-        else:
-            return data
+        return data
