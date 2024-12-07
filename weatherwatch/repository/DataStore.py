@@ -17,6 +17,8 @@ class DataStore:
     https://docs.sqlalchemy.org/en/20/core/engines.html#creating-urls-programmatically
     https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
     https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration
+    https://sw-amt.ws/python/_build/html/index.html
+    
     """
 
     def __init__(self):
