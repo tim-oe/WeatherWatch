@@ -34,7 +34,7 @@ class BackupSvc:
             backup_folder = str(self._FileBackupConfig.folder.resolve())
             if self._cameraConfig.enable:
                 self.logger.info("starting camera backup")
-                folder = str(self._cameraConfig.folder.absolute())
+                folder = str(self._cameraConfig.folder.resolve())
                 if folder.endswith("/"):
                     folder = folder.rstrip("/")
 
@@ -47,7 +47,7 @@ class BackupSvc:
 
             if self._timelapseConfig.enable:
                 self.logger.info("starting timelapse backup")
-                folder = str(self._timelapseConfig.folder.absolute())
+                folder = str(self._timelapseConfig.folder.resolve())
                 if folder.endswith("/"):
                     folder = folder.rstrip("/")
 

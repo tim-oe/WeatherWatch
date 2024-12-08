@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta
+import os
 from pathlib import Path
 import shutil
 import unittest
+import glob
 
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
@@ -17,28 +20,33 @@ class BackupSvcTest(unittest.TestCase):
         self.tlc: TimelapseConfig = AppConfig().timelapse
         for f in self.fbc.folder.iterdir():
             if(f.is_dir):
-                shutil.rmtree(f.resolve())
+                shutil.rmtree(f)
             else:    
                 f.unlink()
 
     def teardown_method(self, test_method):
         for f in self.fbc.folder.iterdir():
             if(f.is_dir):
-                shutil.rmtree(f.resolve())
+                shutil.rmtree(f)
             else:
                  f.unlink()
         
     def test_file(self):
-        test_dir = Path("tests/data/img")       
+        test_dir = Path("tests/data/img")
+        cutoff_date = datetime.now() - timedelta(days=self.fbc.img_old + 1)
+       
         for f in test_dir.iterdir():
             if(f.is_file):
-                shutil.copy(f.resolve(), self.cc.folder.resolve())    
+                shutil.copy(f, self.cc.folder)
+                os.utime(f, (cutoff_date.timestamp(), cutoff_date.timestamp()))
 
         test_dir = Path("tests/data/vids")       
+        cutoff_date = datetime.now() - timedelta(days=self.fbc.vid_old + 1)
         for f in test_dir.iterdir():
             if(f.is_file):
-                shutil.copy(f.resolve(), self.tlc.folder.resolve())    
- 
+                shutil.copy(f, self.tlc.folder)
+                os.utime(f, (cutoff_date.timestamp(), cutoff_date.timestamp()))
+        
         self.svc.camera()
         
         found_img: bool = False
@@ -51,6 +59,8 @@ class BackupSvcTest(unittest.TestCase):
     
         self.assertTrue(found_img)       
         
+        self.assertEqual(0, len(glob.glob(str(self.cc.folder / '*'))))
+        
         found_vid: bool = False
         vid_dir = Path(self.fbc.folder / self.tlc.folder.name)       
                 
@@ -60,3 +70,5 @@ class BackupSvcTest(unittest.TestCase):
                 break
     
         self.assertTrue(found_vid)               
+        
+        self.assertEqual(0, len(glob.glob(str(self.tlc.folder / '*'))))
