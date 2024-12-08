@@ -94,3 +94,4 @@ class Camera:
         imageName = f"{stamp}{self._cameraConfig.extension}"
 
         return str(self._baseDir / imageName)
+
