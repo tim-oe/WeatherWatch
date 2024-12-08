@@ -35,7 +35,6 @@ class FileBackupConfig:
         """
         return self.__dict__[FileBackupConfig.ENABLE_KEY]
 
-
     @property
     def folder(self) -> Path:
         """

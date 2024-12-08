@@ -176,7 +176,7 @@ class AppConfig:
         return self._file_backup
 
     @property
-    def gps(self) -> AQIConfig:
+    def gps(self) -> GPSConfig:
         """
         gps property getter
         :param self: this

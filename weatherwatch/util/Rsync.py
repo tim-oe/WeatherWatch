@@ -1,16 +1,14 @@
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-import sys
-from subprocess import PIPE, Popen, TimeoutExpired
-from py_singleton import singleton
+from subprocess import Popen, TimeoutExpired
 
 from util.Logger import logger
 
-__all__ = ["TimelapseSvc"]
+__all__ = ["Rsync"]
 
 
 @logger
-@singleton
 class Rsync:
     """
     simple wrapper around rsync, assumes on path
@@ -25,8 +23,8 @@ class Rsync:
         self.logger.info(f"starting rsync {src} -> {dest}")
 
         cmd = Rsync.BASE_CMD.copy()
-        cmd.append(src) 
-        cmd.append(dest) 
+        cmd.append(src)
+        cmd.append(dest)
 
         p: Popen = Popen(
             cmd,
@@ -49,8 +47,8 @@ class Rsync:
             p.kill()
 
     def purge(self, src: str, days_ago: int):
-        dir: Path = Path(src)
         cutoff_date = datetime.now() - timedelta(days=days_ago)
+        dir: Path = Path(src)
 
         for file in dir.iterdir():
             if file.is_file():

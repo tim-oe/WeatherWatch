@@ -11,7 +11,7 @@ import json
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from queue import Empty, Queue
-from subprocess import PIPE, STDOUT, Popen
+from subprocess import PIPE, Popen
 from typing import List
 
 from conf.AppConfig import AppConfig
@@ -191,7 +191,7 @@ class SDRReader:
             self._cmd,
             stdout=PIPE,
             stderr=PIPE,
-            text=True,            
+            text=True,
             close_fds=SDRReader.ON_POSIX,
         )
 

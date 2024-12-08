@@ -1,5 +1,5 @@
 import sys
-from subprocess import PIPE, Popen, TimeoutExpired
+from subprocess import Popen, TimeoutExpired
 
 from py_singleton import singleton
 from util.Logger import logger

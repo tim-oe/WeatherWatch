@@ -61,7 +61,7 @@ class DataStore:
 
             print(f"\n\n****{t}****")
 
-            #columns: ReadOnlyColumnCollection[str, Column[Any]] = table.columns
+            # columns: ReadOnlyColumnCollection[str, Column[Any]] = table.columns
             columns = table.columns
 
             for column in columns:
@@ -70,4 +70,3 @@ class DataStore:
             print(inspector.get_pk_constraint(t))
             print(inspector.get_foreign_keys(t))
             print(f"****{t}****")
-        
