@@ -1,9 +1,7 @@
-from typing import Any
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
-from sqlalchemy import Column, Connection, create_engine, MetaData, Table, inspect
-
+from sqlalchemy import Connection, Dialect, Engine, MetaData, Table, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 __all__ = ["DataStore"]
@@ -17,8 +15,6 @@ class DataStore:
     https://docs.sqlalchemy.org/en/20/core/engines.html#creating-urls-programmatically
     https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
     https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration
-    https://sw-amt.ws/python/_build/html/index.html
-    
     """
 
     def __init__(self):
@@ -29,7 +25,12 @@ class DataStore:
         self._dbConfig: DatabaseConfig = AppConfig().database
 
         # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly
-        self._engine = create_engine(self._dbConfig.url, max_overflow=3, pool_size=3, pool_pre_ping=True)
+        self._engine: Engine = create_engine(
+            self._dbConfig.url,
+            max_overflow=self._dbConfig.pool_size,
+            pool_size=self._dbConfig.pool_overflow,
+            pool_pre_ping=True,
+        )
 
     @property
     def session(self) -> Session:
@@ -50,29 +51,9 @@ class DataStore:
         """
         return self._engine.connect()
 
-    def get_table_def(self, table_name: str):
+    def get_table_def(self, table_name: str) -> Table:
 
-        # Reflect the database metadata
         metadata = MetaData()
         metadata.reflect(self._engine)
 
-        table: Table = Table(table_name, metadata, autoload_with=self._engine)
-
-        # Access table columns
-        #columns: ReadOnlyColumnCollection[str, Column[Any]] = table.columns
-        columns = table.columns
-
-        for column in columns:
-            print(column.name, column.type)
-
-        # Inspect the database for more detailed metadata
-        inspector = inspect(self._engine)
-
-        # Get all table names
-        print(inspector.get_table_names())
-
-        # Get primary keys for a table
-        print(inspector.get_pk_constraint(table_name))
-
-        # Get foreign keys for a table
-        print(inspector.get_foreign_keys(table_name))
+        return Table(table_name, metadata, autoload_with=self._engine)

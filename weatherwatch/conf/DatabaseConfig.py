@@ -16,16 +16,16 @@ class DatabaseConfig:
     USERNAME_KEY = "username"
     PASSWORD_KEY = "password"
     PRODUCTION_KEY = "production"
+    POOL_KEY = "pool"
+    SIZE_KEY = "size"
+    OVERFLOW_KEY = "overflow"
     BACKUP_KEY = "backup"
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
-    
+
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
     PASSWORD_ENVAR = "WW_DB_PASSWORD"
-
-    # sql dump backup command
-    BACKUP_CMD: str = "mysqldump --opt --host=_DB_HOST_ --user=_DB_USER_ --password=_DB_PWD_ _DB_ _TABLE_ --skip-extended-insert --insert-ignore --no-create-info --where=\"BETWEEN '_TO_DATE_' AND '_FROM_DATE'\" > _SQL_FILE_"
 
     # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
     # https://ankushkunwar7777.medium.com/connect-mysql-to-sqlalchemy-in-python-b94c34568818
@@ -74,6 +74,24 @@ class DatabaseConfig:
         )
 
     @property
+    def pool_size(self) -> int:
+        """
+        pool_size property getter
+        :param self: this
+        :return: the pool_size
+        """
+        return self.__dict__[DatabaseConfig.POOL_KEY][DatabaseConfig.SIZE_KEY]
+
+    @property
+    def pool_overflow(self) -> int:
+        """
+        pool_size property getter
+        :param self: this
+        :return: the pool_size
+        """
+        return self.__dict__[DatabaseConfig.POOL_KEY][DatabaseConfig.OVERFLOW_KEY]
+
+    @property
     def backupEnable(self) -> bool:
         """
         backupEnable property getter
@@ -90,11 +108,3 @@ class DatabaseConfig:
         :return: the backupFolder
         """
         return self.__dict__[DatabaseConfig.BACKUP_KEY][DatabaseConfig.FOLDER_KEY]
-
-    @property
-    def backup(self) -> str:
-        cmd = DatabaseConfig.BACKUP_CMD.replace("_DB_HOST_", self.__dict__[DatabaseConfig.HOST_KEY])
-        cmd = cmd.replace("_DB_USER_", self.__dict__[DatabaseConfig.USERNAME_KEY])
-        cmd = cmd.replace("_DB_PWD_", self.__dict__[DatabaseConfig.PASSWORD_KEY])
-        cmd = cmd.replace("_DB_", self.__dict__[DatabaseConfig.NAME_KEY])
-        return cmd

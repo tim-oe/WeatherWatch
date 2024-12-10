@@ -1,5 +1,6 @@
 
 from abc import ABC, abstractmethod
+import pathlib
 import unittest
 
 from repository.BaseRepository import BaseRepository
@@ -22,6 +23,7 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
     def teardown_class(self):
         repo: BaseRepository = self.getRepo(self)
         repo.exec(f'truncate {repo.entity.__table__}')
+        pathlib.Path("test.sql").unlink(missing_ok=True)
         
         # TODO transactions.
         # self.getRepo(self)._datastore.stop()
