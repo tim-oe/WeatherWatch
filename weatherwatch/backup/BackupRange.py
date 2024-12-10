@@ -13,9 +13,10 @@ class BackupRange:
     backup date range data
     """
 
-    def __init__(self, from_date: date, to_date: date):
+    def __init__(self, from_date: date, to_date: date, file_prefix: str):
         self._from_date = from_date
         self._to_date = to_date
+        self._file_prefix = file_prefix
 
     @property
     def from_date(self) -> date:
@@ -35,6 +36,15 @@ class BackupRange:
         """
         return self._to_date
 
+    @property
+    def file_prefix(self) -> str:
+        """
+        _file_prefix string property getter
+        :param self: this
+        :return: the _file_prefix
+        """
+        return self._file_prefix
+
     @staticmethod
     def prev_week() -> Self:
         today: date = date.today()
@@ -42,7 +52,7 @@ class BackupRange:
         from_date: date = today - timedelta(days=today.weekday(), weeks=1)
         to_date: date = today - timedelta(days=today.weekday() + 1)
 
-        return BackupRange(from_date, to_date)
+        return BackupRange(from_date, to_date, from_date.strftime("%Y-%m-%d"))
 
     @staticmethod
     def prev_month() -> Self:
@@ -54,4 +64,4 @@ class BackupRange:
         from_date: date = today.replace(day=1) - relativedelta(months=1)
         to_date: date = from_date + relativedelta(months=1) - timedelta(days=1)
 
-        return BackupRange(from_date, to_date)
+        return BackupRange(from_date, to_date, from_date.strftime("%Y-%m"))

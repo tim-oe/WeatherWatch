@@ -1,7 +1,7 @@
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
-from sqlalchemy import Connection, Dialect, Engine, MetaData, Table, create_engine
+from sqlalchemy import Connection, Engine, MetaData, Table, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 __all__ = ["DataStore"]

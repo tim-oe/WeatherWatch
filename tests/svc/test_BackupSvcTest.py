@@ -7,7 +7,7 @@ import glob
 
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
-from conf.FileBackupConfig import FileBackupConfig
+from conf.BackupConfig import BackupConfig
 from conf.TimelapseConfig import TimelapseConfig
 from svc.BackupSvc import BackupSvc
 
@@ -16,7 +16,7 @@ class BackupSvcTest(unittest.TestCase):
     def setup_method(self, test_method):
         self.svc: BackupSvc = BackupSvc()
         self.cc: CameraConfig = AppConfig().camera
-        self.fbc: FileBackupConfig = AppConfig().file_backup
+        self.fbc: BackupConfig = AppConfig().backup
         self.tlc: TimelapseConfig = AppConfig().timelapse
         for f in self.fbc.folder.iterdir():
             if(f.is_dir):
@@ -72,3 +72,6 @@ class BackupSvcTest(unittest.TestCase):
         self.assertTrue(found_vid)               
         
         self.assertEqual(0, len(glob.glob(str(self.tlc.folder / '*'))))
+
+    def test_db(self):
+        self.svc.db()

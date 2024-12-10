@@ -2,11 +2,13 @@ from pathlib import Path
 
 from util.Logger import logger
 
-__all__ = ["FileBackupConfig"]
+__all__ = ["BackupConfig"]
 
 
 @logger
-class FileBackupConfig:
+class BackupConfig:
+    FILE_KEY = "file"
+    DB_KEY = "db"
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
     PURGE_KEY = "purge"
@@ -27,22 +29,31 @@ class FileBackupConfig:
             self.__dict__[key] = config[key]
 
     @property
-    def enable(self) -> bool:
-        """
-        enable property getter
-        :param self: this
-        :return: the enable
-        """
-        return self.__dict__[FileBackupConfig.ENABLE_KEY]
-
-    @property
     def folder(self) -> Path:
         """
         folder property getter
         :param self: this
         :return: the folder
         """
-        return Path(self.__dict__[FileBackupConfig.FOLDER_KEY])
+        return Path(self.__dict__[BackupConfig.FOLDER_KEY])
+
+    @property
+    def file_enable(self) -> bool:
+        """
+        file_enable property getter
+        :param self: this
+        :return: the file_enable
+        """
+        return self.__dict__[BackupConfig.FILE_KEY][BackupConfig.ENABLE_KEY]
+
+    @property
+    def db_enable(self) -> bool:
+        """
+        db_enable property getter
+        :param self: this
+        :return: the db_enable
+        """
+        return self.__dict__[BackupConfig.DB_KEY][BackupConfig.ENABLE_KEY]
 
     @property
     def purge_enable(self) -> bool:
@@ -51,7 +62,7 @@ class FileBackupConfig:
         :param self: this
         :return: the purge_enable
         """
-        return self.__dict__[FileBackupConfig.PURGE_KEY][FileBackupConfig.ENABLE_KEY]
+        return self.__dict__[BackupConfig.PURGE_KEY][BackupConfig.ENABLE_KEY]
 
     @property
     def img_old(self) -> int:
@@ -60,7 +71,7 @@ class FileBackupConfig:
         :param self: this
         :return: the img_old
         """
-        return self.__dict__[FileBackupConfig.PURGE_KEY][FileBackupConfig.IMG_OLD_KEY]
+        return self.__dict__[BackupConfig.PURGE_KEY][BackupConfig.IMG_OLD_KEY]
 
     @property
     def vid_old(self) -> int:
@@ -69,4 +80,4 @@ class FileBackupConfig:
         :param self: this
         :return: the vid_old
         """
-        return self.__dict__[FileBackupConfig.PURGE_KEY][FileBackupConfig.VID_OLD_KEY]
+        return self.__dict__[BackupConfig.PURGE_KEY][BackupConfig.VID_OLD_KEY]
