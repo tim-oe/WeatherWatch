@@ -6,6 +6,7 @@ from conf.AQIConfig import AQIConfig
 from conf.CameraConfig import CameraConfig
 from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
+from conf.FileBackupConfig import FileBackupConfig
 from conf.GPSConfig import GPSConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
@@ -34,6 +35,7 @@ class AppConfig:
     SENSORS_KEY = "sensors"
     DATABASE_KEY = "database"
     CAMERA_KEY = "camera"
+    FILE_BACKUP_KEY = "file_backup"
     SCHEDULER_KEY = "scheduler"
     DASHBOARD_KEY = "dashboard"
     TIMELAPSE_KEY = "timelapse"
@@ -66,23 +68,26 @@ class AppConfig:
 
         self.logger.info("loaded %s config", AppConfig.SENSORS_KEY)
 
-        self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
-        self.logger.info("loaded %s config", AppConfig.CAMERA_KEY)
-
         self._aqi = AQIConfig(self._conf[AppConfig.AQI_KEY])
         self.logger.info("loaded %s config", AppConfig.AQI_KEY)
 
-        self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
-        self.logger.info("loaded %s config", AppConfig.GPS_KEY)
+        self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
+        self.logger.info("loaded %s config", AppConfig.CAMERA_KEY)
+
+        self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
+        self.logger.info("loaded %s config", AppConfig.DASHBOARD_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
         self.logger.info("loaded %s config", AppConfig.DATABASE_KEY)
 
+        self._file_backup = FileBackupConfig(self._conf[AppConfig.FILE_BACKUP_KEY])
+        self.logger.info("loaded %s config", AppConfig.FILE_BACKUP_KEY)
+
+        self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
+        self.logger.info("loaded %s config", AppConfig.GPS_KEY)
+
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         self.logger.info("loaded %s config", AppConfig.SCHEDULER_KEY)
-
-        self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
-        self.logger.info("loaded %s config", AppConfig.DASHBOARD_KEY)
 
         self._timelapse = TimelapseConfig(self._conf[AppConfig.TIMELAPSE_KEY])
         self.logger.info("loaded %s config", AppConfig.TIMELAPSE_KEY)
@@ -126,24 +131,6 @@ class AppConfig:
         return self._sensors[name]
 
     @property
-    def camera(self) -> CameraConfig:
-        """
-        camera property getter
-        :param self: this
-        :return: the camera
-        """
-        return self._camera
-
-    @property
-    def timelapse(self) -> TimelapseConfig:
-        """
-        timelapse property getter
-        :param self: this
-        :return: the timelapse
-        """
-        return self._timelapse
-
-    @property
     def aqi(self) -> AQIConfig:
         """
         aqi property getter
@@ -153,13 +140,22 @@ class AppConfig:
         return self._aqi
 
     @property
-    def gps(self) -> AQIConfig:
+    def camera(self) -> CameraConfig:
         """
-        gps property getter
+        camera property getter
         :param self: this
-        :return: the gps
+        :return: the camera
         """
-        return self._gps
+        return self._camera
+
+    @property
+    def dashboard(self) -> DashConfig:
+        """
+        dashboard property getter
+        :param self: this
+        :return: the dashboard
+        """
+        return self._dashboard
 
     @property
     def database(self) -> DatabaseConfig:
@@ -171,6 +167,24 @@ class AppConfig:
         return self._database
 
     @property
+    def file_backup(self) -> FileBackupConfig:
+        """
+        file_backup property getter
+        :param self: this
+        :return: the file_backup
+        """
+        return self._file_backup
+
+    @property
+    def gps(self) -> GPSConfig:
+        """
+        gps property getter
+        :param self: this
+        :return: the gps
+        """
+        return self._gps
+
+    @property
     def scheduler(self) -> SchedulerConfig:
         """
         scheduler property getter
@@ -180,13 +194,13 @@ class AppConfig:
         return self._scheduler
 
     @property
-    def dashboard(self) -> DashConfig:
+    def timelapse(self) -> TimelapseConfig:
         """
-        dashboard property getter
+        timelapse property getter
         :param self: this
-        :return: the dashboard
+        :return: the timelapse
         """
-        return self._dashboard
+        return self._timelapse
 
     @property
     def wu(self) -> WUConfig:

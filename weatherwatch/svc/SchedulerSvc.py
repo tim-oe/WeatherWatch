@@ -6,6 +6,7 @@ from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
 from svc.AQISvc import AQISvc
+from svc.BackupSvc import BackupSvc
 from svc.CameraSvc import CameraSvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
@@ -47,6 +48,14 @@ def camera():
     svc.process()
 
 
+def file_backup():
+    """
+    schedule entry point for file backup task
+    """
+    svc = BackupSvc()
+    svc.camera()
+
+
 def timelapse():
     """
     schedule entry point for timelapse task
@@ -67,6 +76,7 @@ def pimetrics():
 class SchedulerSvc:
     AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
+    FILE_BACKUP_JOB = "file_backup"
     PI_METRICS_JOB = "pi_metrics"
     SENSOR_JOB = "sensor"
     TIMELAPSE_JOB = "timelapse"
@@ -135,6 +145,20 @@ class SchedulerSvc:
                 minute="6",
                 name=SchedulerSvc.TIMELAPSE_JOB,
                 id=SchedulerSvc.TIMELAPSE_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60,
+            )
+
+        if self._appConfig.file_backup.enable is True:
+            self._scheduler.add_job(
+                file_backup,
+                "cron",
+                hour=self._schedulerConfig.file_back_hour,
+                minute="7",
+                name=SchedulerSvc.FILE_BACKUP_JOB,
+                id=SchedulerSvc.FILE_BACKUP_JOB,
                 coalesce=True,
                 max_instances=1,
                 replace_existing=True,
