@@ -11,7 +11,7 @@ import json
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from queue import Empty, Queue
-from subprocess import PIPE, STDOUT, Popen
+from subprocess import PIPE, Popen
 from typing import List
 
 from conf.AppConfig import AppConfig
@@ -118,12 +118,12 @@ class SDRReader:
         :param queue: the queue to push data to
         """
         try:
-            for line in iter(out.readline, b""):
+            for line in out:
                 try:
                     json.loads(line)
-                    queue.put(line)
+                    queue.put(line.strip())
                 except ValueError:
-                    self.logger.debug(line.decode())
+                    self.logger.debug(line)
                     pass
         except Exception:
             self.logger.exception("line processing error")
@@ -131,7 +131,7 @@ class SDRReader:
         finally:
             out.close()
 
-    def processRecord(self, line, sensors: dict, reads: List[BaseData], processed: List[str]):
+    def processRecord(self, line: str, sensors: dict, reads: List[BaseData], processed: List[str]):
         """
         process sensor data
         """
@@ -190,7 +190,8 @@ class SDRReader:
         p = Popen(
             self._cmd,
             stdout=PIPE,
-            stderr=STDOUT,
+            stderr=PIPE,
+            text=True,
             close_fds=SDRReader.ON_POSIX,
         )
 
@@ -208,7 +209,7 @@ class SDRReader:
                 except Empty:
                     pass
                 else:  # got line
-                    self.processRecord(data.decode(), sensors, reads, processed)
+                    self.processRecord(data, sensors, reads, processed)
 
                 sys.stdout.flush()
                 duration = self.duration(start)

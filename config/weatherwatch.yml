@@ -36,6 +36,13 @@ database:
   pool:
     size: 3
     overflow: 3
+file_backup:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_BACKUP_ENABLE:true}
+  folder: !ENV ${WW_BACKUP_FOLDER:backup}
+  purge:
+    enable: !ENV tag:yaml.org,2002:bool ${WW_PURGE_ENABLE:true}
+    img_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_IMG_OLD:14}
+    vid_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_VID_OLD:90}
 gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
   serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
@@ -48,9 +55,11 @@ scheduler:
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
+  file_backup:
+    hour: !ENV tag:yaml.org,2002:int ${WW_FILE_BACKUP_HOUR:2}
   pimetrics:
-    # sensystem metrics polling for looking for resource issues
-    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
+    # system metrics polling for looking for resource issues
+    interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}  
   sensor:
     # sensor polling interval should not be < 5
     interval: !ENV tag:yaml.org,2002:int ${WW_SENSOR_INTERVAL:5}
@@ -61,7 +70,7 @@ scheduler:
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
-    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:120}
+    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
   sensors:
       # doing device reset of outdoor sensor will change the id
       # device is the 

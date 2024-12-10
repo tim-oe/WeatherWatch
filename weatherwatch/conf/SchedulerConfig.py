@@ -6,15 +6,14 @@ from util.Logger import logger
 
 @logger
 class SchedulerConfig:
-    SENSOR_KEY = "sensor"
-    CAMERA_KEY = "camera"
     AQI_KEY = "aqi"
+    CAMERA_KEY = "camera"
+    FILE_BACKUP_KEY = "file_backup"
     PIMETRICS_KEY = "pimetrics"
+    SENSOR_KEY = "sensor"
     TIMELAPSE_KEY = "timelapse"
     WU_KEY = "weather_undergound"
     INTERVAL_KEY = "interval"
-    START_KEY = "start"
-    STOP_KEY = "stop"
     HOUR_KEY = "hour"
 
     """
@@ -76,24 +75,6 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def cameraStart(self) -> int:
-        """
-        camera start property getter
-        :param self: this
-        :return: the camera start
-        """
-        return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.START_KEY]
-
-    @property
-    def cameraStop(self) -> int:
-        """
-        camera stop property getter
-        :param self: this
-        :return: the camera stop
-        """
-        return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.STOP_KEY]
-
-    @property
     def timelapseHour(self) -> int:
         """
         timelapse Hour property getter
@@ -101,3 +82,12 @@ class SchedulerConfig:
         :return: the timelapse Hour
         """
         return self.__dict__[SchedulerConfig.TIMELAPSE_KEY][SchedulerConfig.HOUR_KEY]
+
+    @property
+    def file_back_hour(self) -> int:
+        """
+        file_backup Hour property getter
+        :param self: this
+        :return: the file_backup Hour
+        """
+        return self.__dict__[SchedulerConfig.FILE_BACKUP_KEY][SchedulerConfig.HOUR_KEY]

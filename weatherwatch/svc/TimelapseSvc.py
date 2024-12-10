@@ -25,12 +25,20 @@ class TimelapseSvc:
 
         p: Popen = Popen(
             TimelapseSvc.CMD,
+            # stdout=PIPE,
+            # stderr=PIPE,
+            # text=True,
             close_fds=TimelapseSvc.ON_POSIX,
         )
 
         try:
             p.wait(timeout=60 * 15)
             self.logger.info("timelapse subprocess complete %s", p.returncode)
+            # for line in p.stdout:
+            #     self.logger.debug(line.strip())
+
+            # for line in p.stderr:
+            #     self.logger.error(line.strip())
         except TimeoutExpired:
             self.logger.exception("processe timed out")
             p.kill()

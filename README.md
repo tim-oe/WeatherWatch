@@ -40,7 +40,8 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - process reliability and longevity
     - no rebooting functionality
     - memory and resource stability
-- [poetry](https://python-poetry.org/docs/) for dependancy management 
+- [poetry](https://python-poetry.org/docs/) for dependancy management
+    - [poetry-up-plugin](https://github.com/MousaZeidBaker/poetry-plugin-up)
 - [pyway](https://github.com/sergiosbx/pyway) for schema managment
 - [sqlalchemy](https://docs.sqlalchemy.org/en/20/) for orm persistence
 - configuration overrides external to source code
