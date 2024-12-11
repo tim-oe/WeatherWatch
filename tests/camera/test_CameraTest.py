@@ -36,17 +36,14 @@ class CameraTest(unittest.TestCase):
 
         pprint.pprint(exif_dict)
 
-        try:
-            num, den = exif_dict["Exif"][piexif.ExifIFD.ExposureTime]
-            print(f"ExposureTime {num}/{den} {num/den} sec")
+        num, den = exif_dict["Exif"][piexif.ExifIFD.ExposureTime]
+        print(f"ExposureTime {num}/{den} {num/den} sec")
 
-            iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
-            print(f"ISOSpeedRatings {iso}")
+        iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
+        print(f"ISOSpeedRatings {iso}")
 
-            self.assertGreater(num, den)
-            self.assertGreater(iso, 200)
-        except KeyError as e:
-            print(str(e))
+        self.assertGreater(num, den)
+        self.assertGreater(iso, 200)
     
         for f in cc.folder.iterdir():
             f.unlink()
@@ -77,3 +74,37 @@ class CameraTest(unittest.TestCase):
         self.assertLess(num, den)
         self.assertLess(iso, 800)
 
+    # def test(self):
+    #     ac: AppConfig = AppConfig()
+    #     cc: CameraConfig = ac.camera
+        
+    #     c: Camera = Camera()
+        
+    #     for f in cc.folder.iterdir():
+    #         f.unlink()
+
+    #     c.process(cc.luxLimit + 1) 
+        
+    #     found: bool = False
+    #     image_path: str
+                
+    #     for file in cc.folder.glob(f"*{cc.extension}"):       
+    #         found = True
+    #         image_path = str(Path(file.absolute()).resolve())
+    
+    #     self.assertTrue(found)        
+
+    #     print(f"img {image_path}")
+    
+    #     exif_dict = piexif.load(image_path)
+
+    #     pprint.pprint(exif_dict)
+
+    #     num, den = exif_dict["Exif"][piexif.ExifIFD.ExposureTime]
+    #     print(f"ExposureTime {num}/{den} {num/den} sec")
+
+    #     iso = exif_dict["Exif"][piexif.ExifIFD.ISOSpeedRatings]
+    #     print(f"ISOSpeedRatings {iso}")
+
+    #     for f in cc.folder.iterdir():
+    #         f.unlink()

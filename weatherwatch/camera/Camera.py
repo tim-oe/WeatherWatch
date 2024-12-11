@@ -67,14 +67,15 @@ class Camera:
             
             controls = {}
             if lux <= self._cameraConfig.luxLimit:
-                #pass
-                 controls = {
-                        "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
-                        "AnalogueGain": self._cameraConfig.analogueGain,
-                    }
-            # else: # clear controls
-            #     #pass
-            #     self._picam2.controls = Controls(self._picam2)
+                controls = {
+                    "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
+                    "AnalogueGain": self._cameraConfig.analogueGain,
+                }
+            else: # clear controls
+                controls = {
+                    "ExposureTime": 0,
+                    "AnalogueGain": 0,
+                }
 
             self._picam2.start()
 
