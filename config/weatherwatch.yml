@@ -90,7 +90,7 @@ sdr:
         device: 20
       - name: indoor_basement   
         model: Ambientweather-F007TH 
-        id: 95 
+        id: 206 
         channel: 3 
         dataClass: IndoorData
         device: 20

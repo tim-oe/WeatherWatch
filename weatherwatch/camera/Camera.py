@@ -43,49 +43,55 @@ class Camera:
 
         self._baseDir.mkdir(parents=True, exist_ok=True)
 
+        tuning = None
+        if self._cameraConfig.tuningEnable is True:
+            tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
+
+        self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
+
     def process(self, lux: int) -> str:
         if self._cameraConfig.enable is False:
             self.logger.debug("camera not enabled")
             return
 
         try:
-            tuning = None
-            if self._cameraConfig.tuningEnable is True:
-                tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
-
-            picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
+            self._picam2.start_preview(Preview.NULL)
 
             # TODO is this needed?
             time.sleep(1)
 
-            picam2.start_preview(Preview.NULL)
+            preview_config = self._picam2.create_preview_configuration()
+            self._picam2.configure(preview_config)
 
-            preview_config = picam2.create_preview_configuration()
-            picam2.configure(preview_config)
-
+            controls = {}
             if lux <= self._cameraConfig.luxLimit:
-                picam2.set_controls(
-                    {
-                        "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
-                        "AnalogueGain": self._cameraConfig.analogueGain,
-                    }
-                )
+                controls = {
+                    "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
+                    "AnalogueGain": self._cameraConfig.analogueGain,
+                }
+            else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
+                controls = {
+                    "ExposureTime": 0,
+                    "AnalogueGain": 0,
+                }
 
-            picam2.start()
-            # TODO is this needed?
+            self._picam2.start()
+
             time.sleep(1)
 
             imgFile: str = self.imageFile()
-            capture_config = picam2.create_still_configuration()
-            picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
+            capture_config = self._picam2.create_still_configuration(controls=controls)
+            # TODO inject exif data here
+            self._picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
 
             return imgFile
         except Exception as e:
+            self.logger.exception("failed to take pic...")
             raise Exception("failed to take pic...") from e
         finally:
-            picam2.stop_preview()
-            picam2.stop()
-            picam2.close()
+            self._picam2.stop_preview()
+            self._picam2.stop()
+            # self._picam2.close()
 
     def imageFile(self) -> str:
         now = datetime.datetime.now()
