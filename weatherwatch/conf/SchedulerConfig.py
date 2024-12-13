@@ -8,6 +8,7 @@ from util.Logger import logger
 class SchedulerConfig:
     AQI_KEY = "aqi"
     CAMERA_KEY = "camera"
+    DB_BACKUP_KEY = "db_backup"
     FILE_BACKUP_KEY = "file_backup"
     PIMETRICS_KEY = "pimetrics"
     SENSOR_KEY = "sensor"
@@ -82,6 +83,15 @@ class SchedulerConfig:
         :return: the timelapse Hour
         """
         return self.__dict__[SchedulerConfig.TIMELAPSE_KEY][SchedulerConfig.HOUR_KEY]
+
+    @property
+    def db_back_hour(self) -> int:
+        """
+        db_backup Hour property getter
+        :param self: this
+        :return: the db_backup Hour
+        """
+        return self.__dict__[SchedulerConfig.DB_BACKUP_KEY][SchedulerConfig.HOUR_KEY]
 
     @property
     def file_back_hour(self) -> int:

@@ -55,5 +55,5 @@ class Rsync:
                 file_stat = file.stat()
                 modification_time = datetime.fromtimestamp(file_stat.st_mtime)
 
-                if modification_time > cutoff_date:
+                if modification_time < cutoff_date:
                     file.unlink()

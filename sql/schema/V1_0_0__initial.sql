@@ -132,7 +132,7 @@ CREATE TABLE `aqi_sensor` (
     `pm_2_5_conctrt_atmosph` INT UNSIGNED NOT NULL,
     `pm_10_conctrt_atmosph` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`id`, `read_time`),
-	  UNIQUE KEY out_unique_sensor (read_time)
+	  UNIQUE KEY aqi_unique_sensor (read_time)
   )  ENGINE=INNODB DEFAULT CHARSET=utf8mb4
   PARTITION BY RANGE( UNIX_TIMESTAMP(read_time) ) (
     PARTITION p2024 VALUES LESS THAN (UNIX_TIMESTAMP('2025-01-01')),

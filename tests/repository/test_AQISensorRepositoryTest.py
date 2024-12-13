@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import date, timedelta, datetime
 
 from entity.AQISensor import AQISensor
 from repository.AQISensorRepository import AQISensorRepository
@@ -48,9 +48,25 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(l)
         self.assertTrue(len(l) > 0)
 
-    def test_sample(self):
+    def test_clean(self):
         repo: BaseRepository = self.getRepo()
         
         repo.execFile("sql/sample/aqi_sensor.sql")
         
         repo.clean()
+        
+    def test_backup(self):
+        repo: BaseRepository = self.getRepo()        
+        repo.exec(f'truncate {repo.entity.__table__}')
+
+        repo.execFile("sql/sample/aqi_sensor.sql")
+
+        from_date: date = date.today() - timedelta(days=1)
+        to_date: date = date.today() - timedelta(days=-1)
+        
+        repo.backup(from_date, to_date, "test.sql")
+        
+        repo.exec(f'truncate {repo.entity.__table__}')
+
+        repo.execFile("test.sql")
+        

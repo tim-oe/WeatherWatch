@@ -1,7 +1,7 @@
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
-from sqlalchemy import Connection, MetaData, Table, create_engine, inspect
+from sqlalchemy import Connection, Engine, MetaData, Table, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 __all__ = ["DataStore"]
@@ -25,7 +25,12 @@ class DataStore:
         self._dbConfig: DatabaseConfig = AppConfig().database
 
         # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly
-        self._engine = create_engine(self._dbConfig.url, max_overflow=3, pool_size=3, pool_pre_ping=True)
+        self._engine: Engine = create_engine(
+            self._dbConfig.url,
+            max_overflow=self._dbConfig.pool_size,
+            pool_size=self._dbConfig.pool_overflow,
+            pool_pre_ping=True,
+        )
 
     @property
     def session(self) -> Session:
@@ -46,27 +51,9 @@ class DataStore:
         """
         return self._engine.connect()
 
-    def get_schema_def(self):
+    def get_table_def(self, table_name: str) -> Table:
 
-        # Reflect the database metadata
         metadata = MetaData()
         metadata.reflect(self._engine)
 
-        # Inspect the database for more detailed metadata
-        inspector = inspect(self._engine)
-        print(f"inspector {type(inspector)}")
-
-        for t in inspector.get_table_names():
-            table: Table = Table(t, metadata, autoload_with=self._engine)
-
-            print(f"\n\n****{t}****")
-
-            # columns: ReadOnlyColumnCollection[str, Column[Any]] = table.columns
-            columns = table.columns
-
-            for column in columns:
-                print(column.name, column.type)
-
-            print(inspector.get_pk_constraint(t))
-            print(inspector.get_foreign_keys(t))
-            print(f"****{t}****")
+        return Table(table_name, metadata, autoload_with=self._engine)

@@ -24,7 +24,8 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
     def findLatest(self) -> OutdoorSensor:
         session: Session = self._datastore.session
         try:
-            return session.query(OutdoorSensor).order_by(OutdoorSensor.read_time.desc()).first()
+            val = session.query(OutdoorSensor).order_by(OutdoorSensor.read_time.desc()).first()
+            return val
         finally:
             session.close()
 
@@ -56,3 +57,13 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
                 return Decimal(0.0)
         finally:
             session.close()
+
+    def backup(self, from_date: date, to_date: date, file_name: str):
+        with open(file_name, "w", encoding="utf-8") as f:
+            session: Session = self._datastore.session
+            try:
+                for v in session.query(OutdoorSensor).filter(cast(OutdoorSensor.read_time, DATE).between(from_date, to_date)):
+                    f.write(f"{self.get_insert(v)};\n")
+            finally:
+                f.close()
+                session.close()

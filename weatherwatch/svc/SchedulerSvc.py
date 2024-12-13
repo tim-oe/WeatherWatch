@@ -56,6 +56,14 @@ def file_backup():
     svc.camera()
 
 
+def db_backup():
+    """
+    schedule entry point for file backup task
+    """
+    svc = BackupSvc()
+    svc.db()
+
+
 def timelapse():
     """
     schedule entry point for timelapse task
@@ -76,6 +84,7 @@ def pimetrics():
 class SchedulerSvc:
     AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
+    DB_BACKUP_JOB = "db_backup"
     FILE_BACKUP_JOB = "file_backup"
     PI_METRICS_JOB = "pi_metrics"
     SENSOR_JOB = "sensor"
@@ -151,7 +160,7 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.file_backup.enable is True:
+        if self._appConfig.backup.file_enable is True:
             self._scheduler.add_job(
                 file_backup,
                 "cron",
@@ -159,6 +168,20 @@ class SchedulerSvc:
                 minute="7",
                 name=SchedulerSvc.FILE_BACKUP_JOB,
                 id=SchedulerSvc.FILE_BACKUP_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60,
+            )
+
+        if self._appConfig.backup.db_enable is True:
+            self._scheduler.add_job(
+                db_backup,
+                "cron",
+                hour=self._schedulerConfig.db_back_hour,
+                minute="7",
+                name=SchedulerSvc.DB_BACKUP_JOB,
+                id=SchedulerSvc.DB_BACKUP_JOB,
                 coalesce=True,
                 max_instances=1,
                 replace_existing=True,

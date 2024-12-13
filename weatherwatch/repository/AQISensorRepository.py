@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List
 
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import or_
+from sqlalchemy import DATE, cast, or_
 from sqlalchemy.orm import Session
 
 __all__ = ["AQISensorRepository"]
@@ -33,6 +33,16 @@ class AQISensorRepository(BaseRepository[AQISensor]):
             return session.query(AQISensor).filter(AQISensor.read_time > dt).order_by(AQISensor.read_time.desc()).all()
         finally:
             session.close()
+
+    def backup(self, from_date: date, to_date: date, file_name: str):
+        with open(file_name, "w", encoding="utf-8") as f:
+            session: Session = self._datastore.session
+            try:
+                for v in session.query(AQISensor).filter(cast(AQISensor.read_time, DATE).between(from_date, to_date)):
+                    f.write(f"{self.get_insert(v)};\n")
+            finally:
+                f.close()
+                session.close()
 
     ##################################################################
     # below functions are for data cleaup with funky sensor readings

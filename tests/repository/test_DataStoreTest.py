@@ -6,4 +6,4 @@ class DataStoreTest(unittest.TestCase):
 
     def test(self):
         ds: DataStore = DataStore()
-        ds.get_schema_def()
+        ds.get_table_def("outdoor_sensor")

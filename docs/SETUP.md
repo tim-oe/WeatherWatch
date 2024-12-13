@@ -40,9 +40,8 @@
 - see [init.sh](/init.sh?raw=true) for sdr, project, and circuit python install
     - it's using pip for some local libs, but these should be in he project manifest
 
-
 ## database
-- for dev leveraged docker container with [compose file](/mariadb-docker-compose.yml?raw=true)
+- for dev a docker container can be leveraged with [compose file](/mariadb-docker-compose.yml?raw=true)
     - to start: ```python3 setup.py mysqlUp``` 
     - to stop:  ```python3 setup.py mysqlDown```
     - app user weather:weather     
@@ -60,10 +59,16 @@
     - app WW_DB_USERNAME:WW_DB_PASSWORD
     - [pyway](https://github.com/jasondcamp/pyway?tab=readme-ov-file#configuration)
 - initialize db ```pyway migrate``` 
-    
-## running tests
+
+## loading sample date for dashboard development
+- ```python3 setup.py dbInit```
+
+## helpfull commands
 - all tests:   ```poetry run pytest```
 - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
+- coverage: ```python3 setup.py cover```
+- formating: ```python3 setup.py format```
+- clean the cruft: ```python3 setup.py clean```
 
 ## faq
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)

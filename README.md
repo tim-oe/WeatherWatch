@@ -44,6 +44,7 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
     - [poetry-up-plugin](https://github.com/MousaZeidBaker/poetry-plugin-up)
 - [pyway](https://github.com/sergiosbx/pyway) for schema managment
 - [sqlalchemy](https://docs.sqlalchemy.org/en/20/) for orm persistence
+- [waitress](https://docs.pylonsproject.org/projects/waitress/en/latest/) for WSGI server
 - configuration overrides external to source code
 - extensible sensor configuration
 
