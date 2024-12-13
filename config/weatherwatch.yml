@@ -108,6 +108,7 @@ timelapse:
   codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:avc1}
 weather_undergound:
   enable: !ENV tag:yaml.org,2002:bool ${WW_WU_ENABLE:true}
+  retries: !ENV tag:yaml.org,2002:int ${WW_WU_RETRIES:5}
   station_id: !ENV ${WW_WU_STATION_ID}
   station_key: !ENV ${WW_WU_STATION_KEY}
   api_key: !ENV ${WW_WU_API_KEY}
