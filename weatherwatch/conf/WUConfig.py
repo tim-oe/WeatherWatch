@@ -10,6 +10,7 @@ class WUConfig:
     STATION_ID = "station_id"
     STATION_KEY = "station_key"
     API_KEY = "api_key"
+    RETRIES_KEY = "retries"
     INDOOR_CHANNEL_KEY = "indoor_channel"
 
     """
@@ -33,6 +34,15 @@ class WUConfig:
         :return: the enable
         """
         return self.__dict__[WUConfig.ENABLE_KEY]
+
+    @property
+    def retries(self) -> int:
+        """
+        retries property getter
+        :param self: this
+        :return: the retries
+        """
+        return self.__dict__[WUConfig.RETRIES_KEY]
 
     @property
     def stationId(self):
