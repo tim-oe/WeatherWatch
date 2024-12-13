@@ -50,10 +50,21 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)
 
-    def test_sample(self):
+    def test_backup(self):
         repo: BaseRepository = self.getRepo()        
-        #repo.execFile("sql/sample/outdoor_sensor.sql")
+        repo.exec(f'truncate {repo.entity.__table__}')
 
+        repo.execFile("sql/sample/outdoor_sensor.sql")
+
+        from_date: date = date.today() - timedelta(days=1)
+        to_date: date = date.today() - timedelta(days=-1)
+        
+        repo.backup(from_date, to_date, "test.sql")
+        
+        repo.exec(f'truncate {repo.entity.__table__}')
+
+        repo.execFile("test.sql")
+        
     @staticmethod
     def getSample() -> OutdoorSensor:
             

@@ -3,10 +3,10 @@ import os
 from typing import List
 
 from conf.AQIConfig import AQIConfig
+from conf.BackupConfig import BackupConfig
 from conf.CameraConfig import CameraConfig
 from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
-from conf.FileBackupConfig import FileBackupConfig
 from conf.GPSConfig import GPSConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
@@ -35,7 +35,7 @@ class AppConfig:
     SENSORS_KEY = "sensors"
     DATABASE_KEY = "database"
     CAMERA_KEY = "camera"
-    FILE_BACKUP_KEY = "file_backup"
+    BACKUP_KEY = "backup"
     SCHEDULER_KEY = "scheduler"
     DASHBOARD_KEY = "dashboard"
     TIMELAPSE_KEY = "timelapse"
@@ -80,8 +80,8 @@ class AppConfig:
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
         self.logger.info("loaded %s config", AppConfig.DATABASE_KEY)
 
-        self._file_backup = FileBackupConfig(self._conf[AppConfig.FILE_BACKUP_KEY])
-        self.logger.info("loaded %s config", AppConfig.FILE_BACKUP_KEY)
+        self._file_backup = BackupConfig(self._conf[AppConfig.BACKUP_KEY])
+        self.logger.info("loaded %s config", AppConfig.BACKUP_KEY)
 
         self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
         self.logger.info("loaded %s config", AppConfig.GPS_KEY)
@@ -167,7 +167,7 @@ class AppConfig:
         return self._database
 
     @property
-    def file_backup(self) -> FileBackupConfig:
+    def backup(self) -> BackupConfig:
         """
         file_backup property getter
         :param self: this
