@@ -21,6 +21,7 @@ class WUClient:
     post data to weather underground
     https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US
     https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY/edit?pli=1&tab=t.0
+    https://github.com/litl/backoff
     """
 
     END_POINT_URL: ParseResult = urlparse("https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php")
