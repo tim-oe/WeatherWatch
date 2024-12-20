@@ -88,13 +88,20 @@ class SonarCommand(Command):
         pass
 
     def run(self):
+        
+        sonar_url = os.environ.get('SONAR_URL') 
+        #print(sonar_url)
+
+        sonar_token = os.environ.get('WEATHER_SONAR_TOKEN') 
+        #print(sonar_token)
+        
         os.system("sonar-scanner -X " + 
-                  "-Dsonar.projectKey=beez " + 
+                  "-Dsonar.projectKey=WeatherWatch " + 
                   "-Dsonar.python.version=3 " +
-                  "-Dsonar.sources=src " +
+                  "-Dsonar.sources=weatherwatch " +
                   "-Dsonar.exclusions=src/lib/**/* " +
-                  "-Dsonar.host.url=http://sonarqube " + 
-                  "-Dsonar.login=sqp_71c96d128c55d2c7ecb534b89a9cfa35fe67a130")
+                  f"-Dsonar.host.url={sonar_url} " + 
+                  f"-Dsonar.login={sonar_token}")
 
 # load sample data
 class SQLInitCommand(Command):

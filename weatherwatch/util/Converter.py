@@ -51,7 +51,6 @@ class Converter:
         """
         https://www.researchgate.net/post/Howto_convert_solar_intensity_in_LUX_to_watt_per_meter_square_for_sunlight
         """
-        tzlocal
         local_tz: tzinfo = pytz.timezone(tz)
         local_dt: datetime = local_tz.localize(readTime, is_dst=None)
         return local_dt.astimezone(pytz.utc)
