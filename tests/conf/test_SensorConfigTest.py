@@ -23,7 +23,7 @@ class SensorConfigTest(unittest.TestCase):
             self.assertEqual(expected[BaseData.MODEL_KEY], sc.model)
             self.assertEqual(expected[BaseData.ID_KEY], sc.id)
             self.assertEqual(expected[SensorConfig.NAME_KEY], sc.name)
-            self.assertEqual(expected[SensorConfig.CLASS_KEY], sc.dataClass)
+            self.assertEqual(expected[SensorConfig.CLASS_KEY], sc.data_class)
             self.assertEqual(expected[SensorConfig.DEVICE_KEY], sc.device)
             if IndoorData.CHANNEL_KEY in expected:
                 self.assertEqual(expected[IndoorData.CHANNEL_KEY], sc.channel)

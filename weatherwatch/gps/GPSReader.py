@@ -39,7 +39,7 @@ class GPSReader:
         self._gpsConfig: GPSConfig = AppConfig().gps
 
     def read(self) -> GPSData:
-        uart: serial.Seria = serial.Serial(self._gpsConfig.serialDevice, baudrate=self._gpsConfig.baudRate, timeout=1)
+        uart: serial.Seria = serial.Serial(self._gpsConfig.serial_device, baudrate=self._gpsConfig.baud_rate, timeout=1)
         try:
             gps: adafruit_gps.GPS = adafruit_gps.GPS(uart, debug=False)
 
@@ -53,7 +53,7 @@ class GPSReader:
 
             start = datetime.datetime.now()
             duration = 0
-            while not gps.has_fix and duration < self._gpsConfig.initTimeout:
+            while not gps.has_fix and duration < self._gpsConfig.init_timeout:
                 time.sleep(0.5)
                 gps.update()
                 duration = self.duration(start)

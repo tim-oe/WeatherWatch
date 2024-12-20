@@ -144,7 +144,7 @@ class SDRReader:
             sensor: SensorConfig = sensors[key]
             r: BaseData = None
             evt = None
-            match sensor.dataClass:
+            match sensor.data_class:
                 case IndoorData.__name__:
                     r = json.loads(line, object_hook=IndoorData.jsonDecoder)
                     evt = IndoorData.__name__

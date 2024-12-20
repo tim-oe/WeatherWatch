@@ -7,6 +7,10 @@ __all__ = ["BackupConfig"]
 
 @logger
 class BackupConfig:
+    """
+    file backup config data
+    """
+
     FILE_KEY = "file"
     DB_KEY = "db"
     ENABLE_KEY = "enable"
@@ -15,10 +19,6 @@ class BackupConfig:
     IMG_OLD_KEY = "img_old"
     VID_OLD_KEY = "vid_old"
     WEEKLY_OLD = "weekly_old"
-
-    """
-    file backup config data
-    """
 
     def __init__(self, config: dict):
         """

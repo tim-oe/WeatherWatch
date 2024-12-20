@@ -1,17 +1,17 @@
-__all__ = ["DashConfig"]
-
-
 from util.Logger import logger
+
+__all__ = ["DashConfig"]
 
 
 @logger
 class DashConfig:
-    HOST_KEY = "host"
-    PORT_KEY = "port"
-    DEBUG_KEY = "debug"
     """
     dash app config data
     """
+
+    HOST_KEY = "host"
+    PORT_KEY = "port"
+    DEBUG_KEY = "debug"
 
     def __init__(self, config: dict):
         """

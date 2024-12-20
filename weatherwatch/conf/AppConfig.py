@@ -22,6 +22,12 @@ __all__ = ["AppConfig"]
 @logger
 @singleton
 class AppConfig:
+    """
+    app config data
+    envar ebedded yaml config
+    https://pyyaml.org/wiki/PyYAMLDocumentation
+    https://pypi.org/project/pyaml-env/
+    """
 
     CONFIG_FILE = "config/weatherwatch.yml"
     LOG_CONFIG_FILE = "config/logging.yml"
@@ -41,12 +47,7 @@ class AppConfig:
     TIMELAPSE_KEY = "timelapse"
     WU_KEY = "weather_undergound"
 
-    """
-    app config data
-    envar ebedded yaml config
-    https://pyyaml.org/wiki/PyYAMLDocumentation
-    https://pypi.org/project/pyaml-env/
-    """
+    CONF_INIT_MSG = "loaded %s config"
 
     def __init__(self):
         """
@@ -54,7 +55,7 @@ class AppConfig:
         :param self: this
         """
 
-        self.initLogging()
+        self.init_logging()
 
         self._conf = parse_config(AppConfig.CONFIG_FILE)
 
@@ -66,39 +67,44 @@ class AppConfig:
             ss: SensorConfig = SensorConfig(s)
             self._sensors[ss.name] = ss
 
-        self.logger.info("loaded %s config", AppConfig.SENSORS_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SENSORS_KEY)
 
         self._aqi = AQIConfig(self._conf[AppConfig.AQI_KEY])
-        self.logger.info("loaded %s config", AppConfig.AQI_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.AQI_KEY)
 
         self._camera = CameraConfig(self._conf[AppConfig.CAMERA_KEY])
-        self.logger.info("loaded %s config", AppConfig.CAMERA_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.CAMERA_KEY)
 
         self._dashboard = DashConfig(self._conf[AppConfig.DASHBOARD_KEY])
-        self.logger.info("loaded %s config", AppConfig.DASHBOARD_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.DASHBOARD_KEY)
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
-        self.logger.info("loaded %s config", AppConfig.DATABASE_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.DATABASE_KEY)
 
         self._file_backup = BackupConfig(self._conf[AppConfig.BACKUP_KEY])
-        self.logger.info("loaded %s config", AppConfig.BACKUP_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.BACKUP_KEY)
 
         self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
-        self.logger.info("loaded %s config", AppConfig.GPS_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.GPS_KEY)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
-        self.logger.info("loaded %s config", AppConfig.SCHEDULER_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SCHEDULER_KEY)
 
         self._timelapse = TimelapseConfig(self._conf[AppConfig.TIMELAPSE_KEY])
-        self.logger.info("loaded %s config", AppConfig.TIMELAPSE_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.TIMELAPSE_KEY)
 
         self._wu = WUConfig(self._conf[AppConfig.WU_KEY])
-        self.logger.info("loaded %s config", AppConfig.WU_KEY)
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.WU_KEY)
 
-    def initLogging(self):
-        # https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
-        # https://docs.python.org/3/library/self.logger.html#logrecord-attributes
-        # https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
+    def init_logging(self):
+        """
+        initialize logging
+        https://coding-stream-of-consciousness.com/2018/11/26/logging-in-python-3-like-java-log4j-logback/
+        https://docs.python.org/3/library/self.logger.html#logrecord-attributes
+        https://gist.github.com/kingspp/9451566a5555fb022215ca2b7b802f19
+        :param self: this
+        """
+
         lc: dict = parse_config(AppConfig.LOG_CONFIG_FILE)
 
         logging.config.dictConfig(lc)
@@ -127,7 +133,13 @@ class AppConfig:
         """
         return list(self._sensors.values())
 
-    def getSensor(self, name: str) -> SensorConfig:
+    def get_sensor(self, name: str) -> SensorConfig:
+        """
+        get sensor config based on name
+        :param self: this
+        :param name: the name of the sensor config
+        :return: the sensor config
+        """
         return self._sensors[name]
 
     @property
@@ -135,7 +147,7 @@ class AppConfig:
         """
         aqi property getter
         :param self: this
-        :return: the aqi
+        :return: the aqi config
         """
         return self._aqi
 

@@ -7,6 +7,10 @@ __all__ = ["CameraConfig"]
 
 @logger
 class CameraConfig:
+    """
+    camera config data
+    """
+
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
     LUX_LIMIT_KEY = "lux_limit"
@@ -18,10 +22,6 @@ class CameraConfig:
     LENS_KEY = "lens"
     MAKE_KEY = "make"
     MODEL_KEY = "model"
-
-    """
-    camera config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -42,7 +42,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.ENABLE_KEY]
 
     @property
-    def luxLimit(self) -> int:
+    def lux_limit(self) -> int:
         """
         luxLimit property getter
         :param self: this
@@ -51,7 +51,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.LUX_LIMIT_KEY]
 
     @property
-    def exposureTime(self) -> int:
+    def exposure_time(self) -> int:
         """
         exposureTime property getter
         :param self: this
@@ -60,7 +60,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.EXPOSURE_TIME_KEY]
 
     @property
-    def analogueGain(self) -> float:
+    def analogue_gain(self) -> float:
         """
         analogueGain property getter
         :param self: this
@@ -87,16 +87,16 @@ class CameraConfig:
         return self.__dict__[CameraConfig.EXTENSION_KEY]
 
     @property
-    def currentFile(self) -> Path:
+    def current_file(self) -> Path:
         """
-        extension property getter
+        current_file property getter
         :param self: this
-        :return: the extension
+        :return: the current_file
         """
         return self.folder / f"current{self.extension}"
 
     @property
-    def tuningEnable(self) -> bool:
+    def tuning_enable(self) -> bool:
         """
         tuningEnable property getter
         :param self: this
@@ -105,7 +105,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.TUNING_KEY][CameraConfig.ENABLE_KEY]
 
     @property
-    def tuningFile(self) -> str:
+    def tuning_file(self) -> str:
         """
         tuningFile property getter
         :param self: this
@@ -114,7 +114,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.TUNING_KEY][CameraConfig.TUNING_FILE_KEY]
 
     @property
-    def lensMake(self) -> str:
+    def lens_make(self) -> str:
         """
         lensMake property getter
         :param self: this
@@ -123,7 +123,7 @@ class CameraConfig:
         return self.__dict__[CameraConfig.LENS_KEY][CameraConfig.MAKE_KEY]
 
     @property
-    def lensModel(self) -> str:
+    def lens_model(self) -> str:
         """
         lensModel property getter
         :param self: this

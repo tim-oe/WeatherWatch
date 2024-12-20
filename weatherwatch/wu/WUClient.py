@@ -31,8 +31,8 @@ class WUClient:
 
     @backoff.on_exception(backoff.expo, requests.exceptions.RequestException, max_tries=AppConfig().wu.retries, jitter=None)
     def post(self, readTime: datetime, data: WUData, endPoint: ParseResult = END_POINT_URL):
-        data.stationId(self._wuConfig.stationId)
-        data.stationKey(self._wuConfig.stationKey)
+        data.stationId(self._wuConfig.station_id)
+        data.stationKey(self._wuConfig.station_key)
         data.readTime(Converter.to_utc(readTime))
 
         resp: requests.Response = requests.get(endPoint.geturl(), params=data.__dict__)

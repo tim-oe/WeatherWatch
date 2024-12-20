@@ -41,12 +41,16 @@ class BackupRange:
         """
         _file_prefix string property getter
         :param self: this
-        :return: the _file_prefix
+        :return: the file_prefix
         """
         return self._file_prefix
 
     @staticmethod
     def prev_week() -> Self:
+        """
+        get and instance of the previous week
+        :return: instance of the previous week
+        """
         today: date = date.today()
 
         from_date: date = today - timedelta(days=today.weekday(), weeks=1)
@@ -58,6 +62,8 @@ class BackupRange:
     def prev_month() -> Self:
         """
         https://stackoverflow.com/questions/66026812/find-start-and-end-date-of-previous-month-from-current-date-in-python
+        get and instance of the previous month
+        :return: instance of the previous month
         """
         today: date = date.today()
 

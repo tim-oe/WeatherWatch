@@ -112,7 +112,7 @@ class SchedulerSvc:
         self._scheduler.add_job(
             sensor,
             "interval",
-            minutes=self._schedulerConfig.sensorInterval,
+            minutes=self._schedulerConfig.sensor_interval,
             name=SchedulerSvc.SENSOR_JOB,
             id=SchedulerSvc.SENSOR_JOB,
             coalesce=True,
@@ -124,7 +124,7 @@ class SchedulerSvc:
         self._scheduler.add_job(
             pimetrics,
             "cron",
-            minute=f"2-59/{self._schedulerConfig.piMetricsInterval}",
+            minute=f"2-59/{self._schedulerConfig.pi_metrics_interval}",
             name=SchedulerSvc.PI_METRICS_JOB,
             id=SchedulerSvc.PI_METRICS_JOB,
             coalesce=True,
@@ -137,7 +137,7 @@ class SchedulerSvc:
             self._scheduler.add_job(
                 camera,
                 "cron",
-                minute=f"3-59/{self._schedulerConfig.cameraInterval}",
+                minute=f"3-59/{self._schedulerConfig.camera_interval}",
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
                 coalesce=True,
@@ -150,7 +150,7 @@ class SchedulerSvc:
             self._scheduler.add_job(
                 timelapse,
                 "cron",
-                hour=self._schedulerConfig.timelapseHour,
+                hour=self._schedulerConfig.timelapse_hour,
                 minute="6",
                 name=SchedulerSvc.TIMELAPSE_JOB,
                 id=SchedulerSvc.TIMELAPSE_JOB,
@@ -192,7 +192,7 @@ class SchedulerSvc:
             self._scheduler.add_job(
                 aqi,
                 "cron",
-                minute=f"4-59/{self._schedulerConfig.cameraInterval}",
+                minute=f"4-59/{self._schedulerConfig.camera_interval}",
                 name=SchedulerSvc.AQI_JOB,
                 id=SchedulerSvc.AQI_JOB,
                 coalesce=True,
@@ -205,7 +205,7 @@ class SchedulerSvc:
             self._scheduler.add_job(
                 wu,
                 "interval",
-                minutes=self._schedulerConfig.wuInterval,
+                minutes=self._schedulerConfig.wu_interval,
                 name=SchedulerSvc.WU_JOB,
                 id=SchedulerSvc.WU_JOB,
                 coalesce=True,

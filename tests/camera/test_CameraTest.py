@@ -19,7 +19,7 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.luxLimit - 1) 
+        c.process(cc.lux_limit - 1) 
         
         found: bool = False
         image_path: str
@@ -48,7 +48,7 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.luxLimit + 1) 
+        c.process(cc.lux_limit + 1) 
         
         found: bool = False
         image_path: str

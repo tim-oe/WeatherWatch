@@ -109,7 +109,7 @@ class App:
         s: SensorConfig
         for s in self._appConfig.sensors:
             links.append(
-                dbc.NavLink(s.name, id=quote(s.name), href=f"/{quote(s.dataClass)}?name={quote(s.name)}", active="exact")
+                dbc.NavLink(s.name, id=quote(s.name), href=f"/{quote(s.data_class)}?name={quote(s.name)}", active="exact")
             )
 
         return html.Div(

@@ -45,7 +45,7 @@ class CameraSvc:
 
             self.addCustomExif(imgFile, data)
 
-            shutil.copy(imgFile, self._cameraConfig.currentFile)
+            shutil.copy(imgFile, self._cameraConfig.current_file)
         except Exception:
             self.logger.exception("failed to take picture")
 
@@ -70,8 +70,8 @@ class CameraSvc:
             exif_dict["Exif"][piexif.ExifIFD.LightSource] = 1
             exif_dict["Exif"][piexif.ExifIFD.BrightnessValue] = (int(data.light_lux), 1)
 
-            exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._cameraConfig.lensMake
-            exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._cameraConfig.lensModel
+            exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._cameraConfig.lens_make
+            exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._cameraConfig.lens_model
 
             # weather
             exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)

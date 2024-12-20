@@ -1,19 +1,18 @@
-__all__ = ["GPSConfig"]
-
-
 from util.Logger import logger
+
+__all__ = ["GPSConfig"]
 
 
 @logger
 class GPSConfig:
+    """
+    gps config data
+    """
     ENABLE_KEY = "enable"
     SERIAL_DEV_KEY = "serial_dev"
     BAUD_RATE_KEY = "baud_rate"
     INIT_TIMEOUT_KEY = "init_timeout"
 
-    """
-    aqi config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -34,7 +33,7 @@ class GPSConfig:
         return self.__dict__[GPSConfig.ENABLE_KEY]
 
     @property
-    def serialDevice(self):
+    def serial_device(self):
         """
         serialDevice property getter
         :param self: this
@@ -43,7 +42,7 @@ class GPSConfig:
         return self.__dict__[GPSConfig.SERIAL_DEV_KEY]
 
     @property
-    def baudRate(self) -> int:
+    def baud_rate(self) -> int:
         """
         baudRate property getter
         :param self: this
@@ -52,7 +51,7 @@ class GPSConfig:
         return self.__dict__[GPSConfig.BAUD_RATE_KEY]
 
     @property
-    def initTimeout(self) -> int:
+    def init_timeout(self) -> int:
         """
         initTimeout property getter
         :param self: this

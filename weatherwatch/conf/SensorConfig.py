@@ -1,18 +1,17 @@
-__all__ = ["SensorConfig"]
-
-
 from util.Logger import logger
 
+__all__ = ["SensorConfig"]
 
 @logger
 class SensorConfig:
+    """
+    sensor config data
+    """
+
     NAME_KEY = "name"
     DEVICE_KEY = "device"
     CLASS_KEY = "dataClass"
 
-    """
-    sensor config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -72,7 +71,7 @@ class SensorConfig:
         return self._channel
 
     @property
-    def dataClass(self):
+    def data_class(self):
         """
         dataClass property getter
         :param self: this
@@ -80,8 +79,8 @@ class SensorConfig:
         """
         return self._dataClass
 
-    @dataClass.setter
-    def dataClass(self, dataClass):
+    @data_class.setter
+    def data_class(self, dataClass):
         """
         dataClass property setter
         :param self: this

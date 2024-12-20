@@ -1,22 +1,21 @@
-__all__ = ["TimelapseConfig"]
-
-
 from pathlib import Path
 
 from util.Logger import logger
 
+__all__ = ["TimelapseConfig"]
+
 
 @logger
 class TimelapseConfig:
+    """
+    Timelapse config data
+    """
+
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
     EXTENSION_KEY = "extension"
     FPS_KEY = "fps"
     CODEC_KEY = "codec"
-
-    """
-    Timelapse config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -55,7 +54,7 @@ class TimelapseConfig:
         return self.__dict__[TimelapseConfig.EXTENSION_KEY]
 
     @property
-    def framesPerSecond(self) -> int:
+    def frames_per_second(self) -> int:
         """
         framesPerSecond property getter
         :param self: this

@@ -28,7 +28,7 @@ class SensorSvcTest(unittest.TestCase):
         
         ent: OutdoorSensor = OutdoorSensorRepositoryTest.getSample()
         
-        ent.light_lux = self.cc.luxLimit + 1
+        ent.light_lux = self.cc.lux_limit + 1
         
         self.outdoorRepo.insert(ent)
         
@@ -70,6 +70,6 @@ class SensorSvcTest(unittest.TestCase):
         self.assertEqual(Ordinal.NORTH.value, exif_dict['GPS'][piexif.GPSIFD.GPSLatitudeRef].decode())
         self.assertEqual(Ordinal.WEST.value, exif_dict['GPS'][piexif.GPSIFD.GPSLongitudeRef].decode())
 
-        my_file = Path(self.cc.currentFile)
+        my_file = Path(self.cc.current_file)
         self.assertTrue(my_file.is_file())
         

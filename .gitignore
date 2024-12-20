@@ -169,5 +169,8 @@ raspi-blinka.py
 pix/
 vid/
 reports/
+# ingore root dir but not any other backup dir...
 backup/
+!/*/backup
+#sonarqube 
 .scannerwork/

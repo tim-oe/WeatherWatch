@@ -1,11 +1,14 @@
-__all__ = ["SchedulerConfig"]
-
-
 from util.Logger import logger
+
+__all__ = ["SchedulerConfig"]
 
 
 @logger
 class SchedulerConfig:
+    """
+    scheduler config data
+    """
+
     AQI_KEY = "aqi"
     CAMERA_KEY = "camera"
     DB_BACKUP_KEY = "db_backup"
@@ -17,10 +20,6 @@ class SchedulerConfig:
     INTERVAL_KEY = "interval"
     HOUR_KEY = "hour"
 
-    """
-    scheduler config data
-    """
-
     def __init__(self, config: dict):
         """
         ctor
@@ -31,7 +30,7 @@ class SchedulerConfig:
             self.__dict__[key] = config[key]
 
     @property
-    def aqiInterval(self) -> int:
+    def aqi_interval(self) -> int:
         """
         aqi inerval property getter
         :param self: this
@@ -40,7 +39,7 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.AQI_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def sensorInterval(self) -> int:
+    def sensor_interval(self) -> int:
         """
         sensor inerval property getter
         :param self: this
@@ -49,7 +48,7 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.SENSOR_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def wuInterval(self) -> int:
+    def wu_interval(self) -> int:
         """
         weather underground inerval property getter
         :param self: this
@@ -58,7 +57,7 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.WU_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def piMetricsInterval(self) -> int:
+    def pi_metrics_interval(self) -> int:
         """
         pimetrics inerval property getter
         :param self: this
@@ -67,7 +66,7 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.PIMETRICS_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def cameraInterval(self) -> int:
+    def camera_interval(self) -> int:
         """
         camera interval property getter
         :param self: this
@@ -76,7 +75,7 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.CAMERA_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
-    def timelapseHour(self) -> int:
+    def timelapse_hour(self) -> int:
         """
         timelapse Hour property getter
         :param self: this

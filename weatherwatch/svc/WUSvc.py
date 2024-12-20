@@ -40,7 +40,7 @@ class WUSvc:
     def process(self):
         self.logger.info("processing weather underground upload")
         try:
-            inData: IndoorSensor = self._indoorRepo.findLatest(self._config.indoorchannelKey)
+            inData: IndoorSensor = self._indoorRepo.findLatest(self._config.indoor_channel_key)
             rainFail_mm = float(self._outdoorRepo.getDaysRainfall(date.today()))
 
             outData: OutdoorSensor = self._outdoorRepo.findLatest()

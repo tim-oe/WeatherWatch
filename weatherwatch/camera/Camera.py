@@ -37,20 +37,26 @@ class Camera:
         # default logging is warn
         Picamera2.set_logging()
 
-        self._cameraConfig: CameraConfig = AppConfig().camera
+        self._camera_config: CameraConfig = AppConfig().camera
 
-        self._baseDir: Path = self._cameraConfig.folder
+        self._base_dir: Path = self._camera_config.folder
 
-        self._baseDir.mkdir(parents=True, exist_ok=True)
+        self._base_dir.mkdir(parents=True, exist_ok=True)
 
         tuning = None
-        if self._cameraConfig.tuningEnable is True:
-            tuning = Picamera2.load_tuning_file(self._cameraConfig.tuningFile)
+        if self._camera_config.tuning_enable is True:
+            tuning = Picamera2.load_tuning_file(self._camera_config.tuning_file)
 
         self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
 
     def process(self, lux: int) -> str:
-        if self._cameraConfig.enable is False:
+        """
+        camera processing entry point
+        :param self: this
+        :param lux: the ambient light level to contol exposure/iso settings
+        :returns image path
+        """
+        if self._camera_config.enable is False:
             self.logger.debug("camera not enabled")
             return
 
@@ -64,10 +70,10 @@ class Camera:
             self._picam2.configure(preview_config)
 
             controls = {}
-            if lux <= self._cameraConfig.luxLimit:
+            if lux <= self._camera_config.lux_limit:
                 controls = {
-                    "ExposureTime": (self._cameraConfig.exposureTime * Camera.MICRO_SECOND),
-                    "AnalogueGain": self._cameraConfig.analogueGain,
+                    "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
+                    "AnalogueGain": self._camera_config.analogue_gain,
                 }
             else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
                 controls = {
@@ -79,12 +85,12 @@ class Camera:
 
             time.sleep(1)
 
-            imgFile: str = self.imageFile()
+            img_file: str = self.image_file()
             capture_config = self._picam2.create_still_configuration(controls=controls)
             # TODO inject exif data here
-            self._picam2.switch_mode_and_capture_file(capture_config, imgFile, wait=True)
+            self._picam2.switch_mode_and_capture_file(capture_config, img_file, wait=True)
 
-            return imgFile
+            return img_file
         except Exception as e:
             self.logger.exception("failed to take pic...")
             raise Exception("failed to take pic...") from e
@@ -93,10 +99,16 @@ class Camera:
             self._picam2.stop()
             # self._picam2.close()
 
-    def imageFile(self) -> str:
+    def image_file(self) -> str:
+        """
+        build image file name including path
+        :param self: this
+        :returns image file name including path
+        """
+
         now = datetime.datetime.now()
 
         stamp = now.strftime("%Y-%m-%d-%H-%M-%S")
-        imageName = f"{stamp}{self._cameraConfig.extension}"
+        image_name = f"{stamp}{self._camera_config.extension}"
 
-        return str(self._baseDir / imageName)
+        return str(self._base_dir / image_name)

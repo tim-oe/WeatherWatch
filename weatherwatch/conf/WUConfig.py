@@ -1,11 +1,13 @@
-__all__ = ["WUConfig"]
-
-
 from util.Logger import logger
 
+__all__ = ["WUConfig"]
 
 @logger
 class WUConfig:
+    """
+    weather underground config data
+    """
+
     ENABLE_KEY = "enable"
     STATION_ID = "station_id"
     STATION_KEY = "station_key"
@@ -13,9 +15,6 @@ class WUConfig:
     RETRIES_KEY = "retries"
     INDOOR_CHANNEL_KEY = "indoor_channel"
 
-    """
-    weather underground config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -45,7 +44,7 @@ class WUConfig:
         return self.__dict__[WUConfig.RETRIES_KEY]
 
     @property
-    def stationId(self):
+    def station_id(self):
         """
         stationId property getter
         :param self: this
@@ -54,7 +53,7 @@ class WUConfig:
         return self.__dict__[WUConfig.STATION_ID]
 
     @property
-    def stationKey(self):
+    def station_key(self):
         """
         stationKey property getter
         :param self: this
@@ -63,7 +62,7 @@ class WUConfig:
         return self.__dict__[WUConfig.STATION_KEY]
 
     @property
-    def apiKey(self):
+    def api_key(self):
         """
         apiKey property getter
         :param self: this
@@ -72,7 +71,7 @@ class WUConfig:
         return self.__dict__[WUConfig.API_KEY]
 
     @property
-    def indoorchannelKey(self) -> int:
+    def indoor_channel_key(self) -> int:
         """
         indoorchannel property getter
         :param self: this

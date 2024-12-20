@@ -58,7 +58,7 @@ class Hm3301Reader:
                 write = i2c_msg.write(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, [Hm3301Reader.SELECT_I2C_ADDR])
                 bus.i2c_rdwr(write)
 
-            time.sleep(self._aqiConfig.waitSec)
+            time.sleep(self._aqiConfig.wait_sec)
 
             with SMBus(Hm3301Reader.SM_BUS) as bus:
                 read = i2c_msg.read(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, Hm3301Reader.DATA_CNT)

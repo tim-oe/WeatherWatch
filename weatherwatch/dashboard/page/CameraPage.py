@@ -34,7 +34,7 @@ class CameraPage(BasePage):
 
     def content(self, **kwargs) -> dbc.Container:
 
-        currImage: Path = self._cameraConfig.currentFile
+        currImage: Path = self._cameraConfig.current_file
 
         exif_dict = piexif.load(str(currImage))
 

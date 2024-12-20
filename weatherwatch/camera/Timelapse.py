@@ -3,7 +3,10 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import List
 
+# AI tells me
+# pylint: disable=no-member, invalid-name
 import cv2
+
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
@@ -27,41 +30,49 @@ class Timelapse:
         :param self: this
         """
 
-        self._cameraConfig: CameraConfig = AppConfig().camera
-        self._timelapseConfig: TimelapseConfig = AppConfig().timelapse
+        self._camera_config: CameraConfig = AppConfig().camera
+        self._timelapse_config: TimelapseConfig = AppConfig().timelapse
 
-        self._baseDir: Path = self._timelapseConfig.folder
+        self._base_dir: Path = self._timelapse_config.folder
 
-        self._baseDir.mkdir(parents=True, exist_ok=True)
+        self._base_dir.mkdir(parents=True, exist_ok=True)
 
-    def process(self, d: date = None, imgFolder: Path = None, vidFolder: Path = None) -> Path:
+    def process(self, d: date = None, img_folder: Path = None, vid_folder: Path = None) -> Path:
+        """
+        entry point for timelapse video creation
+        :param self: this
+        :param date: the date of the video
+        :param img_folder: source image folder
+        :param vid_folder: destination video folder
+        :return: video file path
+        """
         start = datetime.datetime.now()
 
         if d is None:
             d = date.today() - timedelta(days=1)
 
-        if imgFolder is None:
-            imgFolder = self._cameraConfig.folder
+        if img_folder is None:
+            img_folder = self._camera_config.folder
 
-        if vidFolder is None:
-            vidFolder = self._baseDir
+        if vid_folder is None:
+            vid_folder = self._base_dir
 
         stamp = d.strftime("%Y-%m-%d")
 
-        images: List[Path] = sorted(imgFolder.glob(f"{stamp}*{self._cameraConfig.extension}"))
+        images: List[Path] = sorted(img_folder.glob(f"{stamp}*{self._camera_config.extension}"))
 
         if not images:
-            self.logger.warning("No images for %s found in: %s", stamp, imgFolder)
+            self.logger.warning("No images for %s found in: %s", stamp, img_folder)
             return
 
         img = cv2.imread(images[0].resolve())
         height, width, _ = img.shape
         size = (width, height)
 
-        vidFile = (vidFolder / f"{stamp}{self._timelapseConfig.extension}").resolve()
+        vid_file = (vid_folder / f"{stamp}{self._timelapse_config.extension}").resolve()
 
         video = cv2.VideoWriter(
-            vidFile, cv2.VideoWriter.fourcc(*self._timelapseConfig.codec), self._timelapseConfig.framesPerSecond, size
+            vid_file, cv2.VideoWriter.fourcc(*self._timelapse_config.codec), self._timelapse_config.frames_per_second, size
         )
 
         try:
@@ -75,11 +86,13 @@ class Timelapse:
 
         self.logger.info("time lapse for %s complete  duration %s", stamp, self.duration(start))
 
-        return vidFile
+        return vid_file
 
     def duration(self, start: datetime) -> int:
         """
         calculate the execution duration from start to now
+        :param start: the process start time
+        :return: the number of seconds since the start
         """
         current = datetime.datetime.now()
         return int((current - start).total_seconds())

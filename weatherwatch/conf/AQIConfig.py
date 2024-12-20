@@ -1,18 +1,18 @@
-__all__ = ["AQIConfig"]
-
 from util.Logger import logger
+
+__all__ = ["AQIConfig"]
 
 
 @logger
 class AQIConfig:
+    """
+    aqi config data
+    """
+
     ENABLE_KEY = "enable"
     RETRY_KEY = "retry"
     POLL_KEY = "poll"
     WAIT_SEC_KEY = "wait_sec"
-
-    """
-    aqi config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -51,10 +51,10 @@ class AQIConfig:
         return self.__dict__[AQIConfig.POLL_KEY]
 
     @property
-    def waitSec(self) -> int:
+    def wait_sec(self) -> int:
         """
-        waitSec property getter
+        wait_sec property getter
         :param self: this
-        :return: the waitSec
+        :return: the wait_sec property
         """
         return self.__dict__[AQIConfig.WAIT_SEC_KEY]

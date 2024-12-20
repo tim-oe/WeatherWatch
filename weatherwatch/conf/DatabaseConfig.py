@@ -1,13 +1,19 @@
-__all__ = ["DatabaseConfig"]
-
 import os
 
 from sqlalchemy import URL
 from util.Logger import logger
 
+__all__ = ["DatabaseConfig"]
 
 @logger
 class DatabaseConfig:
+    """
+    database config data
+    # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
+    # https://ankushkunwar7777.medium.com/connect-mysql-to-sqlalchemy-in-python-b94c34568818
+    # https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
+    """
+
     NAME_KEY = "name"
     DIALECT_KEY = "dialect"
     DRIVER_KEY = "driver"
@@ -26,14 +32,6 @@ class DatabaseConfig:
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
     PASSWORD_ENVAR = "WW_DB_PASSWORD"
-
-    # https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
-    # https://ankushkunwar7777.medium.com/connect-mysql-to-sqlalchemy-in-python-b94c34568818
-    # https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
-
-    """
-    database config data
-    """
 
     def __init__(self, config: dict):
         """
@@ -92,7 +90,7 @@ class DatabaseConfig:
         return self.__dict__[DatabaseConfig.POOL_KEY][DatabaseConfig.OVERFLOW_KEY]
 
     @property
-    def backupEnable(self) -> bool:
+    def backup_enable(self) -> bool:
         """
         backupEnable property getter
         :param self: this
@@ -101,7 +99,7 @@ class DatabaseConfig:
         return self.__dict__[DatabaseConfig.BACKUP_KEY][DatabaseConfig.ENABLE_KEY]
 
     @property
-    def backupFolder(self) -> bool:
+    def backup_folder(self) -> bool:
         """
         backupFolder property getter
         :param self: this
