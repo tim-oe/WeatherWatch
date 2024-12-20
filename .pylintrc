@@ -444,8 +444,9 @@ disable=raw-checker-failed,
         # not really modules in this app
         missing-module-docstring,
         # unless there's a way to recover there's no need to be more detailed
-        broad-exception-raised
-        
+        broad-exception-raised,
+        broad-exception-caught
+
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where

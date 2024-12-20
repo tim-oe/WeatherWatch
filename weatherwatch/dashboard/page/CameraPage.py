@@ -29,12 +29,17 @@ class CameraPage(BasePage):
         """
         super().__init__()
 
-        self._cameraConfig: CameraConfig = self._appConfig.camera
-        self._timelapseConfig: TimelapseConfig = self._appConfig.timelapse
+        self._camera_config: CameraConfig = self._app_config.camera
+        self._timelapse_config: TimelapseConfig = self._app_config.timelapse
 
     def content(self, **kwargs) -> dbc.Container:
+        """
+        render page content
+        :param self: this
+        :param kwargs: additional arguments
+        """
 
-        currImage: Path = self._cameraConfig.current_file
+        currImage: Path = self._camera_config.current_file
 
         exif_dict = piexif.load(str(currImage))
 
@@ -62,7 +67,7 @@ class CameraPage(BasePage):
                     children=dbc.Col(
                         children=dp.DashPlayer(
                             id="player",
-                            url=f"/vid/{stamp}{self._timelapseConfig.extension}",
+                            url=f"/vid/{stamp}{self._timelapse_config.extension}",
                             controls=True,
                             width="100%",
                             height="750px",

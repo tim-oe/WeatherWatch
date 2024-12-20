@@ -2,6 +2,7 @@ from util.Logger import logger
 
 __all__ = ["WUConfig"]
 
+
 @logger
 class WUConfig:
     """
@@ -14,7 +15,6 @@ class WUConfig:
     API_KEY = "api_key"
     RETRIES_KEY = "retries"
     INDOOR_CHANNEL_KEY = "indoor_channel"
-
 
     def __init__(self, config: dict):
         """

@@ -5,6 +5,7 @@ from util.Logger import logger
 
 __all__ = ["DatabaseConfig"]
 
+
 @logger
 class DatabaseConfig:
     """

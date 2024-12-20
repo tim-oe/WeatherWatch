@@ -29,25 +29,30 @@ class OutdoorSensorPage(BasePage):
         ctor
         :param self: this
         """
-        self._outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
+        self._outdoor_repo: OutdoorSensorRepository = OutdoorSensorRepository()
 
         super().__init__()
 
     def content(self, **kwargs) -> dbc.Container:
+        """
+        render page content
+        :param self: this
+        :param kwargs: additional arguments
+        """
 
-        data: OutdoorSensor = self._outdoorRepo.findLatest()
-        currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
+        data: OutdoorSensor = self._outdoor_repo.findLatest()
+        curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
-        rainFail = self._outdoorRepo.getDaysRainfall(date.today())
+        rain_fail = self._outdoor_repo.getDaysRainfall(date.today())
         # for lazy testing...
         # rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
 
         d = date.today() - timedelta(days=7)
-        sevenDay: List[OutdoorSensor] = self._outdoorRepo.findGreaterThanReadTime(d)
+        seven_day: List[OutdoorSensor] = self._outdoor_repo.findGreaterThanReadTime(d)
 
         return dbc.Container(
             [
-                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {currDate}")))),
+                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {curr_date}")))),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(
                     align="stretch",
@@ -68,7 +73,7 @@ class OutdoorSensorPage(BasePage):
                         dbc.Col(id="out-p-col", children=BarometricPressureGauge(data.pressure)),
                         dbc.Col(
                             id="out-r-col",
-                            children=RainGauge(rainFail),
+                            children=RainGauge(rain_fail),
                         ),
                     ],
                 ),
@@ -82,11 +87,11 @@ class OutdoorSensorPage(BasePage):
                 ),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
-                dbc.Row(children=dbc.Col(WindCompass(sevenDay))),
-                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=sevenDay))),
-                dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=sevenDay))),
-                dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=sevenDay))),
-                dbc.Row(children=dbc.Col(Graph("uv", "uv", "index", "uv", data=sevenDay))),
-                dbc.Row(children=dbc.Col(Graph("sunlight", "sunlight", "lux", "light_lux", data=sevenDay))),
+                dbc.Row(children=dbc.Col(WindCompass(seven_day))),
+                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("uv", "uv", "index", "uv", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("sunlight", "sunlight", "lux", "light_lux", data=seven_day))),
             ]
         )

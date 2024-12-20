@@ -7,39 +7,44 @@ from entity.OutdoorSensor import OutdoorSensor
 
 
 class WindCompass(dbc.Container):
+    """
+    wind compass style graph
+    https://plotly.com/python/graph-objects/
+    direct CCP from:
+    https://github.com/switchdoclabs/SDL_Pi_SkyWeather2/blob/master/dash_app/weather_page.py#L471
+    """
 
     def __init__(self, data: List[OutdoorSensor]):
         """
         ctor
         :param self: this
-        :param data 7 days of outdoor data
-        https://plotly.com/python/graph-objects/
-        direct CCP from:
-        https://github.com/switchdoclabs/SDL_Pi_SkyWeather2/blob/master/dash_app/weather_page.py#L471
+        :param data: 7 days of outdoor data
         """
 
         self._data = data
-        fig = self.figCompassRose()
+        fig = self.fig_compass_rose()
 
         # id={"type": "WPRdynamic", "index": "compassrose"},
         super().__init__(fluid=True, children=[dcc.Graph(figure=fig)])
 
-    def figCompassRose(self) -> go.Figure:
+    def fig_compass_rose(self) -> go.Figure:
         """
-        df = [77.5, 72.5, 70.0, 45.0, 22.5, 42.5, 40.0, 62.5]
-            fig = px.bar_polar(df, r="frequency", theta="direction",
-                color="strength", template="plotly_dark",
-                color_discrete_sequence= px.colors.sequential.Plasma_r)
+        generate the wind compass graph
+        :param self: this
         """
-        df = self.processWindData()
+        df = self.process_wind_data()
         fig = go.Figure()
         fig.add_trace(
-            go.Barpolar(r=df[5], name="> " + self.returnNumberConverted(11) + " " + self.WUnits(), marker_color="rgb(40,0,163)")
+            go.Barpolar(
+                r=df[5],
+                name="> " + self.get_wind_speed_converted(11) + " " + self.get_wind_scale(),
+                marker_color="rgb(40,0,163)",
+            )
         )
         fig.add_trace(
             go.Barpolar(
                 r=df[4],
-                name=self.returnNumberConverted(8.5) + "-" + self.returnNumberConverted(11) + " " + self.WUnits(),
+                name=self.get_wind_speed_converted(8.5) + "-" + self.get_wind_speed_converted(11) + " " + self.get_wind_scale(),
                 marker_color="rgb(80,0,163)",
             )
         )
@@ -47,28 +52,40 @@ class WindCompass(dbc.Container):
         fig.add_trace(
             go.Barpolar(
                 r=df[3],
-                name=self.returnNumberConverted(4.4) + "-" + self.returnNumberConverted(8.5) + " " + self.WUnits(),
+                name=self.get_wind_speed_converted(4.4)
+                + "-"
+                + self.get_wind_speed_converted(8.5)
+                + " "
+                + self.get_wind_scale(),
                 marker_color="rgb(120,0,163)",
             )
         )
         fig.add_trace(
             go.Barpolar(
                 r=df[2],
-                name=self.returnNumberConverted(2.2) + "-" + self.returnNumberConverted(4.4) + " " + self.WUnits(),
+                name=self.get_wind_speed_converted(2.2)
+                + "-"
+                + self.get_wind_speed_converted(4.4)
+                + " "
+                + self.get_wind_scale(),
                 marker_color="rgb(160,0,163)",
             )
         )
         fig.add_trace(
             go.Barpolar(
                 r=df[1],
-                name=self.returnNumberConverted(1.0) + "-" + self.returnNumberConverted(2.3) + " " + self.WUnits(),
+                name=self.get_wind_speed_converted(1.0)
+                + "-"
+                + self.get_wind_speed_converted(2.3)
+                + " "
+                + self.get_wind_scale(),
                 marker_color="rgb(200,0,163)",
             )
         )
         fig.add_trace(
             go.Barpolar(
                 r=df[0],
-                name=self.returnNumberConverted(0.0) + "-" + self.returnNumberConverted(1) + " " + self.WUnits(),
+                name=self.get_wind_speed_converted(0.0) + "-" + self.get_wind_speed_converted(1) + " " + self.get_wind_scale(),
                 marker_color="rgb(240,0,163)",
             )
         )
@@ -86,11 +103,14 @@ class WindCompass(dbc.Container):
         )
         return fig
 
-    def processWindData(self):
-        totalRecords = len(self._data)
-        # now calculate buckets
-        # 8 cardinal directions 0 - 360
-        # 6 wind buckets
+    def process_wind_data(self):
+        """
+        calculate wind buckets
+        8 cardinal directions 0 - 360
+        6 wind buckets
+        :param self: this
+        """
+        total_records = len(self._data)
         df = [[], [], [], [], [], []]
         for i in range(0, 6):
             df[i] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -99,21 +119,25 @@ class WindCompass(dbc.Container):
         for os in self._data:
             windSpeed = os.wind_avg_m_s
             windDirection = os.wind_dir_deg
-            CB = self.returnCardinalBucket(windDirection)
-            SB = self.returnSpeedBucket(windSpeed)
+            CB = self.get_cardinal_bucket(windDirection)
+            SB = self.get_speed_bucket(windSpeed)
             # print("SB, CB=", SB, CB)
             df[SB][CB] = df[SB][CB] + 1
         # print ("df=", df)
         # print("number of records=", totalRecords)
         # normalize df
-        if totalRecords > 0:
+        if total_records > 0:
             for single in df:
                 for i in range(0, 8):
-                    single[i] = round(100.0 * float(single[i]) / float(totalRecords), 2)
+                    single[i] = round(100.0 * float(single[i]) / float(total_records), 2)
 
         return df
 
-    def CWUnits(self, wind):
+    def convert_wind_units(self, wind):
+        """
+        convert wind units based on scaler
+        :param self: this
+        """
 
         # TODO add to config
         English_Metric = True
@@ -122,7 +146,11 @@ class WindCompass(dbc.Container):
             wind = wind * 2.23694
         return wind
 
-    def WUnits(self):
+    def get_wind_scale(self):
+        """
+        get wind unit scale
+        :param self: this
+        """
 
         # TODO add to config
         English_Metric = True
@@ -134,41 +162,58 @@ class WindCompass(dbc.Container):
 
         return units
 
-    def returnCardinalBucket(self, windDirection):
-        if (windDirection >= 337.5) or (windDirection < 22.5):
+    def get_cardinal_bucket(self, wind_direction) -> int:
+        """
+        get the cardinal bucket
+        :param self: this
+        :param wind_direction: the wind direction in degrees
+        :return: the the cardinal direction bucket
+        """
+
+        if (wind_direction >= 337.5) or (wind_direction < 22.5):
             return 0
-        if (windDirection >= 22.5) and (windDirection < 67.5):
+        if (wind_direction >= 22.5) and (wind_direction < 67.5):
             return 1
-        if (windDirection >= 67.5) and (windDirection < 112.5):
+        if (wind_direction >= 67.5) and (wind_direction < 112.5):
             return 2
-        if (windDirection >= 112.5) and (windDirection < 157.5):
+        if (wind_direction >= 112.5) and (wind_direction < 157.5):
             return 3
-        if (windDirection >= 157.5) and (windDirection < 202.5):
+        if (wind_direction >= 157.5) and (wind_direction < 202.5):
             return 4
-        if (windDirection >= 202.5) and (windDirection < 247.5):
+        if (wind_direction >= 202.5) and (wind_direction < 247.5):
             return 5
-        if (windDirection >= 247.5) and (windDirection < 292.5):
+        if (wind_direction >= 247.5) and (wind_direction < 292.5):
             return 6
-        if (windDirection >= 292.5) and (windDirection < 337.5):
+        if (wind_direction >= 292.5) and (wind_direction < 337.5):
             return 7
 
-        raise ValueError("unable to get cardinal from %s", windDirection)
+        raise ValueError("unable to get cardinal from %s", wind_direction)
 
-    def returnSpeedBucket(self, windSpeed):
-        # in meters/second
-        if windSpeed < 1.0:
+    def get_speed_bucket(self, wind_speed):
+        """
+        get the speed bucket
+        :param self: this
+        :param wind_speed: the wind speed in meters/second
+        :return: the the wind speed bucket
+        """
+        if wind_speed < 1.0:
             return 0
-        if windSpeed < 2.3:
+        if wind_speed < 2.3:
             return 1
-        if windSpeed < 4.4:
+        if wind_speed < 4.4:
             return 2
-        if windSpeed < 8.5:
+        if wind_speed < 8.5:
             return 3
-        if windSpeed < 11.0:
+        if wind_speed < 11.0:
             return 4
         # greater than 11.00
         return 5
 
-    def returnNumberConverted(self, speed):
-        speed = self.CWUnits(speed)
-        return str(round(speed, 1))
+    def get_wind_speed_converted(self, speed):
+        """
+        get the speed converted to proper scale
+        :param self: this
+        :param speed: the wind speed in meters/second
+        :return: the wind speed it k/h
+        """
+        return str(round(self.convert_wind_units(speed), 1))

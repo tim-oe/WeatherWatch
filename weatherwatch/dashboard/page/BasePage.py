@@ -15,8 +15,13 @@ class BasePage(ABC):
         ctor
         :param self: this
         """
-
-        self._appConfig = AppConfig()
+        self._app_config = AppConfig()
 
     @abstractmethod
-    def content(self, **kwargs) -> dbc.Container: ...
+    def content(self, **kwargs) -> dbc.Container:
+        """
+        render page content
+        :param self: this
+        :param kwargs: additional arguments
+        """
+        ...

@@ -19,17 +19,23 @@ class SystemPage(BasePage):
         ctor
         :param self: this
         """
-        self._piMetricsSvc: PIMetricsSvc = PIMetricsSvc()
+        self._pi_metrics_svc: PIMetricsSvc = PIMetricsSvc()
 
         super().__init__()
 
     def content(self, **kwargs) -> dbc.Container:
-        data: PIMetrics = self._piMetricsSvc.getMetrics()
+        """
+        render page content
+        :param self: this
+        :param kwargs: additional arguments
+        """
+
+        data: PIMetrics = self._pi_metrics_svc.getMetrics()
 
         return dbc.Container(
             [
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H4(f" utime: {self._piMetricsSvc.getUptime()}"))),
+                    children=dbc.Col(children=html.Center(html.H4(f" utime: {self._pi_metrics_svc.getUptime()}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(

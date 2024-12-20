@@ -1,4 +1,6 @@
 import dash_bootstrap_components as dbc
+
+# pylint: disable=not-callable
 import dash_daq as daq
 
 

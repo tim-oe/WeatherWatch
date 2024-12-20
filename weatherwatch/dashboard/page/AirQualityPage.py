@@ -22,20 +22,25 @@ class AirQualityPage(BasePage):
         ctor
         :param self: this
         """
-        self._aqiRepo: AQISensorRepository = AQISensorRepository()
+        self._aqi_repo: AQISensorRepository = AQISensorRepository()
 
         super().__init__()
 
     def content(self, **kwargs) -> dbc.Container:
-        data: AQISensor = self._aqiRepo.findLatest()
-        currDate: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
+        """
+        render page content
+        :param self: this
+        :param kwargs: additional arguments
+        """
+        data: AQISensor = self._aqi_repo.findLatest()
+        curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         d = date.today() - timedelta(days=7)
-        sevenDay: List[AQISensor] = self._aqiRepo.findGreaterThanReadTime(d)
+        seven_day: List[AQISensor] = self._aqi_repo.findGreaterThanReadTime(d)
 
         return dbc.Container(
             [
-                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {currDate}")))),
+                dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {curr_date}")))),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(
                     align="stretch",
@@ -60,7 +65,7 @@ class AirQualityPage(BasePage):
                             "PM1.0 atm conc",
                             "ug/m3",
                             "pm_1_0_conctrt_atmosph",
-                            data=sevenDay,
+                            data=seven_day,
                         )
                     )
                 ),
@@ -71,14 +76,14 @@ class AirQualityPage(BasePage):
                             "PM2.5 atm conc",
                             "ug/m3",
                             "pm_2_5_conctrt_atmosph",
-                            data=sevenDay,
+                            data=seven_day,
                         )
                     )
                 ),
                 dbc.Row(
                     children=dbc.Col(
                         Graph(
-                            "PM10 atmospheric concentration", "PM10 atm conc", "ug/m3", "pm_10_conctrt_atmosph", data=sevenDay
+                            "PM10 atmospheric concentration", "PM10 atm conc", "ug/m3", "pm_10_conctrt_atmosph", data=seven_day
                         )
                     )
                 ),

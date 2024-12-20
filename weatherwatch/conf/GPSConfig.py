@@ -8,11 +8,11 @@ class GPSConfig:
     """
     gps config data
     """
+
     ENABLE_KEY = "enable"
     SERIAL_DEV_KEY = "serial_dev"
     BAUD_RATE_KEY = "baud_rate"
     INIT_TIMEOUT_KEY = "init_timeout"
-
 
     def __init__(self, config: dict):
         """

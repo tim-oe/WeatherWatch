@@ -2,6 +2,7 @@ from util.Logger import logger
 
 __all__ = ["SensorConfig"]
 
+
 @logger
 class SensorConfig:
     """
@@ -11,7 +12,6 @@ class SensorConfig:
     NAME_KEY = "name"
     DEVICE_KEY = "device"
     CLASS_KEY = "dataClass"
-
 
     def __init__(self, config: dict):
         """

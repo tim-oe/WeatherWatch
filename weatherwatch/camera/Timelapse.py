@@ -6,7 +6,6 @@ from typing import List
 # AI tells me
 # pylint: disable=no-member, invalid-name
 import cv2
-
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
