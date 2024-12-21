@@ -17,9 +17,11 @@ class Bmp388SensorReader:
     """
 
     def __init__(self):
+        """
+        ctor
+        :param self: this
+        """
 
-        #
-        # I2C setup
         self.i2c = board.I2C()  # uses board.SCL and board.SDA
 
         self.bmp = adafruit_bmp3xx.BMP3XX_I2C(self.i2c)

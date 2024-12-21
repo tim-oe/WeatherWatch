@@ -25,7 +25,7 @@ class GPSData:
         return self._latitude
 
     @property
-    def latitudeDMS(self):
+    def latitude_dms(self):
         """
         latitude dms property getter
         :param self: this
@@ -52,7 +52,7 @@ class GPSData:
         return self._longitude
 
     @property
-    def longitudeDMS(self):
+    def longitude_dms(self):
         """
         longitude dms property getter
         :param self: this

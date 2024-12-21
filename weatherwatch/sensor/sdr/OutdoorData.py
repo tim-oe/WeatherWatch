@@ -5,16 +5,16 @@ __all__ = ["OutdoorData"]
 
 
 class OutdoorData(IndoorData):
+    """
+    outdoor sensor data
+    """
+
     RAIN_KEY = "rain_mm"
     WIND_AVE_KEY = "wind_avg_m_s"
     WIND_MAX_KEY = "wind_max_m_s"
     WIND_DIR_KEY = "wind_dir_deg"
     LUX_KEY = "light_lux"
     UV_KEY = "uv"
-
-    """
-    outdoor sensor data
-    """
 
     def __init__(
         self,
@@ -38,21 +38,25 @@ class OutdoorData(IndoorData):
         super().__init__()
 
     @staticmethod
-    def jsonDecoder(d: dict) -> "OutdoorData":
+    def json_decoder(raw: dict) -> "OutdoorData":
+        """
+        json data decoder
+        :param raw: raw dictionary data
+        """
         try:
             data = OutdoorData()
-            BaseData.baseDecoder(data, d)
-            data.temperature = d[IndoorData.TEMP_KEY]
-            data.humidity = d[IndoorData.HUMID_KEY]
-            data.rain_mm = d[OutdoorData.RAIN_KEY]
-            data.wind_avg_m_s = d[OutdoorData.WIND_AVE_KEY]
-            data.wind_max_m_s = d[OutdoorData.WIND_MAX_KEY]
-            data.wind_dir_deg = d[OutdoorData.WIND_DIR_KEY]
-            data.light_lux = d[OutdoorData.LUX_KEY]
-            data.uv = d[OutdoorData.UV_KEY]
+            BaseData.base_decoder(data, raw)
+            data.temperature = raw[IndoorData.TEMP_KEY]
+            data.humidity = raw[IndoorData.HUMID_KEY]
+            data.rain_mm = raw[OutdoorData.RAIN_KEY]
+            data.wind_avg_m_s = raw[OutdoorData.WIND_AVE_KEY]
+            data.wind_max_m_s = raw[OutdoorData.WIND_MAX_KEY]
+            data.wind_dir_deg = raw[OutdoorData.WIND_DIR_KEY]
+            data.light_lux = raw[OutdoorData.LUX_KEY]
+            data.uv = raw[OutdoorData.UV_KEY]
             return data
         except Exception as e:
-            raise Exception("failed to parse " + str(d)) from e
+            raise Exception("failed to parse " + str(raw)) from e
 
     @property
     def rain_mm(self):

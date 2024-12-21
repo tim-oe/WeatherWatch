@@ -71,8 +71,8 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         data: OutdoorData = OutdoorDataTest.getSample()
             
         ent: OutdoorSensor = OutdoorSensor()
-        ent.sensor_id = data.id
-        ent.battery_ok = data.batteryOk
+        ent.sensor_id = data.sensor_id
+        ent.battery_ok = data.battery_ok
         ent.read_time = datetime.now()
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity

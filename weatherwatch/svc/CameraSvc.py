@@ -95,11 +95,11 @@ class CameraSvc:
         if self._gpsConfig.enable is True:
             gpsReader: GPSReader = GPSReader()
             data: GPSData = gpsReader.read()
-            lat: DMSCoordinate = data.latitudeDMS
-            self.logger.debug(f"latitudeDMS {data.latitudeDMS}")
+            lat: DMSCoordinate = data.latitude_dms
+            self.logger.debug(f"latitudeDMS {data.latitude_dms}")
 
-            lon: DMSCoordinate = data.longitudeDMS
-            self.logger.debug(f"longitudeDMS {data.longitudeDMS}")
+            lon: DMSCoordinate = data.longitude_dms
+            self.logger.debug(f"longitudeDMS {data.longitude_dms}")
 
             self.logger.debug(f"altitude {data.altitude}")
             # seen issue with value being not set and taking cycles to become accurate

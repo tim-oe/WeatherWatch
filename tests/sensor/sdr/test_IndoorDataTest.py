@@ -10,7 +10,7 @@ class IndoorDataTest(BaseTestData):
             expected = json.load(file)
 
         with open("tests/data/indoor.json", "r") as file:
-            record: IndoorData = json.load(file, object_hook=IndoorData.jsonDecoder)
+            record: IndoorData = json.load(file, object_hook=IndoorData.json_decoder)
 
         self.assertBase(expected, record)
         self.assertEqual(expected[IndoorData.CHANNEL_KEY], record.channel)

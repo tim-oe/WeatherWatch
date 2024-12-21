@@ -10,8 +10,8 @@ class GPSReaderTest(unittest.TestCase):
         data: GPSData = bs.read()
         
         self.assertIsNotNone(data)
-        self.assertEqual(Ordinal.NORTH, data.latitudeDMS.ordinal)
-        self.assertEqual(Ordinal.WEST, data.longitudeDMS.ordinal)
+        self.assertEqual(Ordinal.NORTH, data.latitude_dms.ordinal)
+        self.assertEqual(Ordinal.WEST, data.longitude_dms.ordinal)
         print(f"{data}")
-        print(f"latitudeDMS {data.latitudeDMS}")
-        print(f"longitudeDMS {data.longitudeDMS}")
+        print(f"latitudeDMS {data.latitude_dms}")
+        print(f"longitudeDMS {data.longitude_dms}")

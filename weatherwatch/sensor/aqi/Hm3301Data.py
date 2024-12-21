@@ -1,15 +1,14 @@
-__all__ = ["Hm3301Data"]
-
-
 from typing import Self
 
 from util.Logger import logger
+
+__all__ = ["Hm3301Data"]
 
 
 @logger
 class Hm3301Data:
     """
-    base sensor data
+    aqi sensor data
     """
 
     def __init__(self):

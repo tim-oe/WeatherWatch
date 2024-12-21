@@ -9,6 +9,9 @@ __all__ = ["BaseData"]
 
 @logger
 class BaseData:
+    """
+    base sensor data
+    """
 
     # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -25,16 +28,12 @@ class BaseData:
     NOISE_KEY = "noise"
     SNR_KEY = "snr"
 
-    """
-    base sensor data
-    """
-
     def __init__(
         self,
-        timeStamp=None,
-        id=None,
+        time_stamp=None,
+        sensor_id=None,
         model=None,
-        batteryOK=False,
+        battery_ok=False,
         mic=None,
         mod=None,
         freq=None,
@@ -48,10 +47,10 @@ class BaseData:
         ctor
         :param self: this
         """
-        self.timeStamp = timeStamp
+        self.time_stamp = time_stamp
         self.model = model
-        self.id = id
-        self.batteryOk = batteryOK
+        self.sensor_id = sensor_id
+        self.battery_ok = battery_ok
         self.mic = mic
         self.mod = mod
         self.freq = freq
@@ -62,39 +61,44 @@ class BaseData:
         self.config = config
 
     @staticmethod
-    def baseDecoder(o: "BaseData", d: dict):
+    def base_decoder(o: "BaseData", raw: dict):
+        """
+        base data decoder
+        :param o: the base data object
+        :param raw: raw dictionary data
+        """
         try:
-            o.timeStamp = datetime.strptime(d["time"], BaseData.DATE_FORMAT)
-            o.model = d[BaseData.MODEL_KEY]
-            o.id = int(d[BaseData.ID_KEY])
-            o.batteryOk = d[BaseData.BATTERY_KEY] == 1
-            o.mic = d[BaseData.MIC_KEY]
-            o.mod = d[BaseData.MOD_KEY]
-            o.freq = d[BaseData.FREQ_KEY]
-            o.rssi = d[BaseData.RSSI_KEY]
-            o.noise = d[BaseData.NOISE_KEY]
-            o.snr = d[BaseData.SNR_KEY]
+            o.time_stamp = datetime.strptime(raw["time"], BaseData.DATE_FORMAT)
+            o.model = raw[BaseData.MODEL_KEY]
+            o.sensor_id = int(raw[BaseData.ID_KEY])
+            o.battery_ok = raw[BaseData.BATTERY_KEY] == 1
+            o.mic = raw[BaseData.MIC_KEY]
+            o.mod = raw[BaseData.MOD_KEY]
+            o.freq = raw[BaseData.FREQ_KEY]
+            o.rssi = raw[BaseData.RSSI_KEY]
+            o.noise = raw[BaseData.NOISE_KEY]
+            o.snr = raw[BaseData.SNR_KEY]
         except Exception as e:
             raise Exception(
-                f"failed to parse {d}",
+                f"failed to parse {raw}",
             ) from e
 
     @staticmethod
-    def key(j):
+    def key(raw: dict) -> str:
         """
-        key property getter
-        :param self: this
+        generate sensor key from dictionary
+        :param raw: the raw dictionary
         :return: the key
         """
-        key = "[" + j[BaseData.MODEL_KEY] + "|" + str(j[BaseData.ID_KEY])
+        key = "[" + raw[BaseData.MODEL_KEY] + "|" + str(raw[BaseData.ID_KEY])
 
-        if BaseData.CHANNEL_KEY in j:
-            key = key + "|" + str(j[BaseData.CHANNEL_KEY])
+        if BaseData.CHANNEL_KEY in raw:
+            key = key + "|" + str(raw[BaseData.CHANNEL_KEY])
 
         return key + "]"
 
     @property
-    def timeStamp(self) -> datetime:
+    def time_stamp(self) -> datetime:
         """
         timestamp property getter
         :param self: this
@@ -102,8 +106,8 @@ class BaseData:
         """
         return self._timeStamp
 
-    @timeStamp.setter
-    def timeStamp(self, timeStamp: datetime):
+    @time_stamp.setter
+    def time_stamp(self, timeStamp: datetime):
         """
         timeStamp property setter
         :param self: this
@@ -130,40 +134,40 @@ class BaseData:
         self._model = model
 
     @property
-    def id(self) -> int:
+    def sensor_id(self) -> int:
         """
         id property getter
         :param self: this
         :return: the id
         """
-        return self._id
+        return self._sensor_id
 
-    @id.setter
-    def id(self, id: int):
+    @sensor_id.setter
+    def sensor_id(self, sensor_id: int):
         """
         id property setter
         :param self: this
         :param: the id
         """
-        self._id = id
+        self._sensor_id = sensor_id
 
     @property
-    def batteryOk(self) -> bool:
+    def battery_ok(self) -> bool:
         """
         batteryOk property getter
         :param self: this
         :return: the batteryOk
         """
-        return self._batteryOk
+        return self._battery_ok
 
-    @batteryOk.setter
-    def batteryOk(self, batteryOk: bool):
+    @battery_ok.setter
+    def battery_ok(self, battery_ok: bool):
         """
         batteryOk property setter
         :param self: this
         :param: the batteryOk
         """
-        self._batteryOk = batteryOk
+        self._battery_ok = battery_ok
 
     @property
     def mic(self):

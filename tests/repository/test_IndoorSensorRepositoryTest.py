@@ -20,14 +20,14 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
             j = json.load(file)
 
         with open("tests/data/indoor.json", "r") as file:
-            data: IndoorData = json.load(file, object_hook=IndoorData.jsonDecoder)
+            data: IndoorData = json.load(file, object_hook=IndoorData.json_decoder)
             
         ent: IndoorSensor = IndoorSensor()
         ent.channel = data.channel
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
-        ent.sensor_id = data.id
-        ent.battery_ok = data.batteryOk
+        ent.sensor_id = data.sensor_id
+        ent.battery_ok = data.battery_ok
         ent.read_time = datetime.now()
         ent.raw = j
 

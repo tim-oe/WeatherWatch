@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# The MIT License (MIT)
-#
-"""
-"""
-
 import datetime
 import pprint
 import time
@@ -18,7 +10,6 @@ from gps.GPSData import GPSData
 from py_singleton import singleton
 from util.Logger import logger
 
-# https://stackoverflow.com/questions/44834/can-someone-explain-all-in-python
 __all__ = ["GPSReader"]
 
 
@@ -39,6 +30,10 @@ class GPSReader:
         self._gpsConfig: GPSConfig = AppConfig().gps
 
     def read(self) -> GPSData:
+        """
+        read gps data from receiver
+        :param self: this
+        """
         uart: serial.Seria = serial.Serial(self._gpsConfig.serial_device, baudrate=self._gpsConfig.baud_rate, timeout=1)
         try:
             gps: adafruit_gps.GPS = adafruit_gps.GPS(uart, debug=False)
@@ -73,6 +68,7 @@ class GPSReader:
     def duration(self, start: datetime) -> int:
         """
         calculate the execution duration from start to now
+        :param start: the processing start time
         """
         current = datetime.datetime.now()
         return int((current - start).total_seconds())

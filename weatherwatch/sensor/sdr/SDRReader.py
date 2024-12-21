@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# The MIT License (MIT)
-#
-"""
-"""
-
 import datetime
 import json
 import sys
@@ -38,11 +30,17 @@ class SensorEvent:
         """
         ctor
         :param self: this
+        :param evt: event name
+        :param data: event data
         """
         self._data = data
         self._evt = evt
 
     def fire(self):
+        """
+        fire event
+        :param self: this
+        """
         self.logger.debug("fire %s", self._evt)
 
         try:
@@ -73,16 +71,16 @@ class SDRReader:
         :param self: this
         """
 
-        self._appConfig: AppConfig = AppConfig()
+        self._app_config: AppConfig = AppConfig()
 
-        self._timeout = self._appConfig.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
+        self._timeout = self._app_config.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
 
         # sensor read pool predefined thread
-        self._readPool = ThreadPoolExecutor(max_workers=1)
+        self._read_pool = ThreadPoolExecutor(max_workers=1)
 
         self._sensors: dict = {}
         self._cmd = SDRReader.CMD_BASE.copy()
-        for s in self._appConfig.sensors:
+        for s in self._app_config.sensors:
             self._cmd.append(SDRReader.DEVICE_FLAG)
             self._cmd.append(str(s.device))
             self._sensors[s.key] = s
@@ -90,16 +88,16 @@ class SDRReader:
         self.logger.info(str(self._sensors))
 
         # sensor data thread to fire event async
-        self._dataPool = ThreadPoolExecutor(max_workers=len(self._sensors))
+        self._data_pool = ThreadPoolExecutor(max_workers=len(self._sensors))
 
         self._reads = []
 
-        self._sdrMetricsRepo = SDRMetricsRepository()
+        self._sdr_metrics_repo = SDRMetricsRepository()
 
     # override
     def __del__(self):
-        self._readPool.shutdown()
-        self._dataPool.shutdown()
+        self._read_pool.shutdown()
+        self._data_pool.shutdown()
 
     @property
     def reads(self) -> List[BaseData]:
@@ -110,7 +108,7 @@ class SDRReader:
         """
         return self._reads
 
-    def pushRecord(self, out, queue):
+    def push_record(self, out, queue):
         """
         push sensor data (will be json) to queue
         :param src: the source name (not used)
@@ -124,16 +122,19 @@ class SDRReader:
                     queue.put(line.strip())
                 except ValueError:
                     self.logger.debug(line)
-                    pass
         except Exception:
             self.logger.exception("line processing error")
-            pass
         finally:
             out.close()
 
-    def processRecord(self, line: str, sensors: dict, reads: List[BaseData], processed: List[str]):
+    def process_record(self, line: str, sensors: dict, reads: List[BaseData], processed: List[str]):
         """
         process sensor data
+        :param self: this
+        :param line: the line to processes
+        :param sensors: the set of sensors
+        :param read: the set of existing reads
+        :param processed: the set of keys already processed
         """
         self.logger.debug("sensor json: %s", line)
         j = json.loads(line)
@@ -146,10 +147,10 @@ class SDRReader:
             evt = None
             match sensor.data_class:
                 case IndoorData.__name__:
-                    r = json.loads(line, object_hook=IndoorData.jsonDecoder)
+                    r = json.loads(line, object_hook=IndoorData.json_decoder)
                     evt = IndoorData.__name__
                 case OutdoorData.__name__:
-                    r = json.loads(line, object_hook=OutdoorData.jsonDecoder)
+                    r = json.loads(line, object_hook=OutdoorData.json_decoder)
                     evt = OutdoorData.__name__
                 case _:
                     self.logger.error("unkown impl for sensor: %s", sensor)
@@ -160,7 +161,7 @@ class SDRReader:
                 reads.append(r)
                 # EventBus.call(evt, r)
                 se: SensorEvent = SensorEvent(evt, r)
-                self._dataPool.submit(se.fire)
+                self._data_pool.submit(se.fire)
 
             del sensors[key]
             processed.append(key)
@@ -171,6 +172,7 @@ class SDRReader:
     def duration(self, start: datetime) -> int:
         """
         calculate the execution duration from start to now
+        :param start: the processing start time
         """
         current = datetime.datetime.now()
         return int((current - start).total_seconds())
@@ -179,6 +181,7 @@ class SDRReader:
         """
         read sensor data
         this will block until all sensors are read or until timeout
+        :param self: this
         """
         self.logger.debug("starting cmd: %s", self._cmd)
 
@@ -198,7 +201,7 @@ class SDRReader:
         q = Queue()
 
         # read sdr output
-        self._readPool.submit(self.pushRecord, p.stdout, q)
+        self._read_pool.submit(self.push_record, p.stdout, q)
 
         start = datetime.datetime.now()
         duration = 0
@@ -209,14 +212,14 @@ class SDRReader:
                 except Empty:
                     pass
                 else:  # got line
-                    self.processRecord(data, sensors, reads, processed)
+                    self.process_record(data, sensors, reads, processed)
 
                 sys.stdout.flush()
                 duration = self.duration(start)
 
                 self.logger.debug("duration: %s reads %s", duration, len(reads))
             self._reads = reads
-            self.logMetrics(start, datetime.datetime.now(), duration, len(reads))
+            self.log_metrics(start, datetime.datetime.now(), duration, len(reads))
         except Exception:
             self.logger.exception("sensor read failed")
         finally:
@@ -226,14 +229,21 @@ class SDRReader:
         for k, v in sensors.items():
             self.logger.error("no data for %s=\n%s", k, v)
 
-    def logMetrics(self, startTime: datetime, endTime: datetime, duration: int, sensorCnt: int):
+    def log_metrics(self, start_time: datetime, end_time: datetime, duration: int, sensor_cnt: int):
+        """
+        log metric data
+        :param self: this
+        :param start_time: processing start time
+        :param end_time: processing end time
+        :param sensor_cnt: the number of sensors
+        """
         try:
             m: SDRMetrics = SDRMetrics()
-            m.start_time = startTime
-            m.end_time = endTime
+            m.start_time = start_time
+            m.end_time = end_time
             m.duration_sec = duration
-            m.sensor_cnt = sensorCnt
+            m.sensor_cnt = sensor_cnt
 
-            self._sdrMetricsRepo.insert(m)
+            self._sdr_metrics_repo.insert(m)
         except Exception:
             self.logger.exception("sensor read failed")

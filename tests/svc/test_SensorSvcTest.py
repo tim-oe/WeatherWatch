@@ -56,7 +56,7 @@ class SensorSvcTest(unittest.TestCase):
     def test_delta_next(self):
         
         od1: OutdoorData = OutdoorDataTest.getSample()
-        od1.timeStamp = datetime.now() - timedelta(minutes=5)
+        od1.time_stamp = datetime.now() - timedelta(minutes=5)
 
         self.svc.handleOutdoor(od1)
         
@@ -75,7 +75,7 @@ class SensorSvcTest(unittest.TestCase):
     def test_delta_rain(self):
         
         od1: OutdoorData = OutdoorDataTest.getSample()
-        od1.timeStamp = datetime.now() - timedelta(minutes=5)
+        od1.time_stamp = datetime.now() - timedelta(minutes=5)
         
         od1.rain_mm = Decimal(0.0)
         
@@ -97,7 +97,7 @@ class SensorSvcTest(unittest.TestCase):
     def test_delta_reset(self):
         
         od1: OutdoorData = OutdoorDataTest.getSample()
-        od1.timeStamp = datetime.now() - timedelta(minutes=5)
+        od1.time_stamp = datetime.now() - timedelta(minutes=5)
         
         od1.rain_mm = Decimal(2.0)
         

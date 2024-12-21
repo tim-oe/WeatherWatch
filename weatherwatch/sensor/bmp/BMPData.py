@@ -10,6 +10,10 @@ class BMPData:
     """
 
     def __init__(self, temperature=None, pressure=None, altitude=None):
+        """
+        ctor
+        :param self: this
+        """
         self._temperature = temperature
         self._pressure = pressure
         self._altitude = altitude

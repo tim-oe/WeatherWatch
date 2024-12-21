@@ -33,6 +33,11 @@ __all__ = ["Hm3301Reader"]
 @logger
 @singleton
 class Hm3301Reader:
+    """
+    aqi sensor reader
+    using seeedstudio grove lib
+    https://github.com/Seeed-Studio/grove.py/blob/master/grove/grove_PM2_5_HM3301.py
+    """
 
     HM3301_DEFAULT_I2C_ADDR = 0x40
     SELECT_I2C_ADDR = 0x88
@@ -45,32 +50,36 @@ class Hm3301Reader:
         :param self: this
         """
 
-        self._aqiConfig: AQIConfig = AppConfig().aqi
+        self._aqi_config: AQIConfig = AppConfig().aqi
 
     def read(self) -> Hm3301Data:
+        """
+        read AQI sensor data
+        :param self: this
+        """
 
         data: Hm3301Data = None
         cnt: int = 0
-        while cnt < self._aqiConfig.retry and data is None:
+        while cnt < self._aqi_config.retry and data is None:
 
             # TODO what's the arg for
             with SMBus(Hm3301Reader.SM_BUS) as bus:
                 write = i2c_msg.write(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, [Hm3301Reader.SELECT_I2C_ADDR])
                 bus.i2c_rdwr(write)
 
-            time.sleep(self._aqiConfig.wait_sec)
+            time.sleep(self._aqi_config.wait_sec)
 
             with SMBus(Hm3301Reader.SM_BUS) as bus:
                 read = i2c_msg.read(Hm3301Reader.HM3301_DEFAULT_I2C_ADDR, Hm3301Reader.DATA_CNT)
                 bus.i2c_rdwr(read)
                 raw = list(read)
 
-            sum = 0
+            crc_checksum = 0
             for i in range(Hm3301Reader.DATA_CNT - 1):
-                sum += raw[i]
-            sum = sum & 0xFF
+                crc_checksum += raw[i]
+            crc_checksum = crc_checksum & 0xFF
 
-            if sum == raw[28]:
+            if crc_checksum == raw[28]:
                 data = Hm3301Data()
 
                 data.pm_1_0_conctrt_std = raw[4] << 8 | raw[5]
@@ -82,7 +91,7 @@ class Hm3301Reader:
                 data.pm_10_conctrt_atmosph = raw[14] << 8 | raw[15]
 
             else:
-                self.logger.warning("HM3301 crc check failed")
+                self.logger.warning("HM3301 crc checksum failed")
 
         if data is None:
             raise ValueError("retry exceeded")

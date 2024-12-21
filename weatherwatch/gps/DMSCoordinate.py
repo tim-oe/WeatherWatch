@@ -7,6 +7,10 @@ __all__ = ["DMSCoordinate", "Ordinal"]
 
 
 class Ordinal(Enum):
+    """
+    compass ordinal
+    """
+
     NORTH = "N"
     SOUTH = "S"
     EAST = "E"

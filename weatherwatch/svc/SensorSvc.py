@@ -100,7 +100,7 @@ class SensorSvc:
     def setBaseData(self, data: BaseData, ent: BaseSensor):
         ent.temperature_f = data.temperature
         ent.humidity = data.humidity
-        ent.sensor_id = data.id
-        ent.battery_ok = data.batteryOk
-        ent.read_time = data.timeStamp
+        ent.sensor_id = data.sensor_id
+        ent.battery_ok = data.battery_ok
+        ent.read_time = data.time_stamp
         ent.raw = data.raw

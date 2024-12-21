@@ -12,7 +12,7 @@ class OutdoorDataTest(BaseTestData):
             expected = json.load(file)
 
         with open("tests/data/outdoor.json", "r") as file:
-            record: OutdoorData = json.load(file, object_hook=OutdoorData.jsonDecoder)
+            record: OutdoorData = json.load(file, object_hook=OutdoorData.json_decoder)
 
         self.assertBase(expected, record)
         self.assertEqual(expected[IndoorData.HUMID_KEY], record.humidity)
@@ -30,9 +30,9 @@ class OutdoorDataTest(BaseTestData):
             j = json.load(file)
 
         with open("tests/data/outdoor.json", "r") as file:
-            data: OutdoorData = json.load(file, object_hook=OutdoorData.jsonDecoder)
+            data: OutdoorData = json.load(file, object_hook=OutdoorData.json_decoder)
             
-        data.timeStamp = datetime.now()
+        data.time_stamp = datetime.now()
         data.raw = j
         
         return data

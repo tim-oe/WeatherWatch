@@ -4,12 +4,12 @@ __all__ = ["IndoorData"]
 
 
 class IndoorData(BaseData):
-    TEMP_KEY = "temperature_F"
-    HUMID_KEY = "humidity"
-
     """
     indoor sensor data
     """
+
+    TEMP_KEY = "temperature_F"
+    HUMID_KEY = "humidity"
 
     def __init__(self, channel=None):
         """
@@ -21,16 +21,20 @@ class IndoorData(BaseData):
         super().__init__()
 
     @staticmethod
-    def jsonDecoder(d: dict) -> "IndoorData":
+    def json_decoder(raw: dict) -> "IndoorData":
+        """
+        json data decoder
+        :param raw: raw dictionary data
+        """
         try:
             data = IndoorData()
-            BaseData.baseDecoder(data, d)
-            data.channel = int(d[BaseData.CHANNEL_KEY])
-            data.temperature = d[IndoorData.TEMP_KEY]
-            data.humidity = d[IndoorData.HUMID_KEY]
+            BaseData.base_decoder(data, raw)
+            data.channel = int(raw[BaseData.CHANNEL_KEY])
+            data.temperature = raw[IndoorData.TEMP_KEY]
+            data.humidity = raw[IndoorData.HUMID_KEY]
             return data
         except Exception as e:
-            raise Exception("failed to parse " + str(d)) from e
+            raise Exception("failed to parse " + str(raw)) from e
 
     @property
     def channel(self) -> int:
