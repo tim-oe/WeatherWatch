@@ -1,6 +1,6 @@
-import datetime
 import pprint
 import time
+from datetime import datetime
 
 import adafruit_gps
 import serial
@@ -8,6 +8,7 @@ from conf.AppConfig import AppConfig
 from conf.GPSConfig import GPSConfig
 from gps.GPSData import GPSData
 from py_singleton import singleton
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["GPSReader"]
@@ -27,14 +28,14 @@ class GPSReader:
         ctor
         :param self: this
         """
-        self._gpsConfig: GPSConfig = AppConfig().gps
+        self._gps_config: GPSConfig = AppConfig().gps
 
     def read(self) -> GPSData:
         """
         read gps data from receiver
         :param self: this
         """
-        uart: serial.Seria = serial.Serial(self._gpsConfig.serial_device, baudrate=self._gpsConfig.baud_rate, timeout=1)
+        uart: serial.Serial = serial.Serial(self._gps_config.serial_device, baudrate=self._gps_config.baud_rate, timeout=1)
         try:
             gps: adafruit_gps.GPS = adafruit_gps.GPS(uart, debug=False)
 
@@ -46,12 +47,12 @@ class GPSReader:
             time.sleep(1)
             gps.update()
 
-            start = datetime.datetime.now()
+            start = datetime.now()
             duration = 0
-            while not gps.has_fix and duration < self._gpsConfig.init_timeout:
+            while not gps.has_fix and duration < self._gps_config.init_timeout:
                 time.sleep(0.5)
                 gps.update()
-                duration = self.duration(start)
+                duration = Converter.duration_seconds(start)
                 self.logger.debug("waiting on GPS %s", duration)
 
             if not gps.has_fix:
@@ -64,11 +65,3 @@ class GPSReader:
             return GPSData(latitude=gps.latitude, longitude=gps.longitude, altitude=gps.altitude_m)
         finally:
             uart.close()
-
-    def duration(self, start: datetime) -> int:
-        """
-        calculate the execution duration from start to now
-        :param start: the processing start time
-        """
-        current = datetime.datetime.now()
-        return int((current - start).total_seconds())

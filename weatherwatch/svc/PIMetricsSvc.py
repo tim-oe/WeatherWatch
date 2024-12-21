@@ -1,6 +1,6 @@
-import datetime
 from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
+from datetime import datetime
 
 import psutil
 import uptime
@@ -80,6 +80,6 @@ class PIMetricsSvc:
 
         self.logger.debug("pi metrics %s", data)
 
-        data.read_time = datetime.datetime.now()
+        data.read_time = datetime.now()
 
         self._piMetricsRepo.insert(data)

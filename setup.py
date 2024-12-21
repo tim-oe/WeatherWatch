@@ -24,8 +24,8 @@ class CleanCommand(Command):
 
     def run(self):
         os.system("py3clean -v .")
-        os.system("rm -vrf WeatherWatch.log*")
-        os.system("rm -vrf report.html")
+        os.system("rm -vrf ./WeatherWatch.log*")
+        os.system("rm -vrf ./report.html")
         os.system("rm -vrf ./reports")
         os.system("rm -vrf ./*.egg-info")
         os.system("rm -vrf ./.coverage")
@@ -146,6 +146,23 @@ class DockerMysqlDownCommand(Command):
     def run(self):
         os.system("docker compose --file mariadb-docker-compose.yml down")
 
+# load sample data
+class ReportCPCommand(Command):
+    """copy test results to net share"""
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        
+        os.system("sudo rm -fR /mnt/clones/data/test/*")
+        os.system("sudo cp -r reports/* /mnt/clones/data/test/")
+
 # test run via poetry
 # this is to hold cm util scripts
 setup(
@@ -153,6 +170,7 @@ setup(
     cmdclass={"clean": CleanCommand, 
               "format": FormatCommand, 
               "cover": CoverageCommand, 
+              "reportcp": ReportCPCommand, 
               "sonar": SonarCommand,
               "dbInit": SQLInitCommand,
               'mysqlUp': DockerMysqlUpCommand,

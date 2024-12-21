@@ -1,5 +1,4 @@
-import datetime
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import List
 
@@ -10,6 +9,7 @@ from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
+from util.Converter import Converter
 from util.Logger import logger
 
 
@@ -45,7 +45,7 @@ class Timelapse:
         :param vid_folder: destination video folder
         :return: video file path
         """
-        start = datetime.datetime.now()
+        start = datetime.now()
 
         if d is None:
             d = date.today() - timedelta(days=1)
@@ -83,15 +83,6 @@ class Timelapse:
             video.release()
             cv2.destroyAllWindows()
 
-        self.logger.info("time lapse for %s complete  duration %s", stamp, self.duration(start))
+        self.logger.info("time lapse for %s complete  duration %s", stamp, Converter.duration_seconds(start))
 
         return vid_file
-
-    def duration(self, start: datetime) -> int:
-        """
-        calculate the execution duration from start to now
-        :param start: the process start time
-        :return: the number of seconds since the start
-        """
-        current = datetime.datetime.now()
-        return int((current - start).total_seconds())

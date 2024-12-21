@@ -20,6 +20,12 @@ class Rsync:
     BASE_CMD = ["rsync", "-a"]
 
     def archive(self, src: str, dest: str):
+        """
+        archive data
+        :param self: this
+        :param src: the source folder
+        :param dest: the destination folder
+        """
         self.logger.info(f"starting rsync {src} -> {dest}")
 
         cmd = Rsync.BASE_CMD.copy()
@@ -47,10 +53,16 @@ class Rsync:
             p.kill()
 
     def purge(self, src: str, days_ago: int):
+        """
+        purge data older than a given days from current date
+        :param self: this
+        :param src: the source folder
+        :param days_ago: the days to purge data
+        """
         cutoff_date = datetime.now() - timedelta(days=days_ago)
-        dir: Path = Path(src)
+        src_dir: Path = Path(src)
 
-        for file in dir.iterdir():
+        for file in src_dir.iterdir():
             if file.is_file():
                 file_stat = file.stat()
                 modification_time = datetime.fromtimestamp(file_stat.st_mtime)

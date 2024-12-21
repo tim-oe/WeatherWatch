@@ -15,6 +15,8 @@ class WUData:
     AQI_AQPM2_5_KEY = "aqpm2.5"
     AQI_AQPM10_KEY = "aqpm10"
 
+    # names are driven by wu api
+    # pylint: disable=invalid-name
     def __init__(
         self,
         winddir: int,
@@ -29,6 +31,10 @@ class WUData:
         indoortempf,
         indoorhumidity,
     ):
+        """
+        ctor
+        :param self: this
+        """
         self.action = "updateraw"
         self.ID = None
         self.PASSWORD = None
@@ -46,17 +52,42 @@ class WUData:
         self.indoortempf = str(indoortempf)
         self.indoorhumidity = str(indoorhumidity)
 
-    def stationId(self, stationId: str):
-        self.ID = stationId
+    def station_id(self, station_id: str):
+        """
+        set station id
+        :param self: this
+        :param station_id: the wu station id
+        """
+        self.ID = station_id
 
-    def stationKey(self, stationKey: str):
-        self.PASSWORD = stationKey
+    def station_key(self, station_key: str):
+        """
+        set station key
+        :param self: this
+        :param station_key: the wu station key
+        """
+        self.PASSWORD = station_key
 
-    def readTime(self, readTime: datetime):
-        self.dateutc = readTime.strftime("%Y-%m-%d %H:%M:%S")
+    def read_time(self, read_time: datetime):
+        """
+        set sensor read time
+        :param self: this
+        :param read_time: the sensor read time
+        """
+        self.dateutc = read_time.strftime("%Y-%m-%d %H:%M:%S")
 
     def aqpm2_5(self, aqpm2_5):
+        """
+        set aqi aqpm2_5
+        :param self: this
+        :param aqpm2_5: aqi aqpm2_5
+        """
         setattr(self, WUData.AQI_AQPM2_5_KEY, aqpm2_5)
 
     def aqpm10(self, aqpm10):
+        """
+        set aqi aqpm10
+        :param self: this
+        :param aqpm10: aqi aqpm10
+        """
         setattr(self, WUData.AQI_AQPM10_KEY, aqpm10)

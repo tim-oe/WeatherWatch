@@ -3,6 +3,10 @@ import pprint
 
 
 def logger(cls):
+    """
+    decorator to add logger and to_string to classes
+    """
+
     def to_string(self):
         return pprint.pformat(self.__dict__)
 

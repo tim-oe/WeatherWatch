@@ -1,5 +1,5 @@
-import datetime
 import time
+from datetime import datetime
 from pathlib import Path
 
 from conf.AppConfig import AppConfig
@@ -106,7 +106,7 @@ class Camera:
         :returns image file name including path
         """
 
-        now = datetime.datetime.now()
+        now = datetime.now()
 
         stamp = now.strftime("%Y-%m-%d-%H-%M-%S")
         image_name = f"{stamp}{self._camera_config.extension}"

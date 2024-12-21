@@ -30,5 +30,5 @@ class WUClientTest(unittest.TestCase):
 
         print(str(data))
 
-        client.post(datetime.now(), data, endPoint=urlparse("http://www.outboundengine.com"))
+        client.post(datetime.now(), data, end_point=urlparse("http://www.outboundengine.com"))
                        

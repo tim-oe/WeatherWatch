@@ -1,7 +1,7 @@
-import datetime
 import json
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from queue import Empty, Queue
 from subprocess import PIPE, Popen
 from typing import List
@@ -15,6 +15,7 @@ from repository.SDRMetricsRepository import SDRMetricsRepository
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["SDRReader"]
@@ -169,14 +170,6 @@ class SDRReader:
             if key not in processed:
                 self.logger.warning("skipping: %s\n%s", key, line)
 
-    def duration(self, start: datetime) -> int:
-        """
-        calculate the execution duration from start to now
-        :param start: the processing start time
-        """
-        current = datetime.datetime.now()
-        return int((current - start).total_seconds())
-
     def read(self):
         """
         read sensor data
@@ -203,7 +196,7 @@ class SDRReader:
         # read sdr output
         self._read_pool.submit(self.push_record, p.stdout, q)
 
-        start = datetime.datetime.now()
+        start = datetime.now()
         duration = 0
         try:
             while len(reads) < len(self._sensors) and duration < self._timeout:
@@ -215,11 +208,11 @@ class SDRReader:
                     self.process_record(data, sensors, reads, processed)
 
                 sys.stdout.flush()
-                duration = self.duration(start)
+                duration = Converter.duration_seconds(start)
 
                 self.logger.debug("duration: %s reads %s", duration, len(reads))
             self._reads = reads
-            self.log_metrics(start, datetime.datetime.now(), duration, len(reads))
+            self.log_metrics(start, datetime.now(), duration, len(reads))
         except Exception:
             self.logger.exception("sensor read failed")
         finally:
