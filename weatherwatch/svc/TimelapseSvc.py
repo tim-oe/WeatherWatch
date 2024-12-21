@@ -21,6 +21,10 @@ class TimelapseSvc:
     CMD = [sys.executable, "weatherwatch/timelapse.py"]
 
     def process(self):
+        """
+        service entry point
+        :param self: this
+        """
         self.logger.info("starting timelapse subprocess")
 
         p: Popen = Popen(

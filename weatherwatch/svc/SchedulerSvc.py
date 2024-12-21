@@ -98,9 +98,12 @@ class SchedulerSvc:
     """
 
     def __init__(self):
-
-        self._appConfig = AppConfig()
-        self._schedulerConfig: SchedulerConfig = self._appConfig.scheduler
+        """
+        ctor
+        :param self: this
+        """
+        self._app_config = AppConfig()
+        self._scheduler_config: SchedulerConfig = self._app_config.scheduler
 
         # in order to use this the task functions need to be static
         jobstores = {"default": SQLAlchemyJobStore(url=AppConfig().database.url)}
@@ -112,7 +115,7 @@ class SchedulerSvc:
         self._scheduler.add_job(
             sensor,
             "interval",
-            minutes=self._schedulerConfig.sensor_interval,
+            minutes=self._scheduler_config.sensor_interval,
             name=SchedulerSvc.SENSOR_JOB,
             id=SchedulerSvc.SENSOR_JOB,
             coalesce=True,
@@ -124,7 +127,7 @@ class SchedulerSvc:
         self._scheduler.add_job(
             pimetrics,
             "cron",
-            minute=f"2-59/{self._schedulerConfig.pi_metrics_interval}",
+            minute=f"2-59/{self._scheduler_config.pi_metrics_interval}",
             name=SchedulerSvc.PI_METRICS_JOB,
             id=SchedulerSvc.PI_METRICS_JOB,
             coalesce=True,
@@ -133,11 +136,11 @@ class SchedulerSvc:
             misfire_grace_time=60,
         )
 
-        if self._appConfig.camera.enable is True:
+        if self._app_config.camera.enable is True:
             self._scheduler.add_job(
                 camera,
                 "cron",
-                minute=f"3-59/{self._schedulerConfig.camera_interval}",
+                minute=f"3-59/{self._scheduler_config.camera_interval}",
                 name=SchedulerSvc.CAMERA_JOB,
                 id=SchedulerSvc.CAMERA_JOB,
                 coalesce=True,
@@ -146,11 +149,11 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.timelapse.enable is True:
+        if self._app_config.timelapse.enable is True:
             self._scheduler.add_job(
                 timelapse,
                 "cron",
-                hour=self._schedulerConfig.timelapse_hour,
+                hour=self._scheduler_config.timelapse_hour,
                 minute="6",
                 name=SchedulerSvc.TIMELAPSE_JOB,
                 id=SchedulerSvc.TIMELAPSE_JOB,
@@ -160,11 +163,11 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.backup.file_enable is True:
+        if self._app_config.backup.file_enable is True:
             self._scheduler.add_job(
                 file_backup,
                 "cron",
-                hour=self._schedulerConfig.file_back_hour,
+                hour=self._scheduler_config.file_back_hour,
                 minute="7",
                 name=SchedulerSvc.FILE_BACKUP_JOB,
                 id=SchedulerSvc.FILE_BACKUP_JOB,
@@ -174,11 +177,11 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.backup.db_enable is True:
+        if self._app_config.backup.db_enable is True:
             self._scheduler.add_job(
                 db_backup,
                 "cron",
-                hour=self._schedulerConfig.db_back_hour,
+                hour=self._scheduler_config.db_back_hour,
                 minute="7",
                 name=SchedulerSvc.DB_BACKUP_JOB,
                 id=SchedulerSvc.DB_BACKUP_JOB,
@@ -188,11 +191,11 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.aqi.enable is True:
+        if self._app_config.aqi.enable is True:
             self._scheduler.add_job(
                 aqi,
                 "cron",
-                minute=f"4-59/{self._schedulerConfig.camera_interval}",
+                minute=f"4-59/{self._scheduler_config.camera_interval}",
                 name=SchedulerSvc.AQI_JOB,
                 id=SchedulerSvc.AQI_JOB,
                 coalesce=True,
@@ -201,11 +204,11 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-        if self._appConfig.wu.enable is True:
+        if self._app_config.wu.enable is True:
             self._scheduler.add_job(
                 wu,
                 "interval",
-                minutes=self._schedulerConfig.wu_interval,
+                minutes=self._scheduler_config.wu_interval,
                 name=SchedulerSvc.WU_JOB,
                 id=SchedulerSvc.WU_JOB,
                 coalesce=True,
@@ -214,19 +217,33 @@ class SchedulerSvc:
                 misfire_grace_time=60,
             )
 
-    # override
     def __str__(self):
+        """
+        override
+        :param self: this
+        """
         out = io.StringIO()
         self._scheduler.print_jobs(out=out)
 
         return out.getvalue()
 
-    # override
     def __del__(self):
+        """
+        override
+        :param self: this
+        """
         self._scheduler.shutdown()
 
     def start(self):
+        """
+        start application scheduler
+        :param self: this
+        """
         self._scheduler.start()
 
     def pause(self):
+        """
+        pause application scheduler
+        :param self: this
+        """
         self._scheduler.pause()

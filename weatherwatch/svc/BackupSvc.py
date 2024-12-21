@@ -21,58 +21,70 @@ __all__ = ["BackupSvc"]
 @logger
 @singleton
 class BackupSvc:
+    """
+    system backup service
+    performs db and camera backup
+    """
 
     def __init__(self):
         """
         ctor
         :param self: this
         """
-        self._cameraConfig: CameraConfig = AppConfig().camera
-        self._timelapseConfig: TimelapseConfig = AppConfig().timelapse
-        self._backupConfig: BackupConfig = AppConfig().backup
+        self._camera_config: CameraConfig = AppConfig().camera
+        self._timelapse_config: TimelapseConfig = AppConfig().timelapse
+        self._backup_config: BackupConfig = AppConfig().backup
 
         # run db backups concurrently
         self._backup_pool = ThreadPoolExecutor(max_workers=3)
         self._rsync: Rsync = Rsync()
 
-        self._baseDir: Path = self._backupConfig.folder
-        self._baseDir.mkdir(parents=True, exist_ok=True)
+        self._base_dir: Path = self._backup_config.folder
+        self._base_dir.mkdir(parents=True, exist_ok=True)
 
-        self._db_m_dir: Path = Path(self._baseDir / "db/m")
+        self._db_m_dir: Path = Path(self._base_dir / "db/m")
         self._db_m_dir.mkdir(parents=True, exist_ok=True)
-        self._db_w_dir: Path = Path(self._baseDir / "db/w")
+        self._db_w_dir: Path = Path(self._base_dir / "db/w")
         self._db_w_dir.mkdir(parents=True, exist_ok=True)
 
     def camera(self):
-        if self._backupConfig.file_enable:
-            backup_folder = str(self._backupConfig.folder.resolve())
-            if self._cameraConfig.enable:
+        """
+        backup camera image and timelapse files
+        :param self: this
+        """
+        if self._backup_config.file_enable:
+            backup_folder = str(self._backup_config.folder.resolve())
+            if self._camera_config.enable:
                 self.logger.info("starting camera backup")
-                folder = str(self._cameraConfig.folder.resolve())
+                folder = str(self._camera_config.folder.resolve())
                 if folder.endswith("/"):
                     folder = folder.rstrip("/")
 
                 self._rsync.archive(folder, backup_folder)
 
-                if self._backupConfig.purge_enable:
-                    self._rsync.purge(folder, self._backupConfig.img_old)
+                if self._backup_config.purge_enable:
+                    self._rsync.purge(folder, self._backup_config.img_old)
 
                 self.logger.info("camera backup complete")
 
-            if self._timelapseConfig.enable:
+            if self._timelapse_config.enable:
                 self.logger.info("starting timelapse backup")
-                folder = str(self._timelapseConfig.folder.resolve())
+                folder = str(self._timelapse_config.folder.resolve())
                 if folder.endswith("/"):
                     folder = folder.rstrip("/")
 
                 self._rsync.archive(folder, backup_folder)
 
-                if self._backupConfig.purge_enable:
-                    self._rsync.purge(folder, self._backupConfig.vid_old)
+                if self._backup_config.purge_enable:
+                    self._rsync.purge(folder, self._backup_config.vid_old)
                 self.logger.info("timelapse backup complete")
 
     def db(self):
-        if self._backupConfig.db_enable:
+        """
+        main entry point for db backup
+        :param self: this
+        """
+        if self._backup_config.db_enable:
             active_threads = set()
             active_threads.add(self._backup_pool.submit(functools.partial(self.outdoor_sensor_backup)))
             active_threads.add(self._backup_pool.submit(functools.partial(self.indoor_sensor_backup)))
@@ -83,15 +95,34 @@ class BackupSvc:
                 self.logger.info("thread complete %s", future.result)
 
     def outdoor_sensor_backup(self):
+        """
+        backup database outdoor sensor tables
+        :param self: this
+        """
         self.db_backup(OutdoorSensorRepository())
 
     def indoor_sensor_backup(self):
+        """
+        backup database indoor sensor tables
+        :param self: this
+        """
         self.db_backup(IndoorSensorRepository())
 
     def aqi_sensor_backup(self):
+        """
+        backup database aqi sensor tables
+        :param self: this
+        """
         self.db_backup(AQISensorRepository())
 
     def db_backup(self, repo):
+        """
+        backup database table
+        performs monthly and weekly backup
+        pruning weeklys whe monthy is in place
+        :param self: this
+        :param repo: the db repo for backup
+        """
         self.logger.info("backup %s", repo.entity.__table__)
         try:
             m: BackupRange = BackupRange.prev_month()
@@ -103,7 +134,7 @@ class BackupSvc:
             if not mf.is_file():
                 self.logger.info("peforming monthly backup of %s %s %s", m.from_date, m.to_date, repo.entity.__table__)
                 repo.backup(m.from_date, m.to_date, mf)
-                self._rsync.purge(self._db_w_dir, self._backupConfig.db_weekly_old)
+                self._rsync.purge(self._db_w_dir, self._backup_config.db_weekly_old)
             else:
                 self.logger.info("skiping backup of %s", mf)
 

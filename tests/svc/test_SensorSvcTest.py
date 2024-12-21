@@ -47,7 +47,7 @@ class SensorSvcTest(unittest.TestCase):
         
         od: OutdoorData = OutdoorDataTest.getSample()
         
-        self.svc.handleOutdoor(od)
+        self.svc.handle_outdoor(od)
         
         os: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -58,7 +58,7 @@ class SensorSvcTest(unittest.TestCase):
         od1: OutdoorData = OutdoorDataTest.getSample()
         od1.time_stamp = datetime.now() - timedelta(minutes=5)
 
-        self.svc.handleOutdoor(od1)
+        self.svc.handle_outdoor(od1)
         
         os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -66,7 +66,7 @@ class SensorSvcTest(unittest.TestCase):
         
         od2: OutdoorData = OutdoorDataTest.getSample()
         
-        self.svc.handleOutdoor(od2)
+        self.svc.handle_outdoor(od2)
         
         os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -79,7 +79,7 @@ class SensorSvcTest(unittest.TestCase):
         
         od1.rain_mm = Decimal(0.0)
         
-        self.svc.handleOutdoor(od1)
+        self.svc.handle_outdoor(od1)
         
         os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -88,7 +88,7 @@ class SensorSvcTest(unittest.TestCase):
         od2: OutdoorData = OutdoorDataTest.getSample()
         od2.rain_mm = Decimal(1.1) 
         
-        self.svc.handleOutdoor(od2)
+        self.svc.handle_outdoor(od2)
         
         os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -101,7 +101,7 @@ class SensorSvcTest(unittest.TestCase):
         
         od1.rain_mm = Decimal(2.0)
         
-        self.svc.handleOutdoor(od1)
+        self.svc.handle_outdoor(od1)
         
         os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
@@ -110,7 +110,7 @@ class SensorSvcTest(unittest.TestCase):
         od2: OutdoorData = OutdoorDataTest.getSample()
         od2.rain_mm = Decimal(1.1) 
         
-        self.svc.handleOutdoor(od2)
+        self.svc.handle_outdoor(od2)
         
         os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
