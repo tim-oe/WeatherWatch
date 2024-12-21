@@ -32,26 +32,26 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(data.id)
         
-        act = repo.findById(data.id)
+        act = repo.find_by_id(data.id)
         self.assertIsNotNone(act)
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)
 
-        act = repo.findLatest()
+        act = repo.find_latest()
         self.assertIsNotNone(act)
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)
 
         d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        l = repo.findGreaterThanReadTime(d)
+        l = repo.find_greater_than_read_time(d)
         self.assertIsNotNone(l)
         self.assertTrue(len(l) > 0)
 
     def test_clean(self):
         repo: BaseRepository = self.getRepo()
         
-        repo.execFile("sql/sample/aqi_sensor.sql")
+        repo.exec_file("sql/sample/aqi_sensor.sql")
         
         repo.clean()
         
@@ -59,7 +59,7 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         repo: BaseRepository = self.getRepo()        
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("sql/sample/aqi_sensor.sql")
+        repo.exec_file("sql/sample/aqi_sensor.sql")
 
         from_date: date = date.today() - timedelta(days=1)
         to_date: date = date.today() - timedelta(days=-1)
@@ -68,5 +68,5 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("test.sql")
+        repo.exec_file("test.sql")
         

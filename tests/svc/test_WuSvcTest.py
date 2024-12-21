@@ -15,7 +15,7 @@ from wu.WUData import WUData
 class WuSvcTest(unittest.TestCase):
 
     def post(self, readTime: datetime, data: WUData, endPoint: ParseResult = WUClient.END_POINT_URL):
-        self._readTime = readTime
+        self._read_time = readTime
         self._data = data  
 
     def setup_method(self, test_method):
@@ -24,10 +24,10 @@ class WuSvcTest(unittest.TestCase):
         self.indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
 
         self._outdoorRepo.exec('truncate ' + OutdoorSensor.__tablename__)
-        self._outdoorRepo.execFile("sql/sample/outdoor_sensor.sql")
+        self._outdoorRepo.exec_file("sql/sample/outdoor_sensor.sql")
 
         self.indoorRepo.exec('truncate ' + IndoorSensor.__tablename__)
-        self.indoorRepo.execFile("sql/sample/indoor_sensor.sql")
+        self.indoorRepo.exec_file("sql/sample/indoor_sensor.sql")
 
     def teardown_class(self):
         IndoorSensorRepository().exec('truncate ' + IndoorSensor.__tablename__)
@@ -39,8 +39,8 @@ class WuSvcTest(unittest.TestCase):
         with mock.patch.object(WUClient, 'post', self.post):
             self.svc.process()
             
-            self.assertIsNotNone(self._readTime)
-            print(f"{self._readTime}")
+            self.assertIsNotNone(self._read_time)
+            print(f"{self._read_time}")
             self.assertIsNotNone(self._data)
             print(f"{self._data}")
             

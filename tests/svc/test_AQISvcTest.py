@@ -21,7 +21,7 @@ class AQISvcTest(unittest.TestCase):
             self.svc.process()
             time.sleep(.5)
             
-        act = self.repo.findLatest()
+        act = self.repo.find_latest()
         self.assertIsNotNone(act)        
         
     # def test(self):

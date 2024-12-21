@@ -10,6 +10,10 @@ __all__ = ["PIMetrics"]
 
 @dataclass
 class PIMetrics(BaseEntity):
+    """
+    base sensor db enitity
+    """
+
     __tablename__ = "pi_metrics"
     __table_args__ = {"extend_existing": True}
 

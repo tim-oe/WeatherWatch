@@ -45,13 +45,19 @@ class DataStore:
     @property
     def connection(self) -> Connection:
         """
-        session property getter
+        connection property getter
         :param self: this
-        :return: the session
+        :return: the connection
         """
         return self._engine.connect()
 
     def get_table_def(self, table_name: str) -> Table:
+        """
+        get tje table metadata definition
+        :param self: this
+        :param table_name: the table to lookup
+        :return: table metadata
+        """
 
         metadata = MetaData()
         metadata.reflect(self._engine)

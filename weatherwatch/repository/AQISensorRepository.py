@@ -20,14 +20,25 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         """
         super().__init__(entity=AQISensor)
 
-    def findLatest(self) -> AQISensor:
+    def find_latest(self) -> AQISensor:
+        """
+        get the latest record
+        :param self: this
+        :return the latest record
+        """
         session: Session = self._datastore.session
         try:
             return session.query(AQISensor).order_by(AQISensor.read_time.desc()).first()
         finally:
             session.close()
 
-    def findGreaterThanReadTime(self, dt: datetime) -> List[AQISensor]:
+    def find_greater_than_read_time(self, dt: datetime) -> List[AQISensor]:
+        """
+        get records greater than the given date
+        :param self: this
+        :param dt: the lower bound date
+        :return the list of records
+        """
         session: Session = self._datastore.session
         try:
             return session.query(AQISensor).filter(AQISensor.read_time > dt).order_by(AQISensor.read_time.desc()).all()
@@ -35,6 +46,13 @@ class AQISensorRepository(BaseRepository[AQISensor]):
             session.close()
 
     def backup(self, from_date: date, to_date: date, file_name: str):
+        """
+        generate backup file for a given data range
+        :param self: this
+        :param from_date: from date
+        :param to_date: to date
+        :param file_name: the backup file name
+        """
         with open(file_name, "w", encoding="utf-8") as f:
             session: Session = self._datastore.session
             try:
@@ -48,13 +66,31 @@ class AQISensorRepository(BaseRepository[AQISensor]):
     # below functions are for data cleaup with funky sensor readings
     # it's a lazy kludge
     ##################################################################
-    def findPrevious(self, session: Session, id: int) -> AQISensor:
+    def find_previous(self, session: Session, id: int) -> AQISensor:
+        """
+        find previous record based on id
+        :param self: this
+        :param session: session the db session
+        :param id: the current record id
+        :return the previous record
+        """
         return session.query(AQISensor).filter(AQISensor.id < id).order_by(AQISensor.id.desc()).first()
 
-    def findNext(self, session: Session, id: int) -> AQISensor:
+    def find_next(self, session: Session, id: int) -> AQISensor:
+        """
+        find next record based on id
+        :param self: this
+        :param session: session the db session
+        :param id: the current record id
+        :return the next record
+        """
         return session.query(AQISensor).filter(AQISensor.id > id).order_by(AQISensor.id.asc()).first()
 
     def clean(self):
+        """
+        clean records of date outside of data range
+        :param self: this
+        """
         session: Session = self._datastore.session
         try:
             for d in (
@@ -74,19 +110,19 @@ class AQISensorRepository(BaseRepository[AQISensor]):
             ):
 
                 print(f"d {d.id}")
-                p: AQISensor = self.findPrevious(session, d.id)
+                p: AQISensor = self.find_previous(session, d.id)
                 if p is not None:
                     print(f"p {p.id}")
                     d.fudge(p)
-                p2: AQISensor = self.findPrevious(session, p.id)
+                p2: AQISensor = self.find_previous(session, p.id)
                 if p2 is not None:
                     print(f"p2 {p2.id}")
                     d.fudge(p2)
-                n: AQISensor = self.findNext(session, d.id)
+                n: AQISensor = self.find_next(session, d.id)
                 if n is not None:
                     print(f"n {p.id}")
                     d.fudge(n)
-                n2: AQISensor = self.findNext(session, n.id)
+                n2: AQISensor = self.find_next(session, n.id)
                 if n2 is not None:
                     print(f"n2 {n2.id}")
                     d.fudge(n2)

@@ -39,7 +39,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.process()
 
-        os: OutdoorSensor = self.outdoorRepo.findLatest()
+        os: OutdoorSensor = self.outdoorRepo.find_latest()
         self.assertIsNotNone(os)
         self.assertIsNotNone(os.rain_delta_mm)
 
@@ -49,7 +49,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od)
         
-        os: OutdoorSensor = self.outdoorRepo.findLatest()
+        os: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal(0.0), os.rain_delta_mm)
 
@@ -60,7 +60,7 @@ class SensorSvcTest(unittest.TestCase):
 
         self.svc.handleOutdoor(od1)
         
-        os1: OutdoorSensor = self.outdoorRepo.findLatest()
+        os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal(0.0), os1.rain_delta_mm)
         
@@ -68,7 +68,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od2)
         
-        os2: OutdoorSensor = self.outdoorRepo.findLatest()
+        os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal(0.0), os2.rain_delta_mm)
 
@@ -81,7 +81,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od1)
         
-        os1: OutdoorSensor = self.outdoorRepo.findLatest()
+        os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal(0.0), os1.rain_delta_mm)
         
@@ -90,7 +90,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od2)
         
-        os2: OutdoorSensor = self.outdoorRepo.findLatest()
+        os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal('1.10'), os2.rain_delta_mm)
 
@@ -103,7 +103,7 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od1)
         
-        os1: OutdoorSensor = self.outdoorRepo.findLatest()
+        os1: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal(0.0), os1.rain_delta_mm)
         
@@ -112,6 +112,6 @@ class SensorSvcTest(unittest.TestCase):
         
         self.svc.handleOutdoor(od2)
         
-        os2: OutdoorSensor = self.outdoorRepo.findLatest()
+        os2: OutdoorSensor = self.outdoorRepo.find_latest()
         
         self.assertEqual(Decimal('1.10'), os2.rain_delta_mm)

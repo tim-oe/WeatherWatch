@@ -24,4 +24,3 @@ class BasePage(ABC):
         :param self: this
         :param kwargs: additional arguments
         """
-        ...

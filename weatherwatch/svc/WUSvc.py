@@ -40,10 +40,10 @@ class WUSvc:
     def process(self):
         self.logger.info("processing weather underground upload")
         try:
-            inData: IndoorSensor = self._indoorRepo.findLatest(self._config.indoor_channel_key)
-            rainFail_mm = float(self._outdoorRepo.getDaysRainfall(date.today()))
+            inData: IndoorSensor = self._indoorRepo.find_latest(self._config.indoor_channel_key)
+            rainFail_mm = float(self._outdoorRepo.get_days_rainfall(date.today()))
 
-            outData: OutdoorSensor = self._outdoorRepo.findLatest()
+            outData: OutdoorSensor = self._outdoorRepo.find_latest()
 
             data: WUData = WUData(
                 winddir=outData.wind_dir_deg,
@@ -67,6 +67,6 @@ class WUSvc:
 
     def setAQI(self, data: WUData):
         if self._aqiConfig.enable:
-            aqiData: AQISensor = self._aqiRepo.findLatest()
+            aqiData: AQISensor = self._aqiRepo.find_latest()
             data.aqpm2_5(aqiData.pm_2_5_conctrt_std)
             data.aqpm10(aqiData.pm_1_0_conctrt_std)

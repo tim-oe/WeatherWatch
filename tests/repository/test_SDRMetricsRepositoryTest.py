@@ -26,7 +26,7 @@ class SDRMetrictsRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(ent.id)
         
-        act = repo.findById(ent.id)
+        act = repo.find_by_id(ent.id)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.start_time, act.start_time)

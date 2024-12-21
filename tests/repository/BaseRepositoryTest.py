@@ -53,7 +53,7 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
 
             shutil.copy(Path(src), outFile)
             filereplace(outFile.resolve(), "__YYYY_MM_DD__", stamp)
-            repo.execFile(outFile.resolve())
+            repo.exec_file(outFile.resolve())
             outFile.unlink()
 
             d = d + timedelta(days=1)
@@ -82,4 +82,4 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
         BaseRespositoryTest.createSql("aqi_sensor", start_date - timedelta(days=7), aqiRepo)
         BaseRespositoryTest.createSql("aqi_sensor", start_date - timedelta(days=3), aqiRepo)
 
-        outdoorRepo.execFile("tests/data/db/finalize.sql")        
+        outdoorRepo.exec_file("tests/data/db/finalize.sql")        

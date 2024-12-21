@@ -62,7 +62,7 @@ class SensorSvc:
         self.logger.debug("read %s", data)
 
         try:
-            lastRead: OutdoorSensor = self._outdoorRepo.findLatest()
+            lastRead: OutdoorSensor = self._outdoorRepo.find_latest()
             self.logger.debug("last %s", lastRead)
 
             ent: OutdoorSensor = OutdoorSensor()

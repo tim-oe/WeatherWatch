@@ -38,7 +38,7 @@ class CameraSvc:
 
     def process(self):
         self.logger.info("processing camera")
-        data: OutdoorSensor = self._repo.findLatest()
+        data: OutdoorSensor = self._repo.find_latest()
 
         try:
             imgFile: str = self.camera.process(data.light_lux)

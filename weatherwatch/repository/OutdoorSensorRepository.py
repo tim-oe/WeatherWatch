@@ -21,7 +21,12 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         """
         super().__init__(entity=OutdoorSensor)
 
-    def findLatest(self) -> OutdoorSensor:
+    def find_latest(self) -> OutdoorSensor:
+        """
+        get the latest record
+        :param self: this
+        :return the latest record
+        """
         session: Session = self._datastore.session
         try:
             val = session.query(OutdoorSensor).order_by(OutdoorSensor.read_time.desc()).first()
@@ -29,7 +34,13 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
-    def findGreaterThanReadTime(self, dt: datetime) -> List[OutdoorSensor]:
+    def find_greater_than_read_time(self, dt: datetime) -> List[OutdoorSensor]:
+        """
+        get records greater than the given date
+        :param self: this
+        :param dt: the lower bound date
+        :return the list of records
+        """
         session: Session = self._datastore.session
         try:
             return (
@@ -38,8 +49,11 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
-    def getDaysRainfall(self, date: date) -> Decimal:
+    def get_days_rainfall(self, date: date) -> Decimal:
         """
+        get the total days rain fall
+        :param self: this
+        :param date: date to lookup rain fall
         theres an edge case of just after midnight where there will not be
         data for the current day yet
         """
@@ -59,6 +73,13 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
             session.close()
 
     def backup(self, from_date: date, to_date: date, file_name: str):
+        """
+        generate backup file for a given data range
+        :param self: this
+        :param from_date: from date
+        :param to_date: to date
+        :param file_name: the backup file name
+        """
         with open(file_name, "w", encoding="utf-8") as f:
             session: Session = self._datastore.session
             try:

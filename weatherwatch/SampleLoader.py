@@ -34,7 +34,7 @@ def createSql(table_name: str, d: date, repo):
 
         shutil.copy(Path(src), outFile)
         filereplace(outFile.resolve(), "__YYYY_MM_DD__", stamp)
-        repo.execFile(outFile.resolve())
+        repo.exec_file(outFile.resolve())
         outFile.unlink()
 
         d = d + timedelta(days=1)
@@ -84,6 +84,6 @@ if __name__ == "__main__":
     createSql("aqi_sensor", date.today() - timedelta(days=7), aqiRepo)
     createSql("aqi_sensor", date.today() - timedelta(days=3), aqiRepo)
 
-    outdoorRepo.execFile("tests/data/db/finalize.sql")
+    outdoorRepo.exec_file("tests/data/db/finalize.sql")
 
     init_files()

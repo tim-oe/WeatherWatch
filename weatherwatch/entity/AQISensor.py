@@ -9,6 +9,10 @@ __all__ = ["AQISensor"]
 
 
 class AQISensor(BaseEntity):
+    """
+    aqi sensor db enitity
+    """
+
     __tablename__ = "aqi_sensor"
     __table_args__ = {"extend_existing": True}
 

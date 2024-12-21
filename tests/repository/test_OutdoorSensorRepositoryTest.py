@@ -24,28 +24,28 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(ent.id)
 
-        act = repo.findById(ent.id)
+        act = repo.find_by_id(ent.id)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
 
-        act = repo.findLatest()
+        act = repo.find_latest()
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
         
         d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        l = repo.findGreaterThanReadTime(d)
+        l = repo.find_greater_than_read_time(d)
         self.assertIsNotNone(l)
         self.assertTrue(len(l) > 0)
 
-        x = repo.getDaysRainfall(date.today())
+        x = repo.get_days_rainfall(date.today())
         
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)
         
-        x = repo.getDaysRainfall(date.today() + timedelta(days=1))
+        x = repo.get_days_rainfall(date.today() + timedelta(days=1))
         
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)
@@ -54,7 +54,7 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         repo: BaseRepository = self.getRepo()        
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("sql/sample/outdoor_sensor.sql")
+        repo.exec_file("sql/sample/outdoor_sensor.sql")
 
         from_date: date = date.today() - timedelta(days=1)
         to_date: date = date.today() - timedelta(days=-1)
@@ -63,7 +63,7 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("test.sql")
+        repo.exec_file("test.sql")
         
     @staticmethod
     def getSample() -> OutdoorSensor:

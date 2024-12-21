@@ -18,7 +18,7 @@ T = TypeVar("T")
 @logger
 class BaseRepository(Generic[T]):
     """
-    DataStore for orm
+    base repository
     https://github.com/auth0-blog/sqlalchemy-orm-tutorial
     https://medium.com/@danielwume/must-know-package-to-build-your-system-real-world-examples-with-sqlalchemy-in-python-db8c72a0f6c1
     https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mariadbconnector
@@ -52,6 +52,11 @@ class BaseRepository(Generic[T]):
         return self._entity
 
     def insert(self, o: T):
+        """
+        insert new object
+        :param self: this
+        :param o: the object to insert
+        """
         session: Session = self._datastore.session
         try:
             session.add(o)
@@ -60,7 +65,13 @@ class BaseRepository(Generic[T]):
         finally:
             session.close()
 
-    def findById(self, id: int) -> T:
+    def find_by_id(self, id: int) -> T:
+        """
+        find record by id
+        :param self: this
+        :param id: the object identity
+        :return the object for the given id
+        """
         session: Session = self._datastore.session
         try:
             return session.query(self._entity).filter_by(id=id).first()
@@ -68,6 +79,12 @@ class BaseRepository(Generic[T]):
             session.close()
 
     def top(self, limit: int) -> List[T]:
+        """
+        get top most objects to the limit
+        :param self: this
+        :param limit: the number of object to get
+        :return list of top objects
+        """
         session: Session = self._datastore.session
         try:
             return session.query(self._entity).limit(limit).all()
@@ -75,6 +92,11 @@ class BaseRepository(Generic[T]):
             session.close()
 
     def delete(self, o: T):
+        """
+        delete object
+        :param self: this
+        :param o: the object to delete
+        """
         session: Session = self._datastore.session
         try:
             session.delete(o)
@@ -83,6 +105,11 @@ class BaseRepository(Generic[T]):
             session.close()
 
     def exec(self, sql: str):
+        """
+        execute sql statement
+        :param self: this
+        :param sql: the statement
+        """
         con: Connection = self._datastore.connection
         try:
             con.execute(text(sql))
@@ -90,10 +117,12 @@ class BaseRepository(Generic[T]):
         finally:
             con.close()
 
-    def execFile(self, f: str):
+    def exec_file(self, f: str):
         """
         crude sql script processor
         doesn't handle comments
+        :param self: this
+        :param f: the file
         """
         con: Connection = self._datastore.connection
         try:
@@ -108,6 +137,12 @@ class BaseRepository(Generic[T]):
             con.close()
 
     def get_insert(self, o: T) -> str:
+        """
+        get insert statement for object
+        :param self: this
+        :param o: the object to build the statement from
+        :return the sql statement
+        """
 
         raw = o.__dict__.copy()
         del raw["_sa_instance_state"]
@@ -120,6 +155,13 @@ class BaseRepository(Generic[T]):
         return sql
 
     def get_value(self, key: str, value) -> str:
+        """
+        get the value for he column for the sql statement
+        :param self: this
+        :param key: the column metadata key
+        :param value: the raw valeu
+        :return value injected into the sql statement
+        """
         t = self._columns[key]
 
         self.logger.debug("%s %s %s", key, type(t), value)

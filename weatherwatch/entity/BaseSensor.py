@@ -9,6 +9,10 @@ __all__ = ["BaseSensor"]
 
 @logger
 class BaseSensor(DeclarativeBase):
+    """
+    base sensor db enitity
+    """
+
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False, default=None, autoincrement="auto")
     read_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=None)
     battery_ok: Mapped[bool] = mapped_column(Boolean, nullable=False, default=None)

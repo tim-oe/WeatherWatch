@@ -20,14 +20,26 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         """
         super().__init__(entity=IndoorSensor)
 
-    def findLatest(self, c: int) -> IndoorSensor:
+    def find_latest(self, c: int) -> IndoorSensor:
+        """
+        get the latest record
+        :param self: this
+        :param c: the cnannel id
+        :return the latest record
+        """
         session: Session = self._datastore.session
         try:
             return session.query(IndoorSensor).filter_by(channel=c).order_by(IndoorSensor.read_time.desc()).first()
         finally:
             session.close()
 
-    def findGreaterThanReadTime(self, channel: int, dt: datetime) -> List[IndoorSensor]:
+    def find_greater_than_read_time(self, channel: int, dt: datetime) -> List[IndoorSensor]:
+        """
+        get records greater than the given date
+        :param self: this
+        :param dt: the lower bound date
+        :return the list of records
+        """
         session: Session = self._datastore.session
         try:
             return (
@@ -40,6 +52,13 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
             session.close()
 
     def backup(self, from_date: date, to_date: date, file_name: str):
+        """
+        generate backup file for a given data range
+        :param self: this
+        :param from_date: from date
+        :param to_date: to date
+        :param file_name: the backup file name
+        """
         with open(file_name, "w", encoding="utf-8") as f:
             session: Session = self._datastore.session
             try:

@@ -37,19 +37,19 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(ent.id)
 
-        act = repo.findById(ent.id)
+        act = repo.find_by_id(ent.id)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
 
-        act = repo.findLatest(ent.channel)
+        act = repo.find_latest(ent.channel)
         self.assertIsNotNone(act)
         self.assertEqual(ent.id, act.id)
         self.assertEqual(ent.read_time, act.read_time)
 
         d =(datetime.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        l = repo.findGreaterThanReadTime(ent.channel, d)
+        l = repo.find_greater_than_read_time(ent.channel, d)
         self.assertIsNotNone(act)
         self.assertTrue(len(l) > 0)
 
@@ -57,7 +57,7 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         repo: BaseRepository = self.getRepo()        
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("sql/sample/indoor_sensor.sql")
+        repo.exec_file("sql/sample/indoor_sensor.sql")
 
         from_date: date = date.today() - timedelta(days=1)
         to_date: date = date.today() - timedelta(days=-1)
@@ -66,4 +66,4 @@ class IndoorSensorRepositoryTest(BaseRespositoryTest):
         
         repo.exec(f'truncate {repo.entity.__table__}')
 
-        repo.execFile("test.sql")
+        repo.exec_file("test.sql")

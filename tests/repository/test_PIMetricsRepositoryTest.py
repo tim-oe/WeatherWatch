@@ -1,6 +1,3 @@
-import pickle
-import unittest
-
 import datetime
 
 import psutil
@@ -42,7 +39,7 @@ class PIMetricsRepositoryTest(BaseRespositoryTest):
         
         self.assertIsNotNone(data.id)
         
-        act = repo.findById(data.id)
+        act = repo.find_by_id(data.id)
         self.assertIsNotNone(act)
         self.assertEqual(data.id, act.id)
         self.assertEqual(data.read_time, act.read_time)

@@ -9,6 +9,10 @@ __all__ = ["IndoorSensor"]
 
 @dataclass
 class IndoorSensor(BaseSensor):
+    """
+    indoor sensor db enitity
+    """
+
     __tablename__ = "indoor_sensor"
     __table_args__ = {"extend_existing": True}
 

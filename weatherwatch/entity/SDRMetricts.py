@@ -10,6 +10,10 @@ __all__ = ["SDRMetrics"]
 
 @dataclass
 class SDRMetrics(BaseEntity):
+    """
+    base sensor db enitity
+    """
+
     __tablename__ = "sdr_metrics"
     __table_args__ = {"extend_existing": True}
 
