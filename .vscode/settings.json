@@ -12,7 +12,11 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true,
-    "python.linting.pylintArgs": [
-        "--rcfile=${env:HOME}/src.WeatherWatch/.pylintrc"
+    "pylint.path": [
+        "${env:HOME}/src/WeatherWatch/.venv/bin/pylint"
+    ],
+    "pylint.args": [
+        "--rcfile=${env:HOME}/src/WeatherWatch/.pylintrc",
+        "--disable=unrecognized-option"
     ]
 }

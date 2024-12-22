@@ -123,6 +123,7 @@ class CoverageCommand(Command):
         run
         """
         os.system("coverage run -m pytest")
+        os.system("coverage xml")
         os.system("coverage html")
         os.system("coverage report")
 
@@ -156,14 +157,12 @@ class SonarCommand(Command):
 
         sonar_token = os.environ.get('WEATHER_SONAR_TOKEN') 
         #print(sonar_token)
-        
-        os.system("sonar-scanner -X " + 
-                  "-Dsonar.projectKey=WeatherWatch " + 
-                  "-Dsonar.python.version=3 " +
-                  "-Dsonar.sources=weatherwatch " +
-                  "-Dsonar.exclusions=src/lib/**/* " +
-                  f"-Dsonar.host.url={sonar_url} " + 
-                  f"-Dsonar.login={sonar_token}")
+
+        # pylint format for sonar
+        print("runnning pylint")
+        os.system("pylint weatherwatch --output-format=parseable > reports/pylint-report.txt")
+        print("pylint complete")
+        os.system(f"sonar-scanner -X -Dsonar.host.url={sonar_url} -Dsonar.login={sonar_token}")
 
 # load sample data
 class SQLInitCommand(Command):

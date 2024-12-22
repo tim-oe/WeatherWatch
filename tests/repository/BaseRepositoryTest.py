@@ -59,6 +59,22 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
             d = d + timedelta(days=1)
 
     @staticmethod
+    def teardown_db():
+        dbConfig: DatabaseConfig = AppConfig().database
+        if dbConfig.production:
+            raise Exception("DO NOT RUN ON PROD!!!!")
+
+        indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
+        indoorRepo.exec(f"truncate {indoorRepo.entity.__table__}")
+
+        outdoorRepo: OutdoorSensorRepository = OutdoorSensorRepository()
+        outdoorRepo.exec(f"truncate {outdoorRepo.entity.__table__}")
+
+        aqiRepo: AQISensorRepository = AQISensorRepository()
+        aqiRepo.exec(f"truncate {aqiRepo.entity.__table__}")
+
+
+    @staticmethod
     def load(start_date: date):
         dbConfig: DatabaseConfig = AppConfig().database
         if dbConfig.production:

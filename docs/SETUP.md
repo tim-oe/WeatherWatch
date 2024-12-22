@@ -70,9 +70,11 @@
 - formating: ```python3 setup.py format```
 - clean the cruft: ```python3 setup.py clean```
 
-## faq
+## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
 - [lint sample config](https://github.com/atlassian-api/atlassian-python-api/blob/master/pyproject.toml)
 - [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
 - [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
+- [pylint vscode](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)
+- [tuning sonar violations](https://www.baeldung.com/sonar-exclude-violations)

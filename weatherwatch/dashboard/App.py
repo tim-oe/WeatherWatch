@@ -96,6 +96,15 @@ class App:
         self._server.route("/vid/<resource>")(self.serve_cam_vid)
         self._server.route("/static/img/<resource>")(self.serve_res_image)
 
+    @property
+    def app(self) -> Dash:
+        """
+        app property getter
+        :param self: this
+        :return: the app
+        """
+        return self._app
+
     def sidebar(self) -> html.Div:
         """
         build sidebard navigation
