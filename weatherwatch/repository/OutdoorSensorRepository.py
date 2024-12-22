@@ -13,6 +13,9 @@ __all__ = ["OutdoorSensorRepository"]
 
 @singleton
 class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
+    """
+    outdoor sensor repo
+    """
 
     def __init__(self):
         """
@@ -34,6 +37,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
+    # pylint: disable=duplicate-code
     def find_greater_than_read_time(self, dt: datetime) -> List[OutdoorSensor]:
         """
         get records greater than the given date
@@ -49,7 +53,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
-    def get_days_rainfall(self, date: date) -> Decimal:
+    def get_days_rainfall(self, rain_date: date) -> Decimal:
         """
         get the total days rain fall
         :param self: this
@@ -61,17 +65,18 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         try:
             r: Row = (
                 session.query(func.sum(OutdoorSensor.rain_delta_mm).label("total"))
-                .filter(cast(OutdoorSensor.read_time, DATE) == date)
+                .filter(cast(OutdoorSensor.read_time, DATE) == rain_date)
                 .group_by(cast(OutdoorSensor.read_time, DATE))
                 .first()
             )
             if r is not None:
                 return r.total
-            else:
-                return Decimal(0.0)
+
+            return Decimal(0.0)
         finally:
             session.close()
 
+    # pylint: disable=duplicate-code
     def backup(self, from_date: date, to_date: date, file_name: str):
         """
         generate backup file for a given data range

@@ -94,11 +94,11 @@ class WindCompass(dbc.Container):
         fig.update_layout(
             title="Wind distribution",
             legend_font_size=16,
-            font=dict(size=16),
-            polar=dict(
-                radialaxis=dict(ticksuffix="%", angle=45, tickfont=dict(size=12)),
-                angularaxis=dict(direction="clockwise", tickfont=dict(size=14)),
-            ),
+            font={"size": 16},
+            polar={
+                "radialaxis": {"ticksuffix": "%", "angle": 45, "tickfont": {"size": 12}},
+                "angularaxis": {"direction": "clockwise", "tickfont": {"size": 14}},
+            },
             template="plotly_dark",
         )
         return fig
@@ -117,12 +117,12 @@ class WindCompass(dbc.Container):
 
         os: OutdoorSensor
         for os in self._data:
-            windSpeed = os.wind_avg_m_s
-            windDirection = os.wind_dir_deg
-            CB = self.get_cardinal_bucket(windDirection)
-            SB = self.get_speed_bucket(windSpeed)
+            wind_speed = os.wind_avg_m_s
+            wind_direction = os.wind_dir_deg
+            cardinal_bucket = self.get_cardinal_bucket(wind_direction)
+            speed_bucket = self.get_speed_bucket(wind_speed)
             # print("SB, CB=", SB, CB)
-            df[SB][CB] = df[SB][CB] + 1
+            df[speed_bucket][cardinal_bucket] = df[speed_bucket][cardinal_bucket] + 1
         # print ("df=", df)
         # print("number of records=", totalRecords)
         # normalize df
@@ -140,9 +140,9 @@ class WindCompass(dbc.Container):
         """
 
         # TODO add to config
-        English_Metric = True
+        english_metric = True
 
-        if English_Metric is False:  # english units
+        if english_metric is False:  # english units
             wind = wind * 2.23694
         return wind
 
@@ -153,9 +153,9 @@ class WindCompass(dbc.Container):
         """
 
         # TODO add to config
-        English_Metric = True
+        english_metric = True
 
-        if English_Metric is False:  # english units
+        if english_metric is False:  # english units
             units = " mph"
         else:
             units = " m/s"
@@ -169,25 +169,29 @@ class WindCompass(dbc.Container):
         :param wind_direction: the wind direction in degrees
         :return: the the cardinal direction bucket
         """
+        cardinal_bucket: int = -1
 
-        if (wind_direction >= 337.5) or (wind_direction < 22.5):
-            return 0
-        if (wind_direction >= 22.5) and (wind_direction < 67.5):
-            return 1
-        if (wind_direction >= 67.5) and (wind_direction < 112.5):
-            return 2
-        if (wind_direction >= 112.5) and (wind_direction < 157.5):
-            return 3
-        if (wind_direction >= 157.5) and (wind_direction < 202.5):
-            return 4
-        if (wind_direction >= 202.5) and (wind_direction < 247.5):
-            return 5
-        if (wind_direction >= 247.5) and (wind_direction < 292.5):
-            return 6
-        if (wind_direction >= 292.5) and (wind_direction < 337.5):
-            return 7
+        if wind_direction >= 337.5 or wind_direction < 22.5:
+            cardinal_bucket = 0
+        if 22.5 <= wind_direction < 67.5:
+            cardinal_bucket = 1
+        if 67.5 <= wind_direction < 112.5:
+            cardinal_bucket = 2
+        if 112.5 <= wind_direction < 157.5:
+            cardinal_bucket = 3
+        if 157.5 <= wind_direction < 202.5:
+            cardinal_bucket = 4
+        if 202.5 <= wind_direction < 247.5:
+            cardinal_bucket = 5
+        if 247.5 <= wind_direction < 292.5:
+            cardinal_bucket = 6
+        if 292.5 <= wind_direction < 337.5:
+            cardinal_bucket = 7
 
-        raise ValueError("unable to get cardinal from %s", wind_direction)
+        if cardinal_bucket == -1:
+            raise ValueError(f"unable to get cardinal from {wind_direction}")
+
+        return cardinal_bucket
 
     def get_speed_bucket(self, wind_speed):
         """

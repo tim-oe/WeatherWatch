@@ -40,15 +40,15 @@ class OutdoorSensorPage(BasePage):
         :param kwargs: additional arguments
         """
 
-        data: OutdoorSensor = self._outdoor_repo.findLatest()
+        data: OutdoorSensor = self._outdoor_repo.find_latest()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
-        rain_fail = self._outdoor_repo.getDaysRainfall(date.today())
+        rain_fail = self._outdoor_repo.get_days_rainfall(date.today())
         # for lazy testing...
         # rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
 
         d = date.today() - timedelta(days=7)
-        seven_day: List[OutdoorSensor] = self._outdoor_repo.findGreaterThanReadTime(d)
+        seven_day: List[OutdoorSensor] = self._outdoor_repo.find_greater_than_read_time(d)
 
         return dbc.Container(
             [
@@ -61,8 +61,8 @@ class OutdoorSensorPage(BasePage):
                             id="out-t-col",
                             children=TempratureGauge(
                                 label="temprature",
-                                min=-10,
-                                max=120,
+                                min_val=-10,
+                                max_val=120,
                                 mid=75,
                                 high=90,
                                 value=round(data.temperature_f, 1),

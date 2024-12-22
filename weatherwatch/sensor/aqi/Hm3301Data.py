@@ -25,33 +25,38 @@ class Hm3301Data:
         self.pm_10_conctrt_atmosph = 0
 
     def high(self) -> bool:
+        """
+        test if data has out of range value
+        :param self: this
+        """
+        is_high: bool = False
         ceiling: int = 1000
         if self.pm_1_0_conctrt_std > ceiling:
-            return True
+            is_high = True
         if self.pm_2_5_conctrt_std > ceiling:
-            return True
+            is_high = True
         if self.pm_10_conctrt_std > ceiling:
-            return True
+            is_high = True
         if self.pm_1_0_conctrt_atmosph > ceiling:
-            return True
+            is_high = True
         if self.pm_2_5_conctrt_atmosph > ceiling:
-            return True
+            is_high = True
         if self.pm_10_conctrt_atmosph > ceiling:
-            return True
+            is_high = True
+        return is_high
 
     def lower(self, that: Self):
-        if that.pm_1_0_conctrt_std < self.pm_1_0_conctrt_std:
-            self.pm_1_0_conctrt_std = that.pm_1_0_conctrt_std
-        if that.pm_2_5_conctrt_std < self.pm_2_5_conctrt_std:
-            self.pm_2_5_conctrt_std = that.pm_2_5_conctrt_std
-        if that.pm_10_conctrt_std < self.pm_10_conctrt_std:
-            self.pm_10_conctrt_std = that.pm_10_conctrt_std
-        if that.pm_1_0_conctrt_atmosph < self.pm_1_0_conctrt_atmosph:
-            self.pm_1_0_conctrt_atmosph = that.pm_1_0_conctrt_atmosph
-        if that.pm_2_5_conctrt_atmosph < self.pm_2_5_conctrt_atmosph:
-            self.pm_2_5_conctrt_atmosph = that.pm_2_5_conctrt_atmosph
-        if that.pm_10_conctrt_atmosph < self.pm_10_conctrt_atmosph:
-            self.pm_10_conctrt_atmosph = that.pm_10_conctrt_atmosph
+        """
+        set values to the lower value
+        :param self: this
+        :param that: the object to level set with
+        """
+        self.pm_1_0_conctrt_std = min(self.pm_1_0_conctrt_std, that.pm_1_0_conctrt_std)
+        self.pm_2_5_conctrt_std = min(self.pm_2_5_conctrt_std, that.pm_2_5_conctrt_std)
+        self.pm_10_conctrt_std = min(self.pm_10_conctrt_std, that.pm_10_conctrt_std)
+        self.pm_1_0_conctrt_atmosph = min(self.pm_1_0_conctrt_atmosph, that.pm_1_0_conctrt_atmosph)
+        self.pm_2_5_conctrt_atmosph = min(self.pm_2_5_conctrt_atmosph, that.pm_2_5_conctrt_atmosph)
+        self.pm_10_conctrt_atmosph = min(self.pm_10_conctrt_atmosph, that.pm_10_conctrt_atmosph)
 
     @property
     def pm_1_0_conctrt_std(self) -> int:

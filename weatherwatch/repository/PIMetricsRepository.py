@@ -7,6 +7,9 @@ __all__ = ["PIMetricsRepository"]
 
 @singleton
 class PIMetricsRepository(BaseRepository[PIMetrics]):
+    """
+    pi metrics sensor repo
+    """
 
     def __init__(self):
         """

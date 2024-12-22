@@ -97,6 +97,10 @@ class App:
         self._server.route("/static/img/<resource>")(self.serve_res_image)
 
     def sidebar(self) -> html.Div:
+        """
+        build sidebard navigation
+        :param self: this
+        """
 
         links = []
 
@@ -125,34 +129,36 @@ class App:
             style=App.SIDEBAR_STYLE,
         )
 
-    def render_page_content(self, href: str):
+    def render_page_content(self, href: str) -> dbc.Container:
         """
         render page based on href request
         :param self: this
         :param href: href request
         """
+        content: dbc.Container = None
         try:
             f: furl = furl(href)
             self.logger.debug("request [%s]", f)
             match f.path:
                 case App.ROOT_PATH:
-                    return SystemPage().content()
+                    content = SystemPage().content()
                 case SystemPage.PATH:
-                    return SystemPage().content()
+                    content = SystemPage().content()
                 case CameraPage.PATH:
-                    return CameraPage().content()
+                    content = CameraPage().content()
                 case AirQualityPage.PATH:
-                    return AirQualityPage().content()
+                    content = AirQualityPage().content()
                 case IndoorSensorPage.PATH:
-                    return IndoorSensorPage().content(name=f.args["name"])
+                    content = IndoorSensorPage().content(name=f.args["name"])
                 case OutdoorSensorPage.PATH:
-                    return OutdoorSensorPage().content(name=f.args["name"])
+                    content = OutdoorSensorPage().content(name=f.args["name"])
                 case _:
                     self.logger.error(" unhandled request [%s]", f)
-                    return self.missing_page_content(f)
+                    content = self.missing_page_content(f)
         except Exception:
             self.logger.exception("failed to render page %s", f)
-            return self.server_error(f)
+            content = self.server_error(f)
+        return content
 
     def missing_page_content(self, f: furl) -> html.Div:
         """

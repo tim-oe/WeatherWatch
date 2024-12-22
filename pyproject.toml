@@ -37,7 +37,7 @@ requests = "^2.32.3"
 axiompy = "^0.2.1"
 waitress = "^3.0.2"
 backoff = "^2.2.1"
-pylint = {extras = ["spelling"], version = "^3.3.2"}
+pylint-json2html = "^0.5.0"
 
 [tool.poetry.group.test.dependencies]  
 coverage = "^7.6.9" 
@@ -46,6 +46,7 @@ pytest-html = "^4.1.1"
 pytest-mock = "^3.14.0"
 pytemp = "^0.0.1"
 python-util = "^1.2.1"
+pylint = {extras = ["spelling"], version = "^3.3.2"}
     
 [tool.poetry.group.dev.dependencies]  
 setuptools = "^75.6.0"

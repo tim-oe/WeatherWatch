@@ -82,6 +82,12 @@ def pimetrics():
 
 @singleton
 class SchedulerSvc:
+    """
+    SchedulerSvc service
+    sets up automated tasks
+    https://apscheduler.readthedocs.io/en/3.x/index.html
+    """
+
     AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
     DB_BACKUP_JOB = "db_backup"
@@ -90,12 +96,6 @@ class SchedulerSvc:
     SENSOR_JOB = "sensor"
     TIMELAPSE_JOB = "timelapse"
     WU_JOB = "weather_underground"
-
-    """
-    SchedulerSvc service
-    sets up automated tasks
-    https://apscheduler.readthedocs.io/en/3.x/index.html
-    """
 
     def __init__(self):
         """

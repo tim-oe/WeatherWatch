@@ -12,6 +12,9 @@ __all__ = ["IndoorSensorRepository"]
 
 @singleton
 class IndoorSensorRepository(BaseRepository[IndoorSensor]):
+    """
+    indoor sensor repo
+    """
 
     def __init__(self):
         """
@@ -33,6 +36,7 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         finally:
             session.close()
 
+    # pylint: disable=duplicate-code
     def find_greater_than_read_time(self, channel: int, dt: datetime) -> List[IndoorSensor]:
         """
         get records greater than the given date
@@ -51,6 +55,7 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         finally:
             session.close()
 
+    # pylint: disable=duplicate-code
     def backup(self, from_date: date, to_date: date, file_name: str):
         """
         generate backup file for a given data range

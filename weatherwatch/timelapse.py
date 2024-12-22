@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.11
+# -*- coding: utf-8 -*-
 from camera.Timelapse import Timelapse
 
 # actual start point

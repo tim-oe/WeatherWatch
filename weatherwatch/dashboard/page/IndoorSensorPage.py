@@ -24,7 +24,7 @@ class IndoorSensorPage(BasePage):
         ctor
         :param self: this
         """
-        self._indoorRepo: IndoorSensorRepository = IndoorSensorRepository()
+        self._indoor_repo: IndoorSensorRepository = IndoorSensorRepository()
 
         super().__init__()
 
@@ -35,13 +35,13 @@ class IndoorSensorPage(BasePage):
         :param kwargs: additional arguments
         """
 
-        sensor: SensorConfig = self._app_config.getSensor(kwargs["name"])
+        sensor: SensorConfig = self._app_config.get_sensor(kwargs["name"])
 
-        data: IndoorSensor = self._indoorRepo.findLatest(sensor.channel)
+        data: IndoorSensor = self._indoor_repo.find_latest(sensor.channel)
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         d = date.today() - timedelta(days=7)
-        seven_day: List[IndoorSensor] = self._indoorRepo.findGreaterThanReadTime(sensor.channel, d)
+        seven_day: List[IndoorSensor] = self._indoor_repo.find_greater_than_read_time(sensor.channel, d)
 
         return dbc.Container(
             id=f"in-root-cont-{sensor.channel}",
@@ -56,8 +56,8 @@ class IndoorSensorPage(BasePage):
                             id="in-t-col",
                             children=TempratureGauge(
                                 label="temprature",
-                                min=-10,
-                                max=120,
+                                min_val=-10,
+                                max_val=120,
                                 mid=75,
                                 high=90,
                                 value=round(data.temperature_f, 1),

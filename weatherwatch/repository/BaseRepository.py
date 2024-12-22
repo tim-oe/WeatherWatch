@@ -17,6 +17,7 @@ T = TypeVar("T")
 
 @logger
 class BaseRepository(Generic[T]):
+    # pylint: disable=line-too-long
     """
     base repository
     https://github.com/auth0-blog/sqlalchemy-orm-tutorial
@@ -65,7 +66,7 @@ class BaseRepository(Generic[T]):
         finally:
             session.close()
 
-    def find_by_id(self, id: int) -> T:
+    def find_by_id(self, record_id: int) -> T:
         """
         find record by id
         :param self: this
@@ -74,7 +75,7 @@ class BaseRepository(Generic[T]):
         """
         session: Session = self._datastore.session
         try:
-            return session.query(self._entity).filter_by(id=id).first()
+            return session.query(self._entity).filter_by(id=record_id).first()
         finally:
             session.close()
 
@@ -126,7 +127,7 @@ class BaseRepository(Generic[T]):
         """
         con: Connection = self._datastore.connection
         try:
-            with open(f) as file:
+            with open(f, "r", encoding="utf-8") as file:
                 statements = re.split(r";\s*$", file.read(), flags=re.MULTILINE)
                 for statement in statements:
                     if statement:
@@ -170,20 +171,19 @@ class BaseRepository(Generic[T]):
         if isinstance(value, bool):
             if value:
                 return "1"
-            else:
-                return "0"
+            return "0"
         # needs to be valid json
-        elif key == "raw":
+        if key == "raw":
             return f"'{json.dumps(value)}'"
-        else:
-            match t:
-                case DateTime():
-                    # TODO is there more generic way
-                    dt = value.strftime("%Y-%m-%d %H:%M:%S")
-                    return f"'{dt}'"
-                case Numeric() | Integer():
-                    return str(value)
-                case _:
-                    # value = str(value)
-                    value = value.replace("'", "''")
-                    return f"'{value}'"
+
+        match t:
+            case DateTime():
+                # TODO is there more generic way
+                dt = value.strftime("%Y-%m-%d %H:%M:%S")
+                return f"'{dt}'"
+            case Numeric() | Integer():
+                return str(value)
+            case _:
+                # value = str(value)
+                value = value.replace("'", "''")
+                return f"'{value}'"

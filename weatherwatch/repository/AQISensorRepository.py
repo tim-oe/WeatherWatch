@@ -12,6 +12,9 @@ __all__ = ["AQISensorRepository"]
 
 @singleton
 class AQISensorRepository(BaseRepository[AQISensor]):
+    """
+    indoor sensor repo
+    """
 
     def __init__(self):
         """
@@ -66,7 +69,7 @@ class AQISensorRepository(BaseRepository[AQISensor]):
     # below functions are for data cleaup with funky sensor readings
     # it's a lazy kludge
     ##################################################################
-    def find_previous(self, session: Session, id: int) -> AQISensor:
+    def find_previous(self, session: Session, record_id: int) -> AQISensor:
         """
         find previous record based on id
         :param self: this
@@ -74,9 +77,9 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         :param id: the current record id
         :return the previous record
         """
-        return session.query(AQISensor).filter(AQISensor.id < id).order_by(AQISensor.id.desc()).first()
+        return session.query(AQISensor).filter(AQISensor.id < record_id).order_by(AQISensor.id.desc()).first()
 
-    def find_next(self, session: Session, id: int) -> AQISensor:
+    def find_next(self, session: Session, record_id: int) -> AQISensor:
         """
         find next record based on id
         :param self: this
@@ -84,7 +87,7 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         :param id: the current record id
         :return the next record
         """
-        return session.query(AQISensor).filter(AQISensor.id > id).order_by(AQISensor.id.asc()).first()
+        return session.query(AQISensor).filter(AQISensor.id > record_id).order_by(AQISensor.id.asc()).first()
 
     def clean(self):
         """

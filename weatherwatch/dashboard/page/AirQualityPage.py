@@ -32,11 +32,11 @@ class AirQualityPage(BasePage):
         :param self: this
         :param kwargs: additional arguments
         """
-        data: AQISensor = self._aqi_repo.findLatest()
+        data: AQISensor = self._aqi_repo.find_latest()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         d = date.today() - timedelta(days=7)
-        seven_day: List[AQISensor] = self._aqi_repo.findGreaterThanReadTime(d)
+        seven_day: List[AQISensor] = self._aqi_repo.find_greater_than_read_time(d)
 
         return dbc.Container(
             [

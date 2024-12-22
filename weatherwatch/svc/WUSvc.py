@@ -48,8 +48,8 @@ class WUSvc:
         """
         self.logger.info("processing weather underground upload")
         try:
-            inData: IndoorSensor = self._indoor_repo.find_latest(self._config.indoor_channel_key)
-            rainFail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
+            in_data: IndoorSensor = self._indoor_repo.find_latest(self._config.indoor_channel_key)
+            rainfail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
 
             out_data: OutdoorSensor = self._outdoor_repo.find_latest()
 
@@ -59,12 +59,12 @@ class WUSvc:
                 windgustmph=round(Converter.mps_to_mph(out_data.wind_max_m_s), 2),
                 humidity=out_data.humidity,
                 tempf=round(out_data.temperature_f, 2),
-                dailyrainin=round(Converter.mm_to_inch(rainFail_mm), 2),
+                dailyrainin=round(Converter.mm_to_inch(rainfail_mm), 2),
                 baromin=round(Converter.hpa_to_iom(out_data.pressure), 2),
                 solarradiation=round(Converter.lux_to_wpm(out_data.light_lux), 2),
                 uv=out_data.uv,
-                indoortempf=round(inData.temperature_f, 2),
-                indoorhumidity=inData.humidity,
+                indoortempf=round(in_data.temperature_f, 2),
+                indoorhumidity=in_data.humidity,
             )
 
             self.set_aqi(data)
@@ -80,6 +80,6 @@ class WUSvc:
         :param data: the wu data
         """
         if self._aqi_config.enable:
-            aqiData: AQISensor = self._aqi_repo.find_latest()
-            data.aqpm2_5(aqiData.pm_2_5_conctrt_std)
-            data.aqpm10(aqiData.pm_1_0_conctrt_std)
+            aqi_data: AQISensor = self._aqi_repo.find_latest()
+            data.aqpm2_5(aqi_data.pm_2_5_conctrt_std)
+            data.aqpm10(aqi_data.pm_1_0_conctrt_std)

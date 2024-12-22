@@ -26,7 +26,6 @@ class HumidityGauge(dbc.Container):
                     max=100,
                     showCurrentValue=True,
                     units="%",
-                    # className="dark-theme-control",
                 )
             ]
         )

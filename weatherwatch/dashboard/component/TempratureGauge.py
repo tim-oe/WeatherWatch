@@ -10,18 +10,18 @@ class TempratureGauge(dbc.Container):
     https://dash.plotly.com/dash-daq/thermometer
     """
 
-    def __init__(self, label: str, units: str, value: float, min: int, max: int, mid: int, high: int, size: int = 100):
+    def __init__(self, label: str, units: str, value: float, min_val: int, max_val: int, mid: int, high: int):
         """
         ctor
         :param self: this
         """
         color = "blue"
-        if value > mid and value < high:
-            color = "yellow"
-        elif value >= high:
+        if value >= high:
             color = "red"
+        elif value > mid:
+            color = "yellow"
 
-        scale = {"start": min, "interval": 10, "labelInterval": 2, "custom": {}}
+        scale = {"start": min_val, "interval": 10, "labelInterval": 2, "custom": {}}
 
         # add current instead of bottom
         scale["custom"][f"{round(value,1)}"] = f"<----{round(value,1)}"
@@ -29,7 +29,14 @@ class TempratureGauge(dbc.Container):
         super().__init__(
             [
                 daq.Thermometer(
-                    label=label, min=min, max=max, color=color, value=value, showCurrentValue=False, units=units, scale=scale
+                    label=label,
+                    min=min_val,
+                    max=max_val,
+                    color=color,
+                    value=value,
+                    showCurrentValue=False,
+                    units=units,
+                    scale=scale,
                 )
             ]
         )

@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from typing import Self
 
 from conf.SensorConfig import SensorConfig
 from util.Logger import logger
@@ -61,7 +62,7 @@ class BaseData:
         self.config = config
 
     @staticmethod
-    def base_decoder(o: "BaseData", raw: dict):
+    def base_decoder(o: Self, raw: dict):
         """
         base data decoder
         :param o: the base data object
@@ -104,16 +105,16 @@ class BaseData:
         :param self: this
         :return: the timestamp
         """
-        return self._timeStamp
+        return self._time_stamp
 
     @time_stamp.setter
-    def time_stamp(self, timeStamp: datetime):
+    def time_stamp(self, time_stamp: datetime):
         """
         timeStamp property setter
         :param self: this
         :param: the timeStamp
         """
-        self._timeStamp = timeStamp
+        self._time_stamp = time_stamp
 
     @property
     def model(self):

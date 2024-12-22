@@ -1,6 +1,6 @@
 from concurrent import futures
 from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import psutil
 import uptime
@@ -81,7 +81,7 @@ class PIMetricsSvc:
         """
         uptime_seconds = uptime.uptime()
 
-        uptime_string = str(datetime.timedelta(seconds=uptime_seconds))
+        uptime_string = str(timedelta(seconds=uptime_seconds))
         self.logger.debug("uptime %s", uptime_string)
 
         return uptime_string

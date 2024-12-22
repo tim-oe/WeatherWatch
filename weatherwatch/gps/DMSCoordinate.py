@@ -24,20 +24,20 @@ class DMSCoordinate:
     https://stackoverflow.com/questions/2579535/convert-dd-decimal-degrees-to-dms-degrees-minutes-seconds-in-python
     """
 
-    def __init__(self, dd=None, isLat: bool = True):
+    def __init__(self, dd=None, is_lat: bool = True):
         neg = dd < 0
         dd = (-1) ** neg * dd
         dd, self._degrees = math.modf(dd)
         mins, self._minutes = math.modf(60 * dd)
         self._seconds = 60 * mins
 
-        if isLat is True and neg is True:
+        if is_lat is True and neg is True:
             self._ordinal = Ordinal.SOUTH
-        if isLat is True and neg is False:
+        if is_lat is True and neg is False:
             self._ordinal = Ordinal.NORTH
-        if isLat is False and neg is True:
+        if is_lat is False and neg is True:
             self._ordinal = Ordinal.WEST
-        if isLat is False and neg is False:
+        if is_lat is False and neg is False:
             self._ordinal = Ordinal.EAST
 
     @property

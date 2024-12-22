@@ -3,6 +3,8 @@ from util.Logger import logger
 __all__ = ["SensorConfig"]
 
 
+# members are set dynamically
+# pylint: disable=no-member
 @logger
 class SensorConfig:
     """
@@ -77,16 +79,20 @@ class SensorConfig:
         :param self: this
         :return: the dataClass
         """
+        # TODO rename config when moved to DB
+        # pylint: disable=invalid-name
         return self._dataClass
 
     @data_class.setter
-    def data_class(self, dataClass):
+    def data_class(self, data_class):
         """
         dataClass property setter
         :param self: this
         :param: the dataClass
         """
-        self._dataClass = dataClass
+        # TODO rename config when moved to DB
+        # pylint: disable=invalid-name
+        self._dataClass = data_class
 
     @property
     def key(self):

@@ -32,25 +32,25 @@ class Rsync:
         cmd.append(src)
         cmd.append(dest)
 
-        p: Popen = Popen(
+        with Popen(
             cmd,
             # stdout=PIPE,
             # stderr=PIPE,
             # text=True,
             close_fds=Rsync.ON_POSIX,
-        )
+        ) as p:
 
-        try:
-            p.wait(timeout=60 * 5)
-            self.logger.info("rsync subprocess complete %s", p.returncode)
-            # for line in p.stdout:
-            #     self.logger.debug(line.strip())
+            try:
+                p.wait(timeout=60 * 5)
+                self.logger.info("rsync subprocess complete %s", p.returncode)
+                # for line in p.stdout:
+                #     self.logger.debug(line.strip())
 
-            # for line in p.stderr:
-            #     self.logger.error(line.strip())
-        except TimeoutExpired:
-            self.logger.exception("rsync timed out")
-            p.kill()
+                # for line in p.stderr:
+                #     self.logger.error(line.strip())
+            except TimeoutExpired:
+                self.logger.exception("rsync timed out")
+                p.kill()
 
     def purge(self, src: str, days_ago: int):
         """

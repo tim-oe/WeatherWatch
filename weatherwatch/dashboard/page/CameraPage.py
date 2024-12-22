@@ -39,14 +39,14 @@ class CameraPage(BasePage):
         :param kwargs: additional arguments
         """
 
-        currImage: Path = self._camera_config.current_file
+        curr_image: Path = self._camera_config.current_file
 
-        exif_dict = piexif.load(str(currImage))
+        exif_dict = piexif.load(str(curr_image))
 
-        imgDate: datetime = datetime.strptime(
+        img_date: datetime = datetime.strptime(
             exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode(), CameraPage.DATE_FORMAT
         )
-        currDate: str = imgDate.strftime("%Y-%m-%d %H-%M-%S")
+        curr_date: str = img_date.strftime("%Y-%m-%d %H-%M-%S")
 
         d = date.today() - timedelta(days=1)
         stamp = d.strftime("%Y-%m-%d")
@@ -54,10 +54,10 @@ class CameraPage(BasePage):
         return dbc.Container(
             children=[
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H1(f"time: {currDate}"))),
+                    children=dbc.Col(children=html.Center(html.H1(f"time: {curr_date}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
-                dbc.Row(children=html.Img(src=f"/cam/{currImage.name}")),
+                dbc.Row(children=html.Img(src=f"/cam/{curr_image.name}")),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(
                     children=dbc.Col(children=html.Center(html.H1(stamp))),

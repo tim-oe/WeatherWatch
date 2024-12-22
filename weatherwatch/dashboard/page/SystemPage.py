@@ -30,12 +30,12 @@ class SystemPage(BasePage):
         :param kwargs: additional arguments
         """
 
-        data: PIMetrics = self._pi_metrics_svc.getMetrics()
+        data: PIMetrics = self._pi_metrics_svc.get_metrics()
 
         return dbc.Container(
             [
                 dbc.Row(
-                    children=dbc.Col(children=html.Center(html.H4(f" utime: {self._pi_metrics_svc.getUptime()}"))),
+                    children=dbc.Col(children=html.Center(html.H4(f" utime: {self._pi_metrics_svc.get_uptime()}"))),
                 ),
                 dbc.Row(children=dbc.Col(children=html.Hr())),
                 dbc.Row(
@@ -46,8 +46,8 @@ class SystemPage(BasePage):
                             [
                                 TempratureGauge(
                                     label="cpu temp c",
-                                    min=10,
-                                    max=90,
+                                    min_val=10,
+                                    max_val=90,
                                     mid=50,
                                     high=70,
                                     value=data.cpu_temp_c,

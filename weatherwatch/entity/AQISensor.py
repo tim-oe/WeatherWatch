@@ -26,6 +26,11 @@ class AQISensor(BaseEntity):
     pm_10_conctrt_atmosph: Mapped[int] = mapped_column(Integer, nullable=False, default=None)
 
     def fudge(self, that: Self):
+        """
+        hack to levelsetup outlying reads
+        :param self: this
+        :param that: the object to balance with
+        """
         ceiling: int = 1000
         if self.pm_1_0_conctrt_std > ceiling:
             self.pm_1_0_conctrt_std = that.pm_1_0_conctrt_std

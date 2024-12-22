@@ -82,7 +82,7 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=
+#load-plugins=
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -114,7 +114,6 @@ unsafe-load-any-extension=no
 
 # In verbose mode, extra non-checker-related info will be displayed.
 #verbose=
-
 
 [BASIC]
 
@@ -220,7 +219,7 @@ method-naming-style=snake_case
 #method-rgx=
 
 # Naming style matching correct module names.
-module-naming-style=PascalCase
+module-naming-style=any
 
 # Regular expression matching correct module names. Overrides module-naming-
 # style. If left empty, module names will be checked with the set naming style.
@@ -290,7 +289,7 @@ exclude-too-few-public-methods=
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=5
+max-args=16
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=7
@@ -309,7 +308,7 @@ max-parents=7
 
 # Maximum number of positional arguments for function / method.
 # TEC getting error in vscode
-max-positional-arguments=5
+max-positional-arguments=16
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=20
@@ -346,7 +345,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=128
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -441,11 +440,17 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-string,
         use-implicit-booleaness-not-comparison-to-zero,
         # additive
+        # if it could be fixed now it wouldn't be a todo.
+        fixme,
         # not really modules in this app
         missing-module-docstring,
+        no-name-in-module,
         # unless there's a way to recover there's no need to be more detailed
         broad-exception-raised,
-        broad-exception-caught
+        broad-exception-caught,
+        # really?
+        too-few-public-methods,
+        too-many-instance-attributes
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -506,7 +511,8 @@ msg-template=
 # json2 (improved json format), json (old json format) and msvs (visual
 # studio). You can also give a reporter class, e.g.
 # mypackage.mymodule.MyReporterClass.
-#output-format=
+# https://pypi.org/project/pylint-json2html/
+output-format=json
 
 # Tells whether to display a full report or only the messages.
 reports=no

@@ -7,6 +7,9 @@ __all__ = ["SDRMetricsRepository"]
 
 @singleton
 class SDRMetricsRepository(BaseRepository[SDRMetrics]):
+    """
+    indoor sensor repo
+    """
 
     def __init__(self):
         """

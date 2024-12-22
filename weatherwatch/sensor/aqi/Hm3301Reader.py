@@ -95,5 +95,5 @@ class Hm3301Reader:
 
         if data is None:
             raise ValueError("retry exceeded")
-        else:
-            return data
+
+        return data

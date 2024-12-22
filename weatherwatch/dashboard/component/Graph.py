@@ -9,39 +9,56 @@ from entity.OutdoorSensor import OutdoorSensor
 
 class Graph(dbc.Container):
     """
-    humidity guage class
-    https://dash.plotly.com/dash-daq/gauge
+    plotting graph
+    https://plotly.com/python/graph-objects/
     """
 
-    def __init__(self, title: str, dataTitle: str, dataUnits: str, dataKey: str, data: List[OutdoorSensor]):
+    def __init__(self, title: str, data_title: str, data_units: str, data_key: str, data: List):
+        """
+        ctor
+        :param self: this
+        :param title: graph title
+        :param data_title: graph data title
+        :param data_units: graph data unit
+        :param data_key: graph data key to pull from data
+        :param data: graph data
+        """
+        super().__init__(
+            children=dcc.Graph(figure=self.build_graph(title, data_title, data_units, data_key, data), animate=False)
+        )
 
-        super().__init__(children=dcc.Graph(figure=self.buildGraph(title, dataTitle, dataUnits, dataKey, data), animate=False))
-
-    def buildGraph(self, title: str, dataTitle: str, dataUnits: str, dataKey: str, data: List[OutdoorSensor]):
+    def build_graph(self, title: str, data_title: str, data_units: str, data_key: str, data: List):
+        """
+        build actual graph
+        :param self: this
+        :param title: graph title
+        :param data_title: graph data title
+        :param data_units: graph data unit
+        :param data_key: graph data key to pull from data
+        :param data: graph data
+        """
 
         val = []
         time = []
 
-        min = getattr(data[0], dataKey)
-        max = getattr(data[0], dataKey)
+        min_val = getattr(data[0], data_key)
+        max_val = getattr(data[0], data_key)
 
         r: OutdoorSensor
         for r in data:
-            v = getattr(r, dataKey)
+            v = getattr(r, data_key)
             time.append(r.read_time)
             val.append(v)
-            if v < min:
-                min = v
-            if v > max:
-                max = v
+            min_val = min(min_val, v)
+            max_val = max(max_val, v)
 
-        min = min * Decimal(0.9)
-        max = max * Decimal(1.10)
+        min_val = min_val * Decimal(0.9)
+        max_val = max_val * Decimal(1.10)
 
         fig = go.Figure()
 
         fig.update_xaxes(title_text="Time")
-        fig.update_yaxes(title_text=f"<b>{dataTitle} {dataUnits}</b>", range=(min, max))
+        fig.update_yaxes(title_text=f"<b>{data_title} {data_units}</b>", range=(min_val, max_val))
 
         fig.update_layout(title_text=title, height=400, template="plotly_dark")
 

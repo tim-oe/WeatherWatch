@@ -73,7 +73,7 @@ class AQISvc:
         d: Hm3301Data = self._hm_3301_reader.read()
 
         if d.high():
-            for x in range(self._config.poll):
+            for _ in range(self._config.poll):
                 time.sleep(2)
                 d.lower(self._hm_3301_reader.read())
                 if d.high() is False:

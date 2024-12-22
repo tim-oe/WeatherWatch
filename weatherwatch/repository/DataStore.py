@@ -2,7 +2,7 @@ from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
 from py_singleton import singleton
 from sqlalchemy import Connection, Engine, MetaData, Table, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
 __all__ = ["DataStore"]
 
@@ -22,13 +22,13 @@ class DataStore:
         ctor
         :param self: this
         """
-        self._dbConfig: DatabaseConfig = AppConfig().database
+        self._db_config: DatabaseConfig = AppConfig().database
 
         # https://docs.sqlalchemy.org/en/20/core/pooling.html#using-a-pool-instance-directly
         self._engine: Engine = create_engine(
-            self._dbConfig.url,
-            max_overflow=self._dbConfig.pool_size,
-            pool_size=self._dbConfig.pool_overflow,
+            self._db_config.url,
+            max_overflow=self._db_config.pool_size,
+            pool_size=self._db_config.pool_overflow,
             pool_pre_ping=True,
         )
 
@@ -39,8 +39,7 @@ class DataStore:
         :param self: this
         :return: the session
         """
-        Session = sessionmaker(bind=self._engine)
-        return Session()
+        return Session(self._engine)
 
     @property
     def connection(self) -> Connection:

@@ -53,6 +53,7 @@ class SensorEvent:
 @logger
 @singleton
 class SDRReader:
+    # pylint: disable=line-too-long
     """
     RTL-SDR sensor reader
     lib: https://github.com/merbanan/rtl_433
@@ -61,6 +62,7 @@ class SDRReader:
     indoor: /usr/local/bin/rtl_433 -M level -F json -R 20
     outdoor: /usr/local/bin/rtl_433 -M level -F json -R 153
     """  # noqa
+    # pylint: enable=line-too-long
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
@@ -183,41 +185,41 @@ class SDRReader:
         self._reads = []
         reads = []
 
-        p = Popen(
+        with Popen(
             self._cmd,
             stdout=PIPE,
             stderr=PIPE,
             text=True,
             close_fds=SDRReader.ON_POSIX,
-        )
+        ) as p:
 
-        q = Queue()
+            q = Queue()
 
-        # read sdr output
-        self._read_pool.submit(self.push_record, p.stdout, q)
+            # read sdr output
+            self._read_pool.submit(self.push_record, p.stdout, q)
 
-        start = datetime.now()
-        duration = 0
-        try:
-            while len(reads) < len(self._sensors) and duration < self._timeout:
-                try:
-                    data = q.get(timeout=10)
-                except Empty:
-                    pass
-                else:  # got line
-                    self.process_record(data, sensors, reads, processed)
+            start = datetime.now()
+            duration = 0
+            try:
+                while len(reads) < len(self._sensors) and duration < self._timeout:
+                    try:
+                        data = q.get(timeout=10)
+                    except Empty:
+                        pass
+                    else:  # got line
+                        self.process_record(data, sensors, reads, processed)
 
-                sys.stdout.flush()
-                duration = Converter.duration_seconds(start)
+                    sys.stdout.flush()
+                    duration = Converter.duration_seconds(start)
 
-                self.logger.debug("duration: %s reads %s", duration, len(reads))
-            self._reads = reads
-            self.log_metrics(start, datetime.now(), duration, len(reads))
-        except Exception:
-            self.logger.exception("sensor read failed")
-        finally:
-            self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
-            p.kill()
+                    self.logger.debug("duration: %s reads %s", duration, len(reads))
+                self._reads = reads
+                self.log_metrics(start, datetime.now(), duration, len(reads))
+            except Exception:
+                self.logger.exception("sensor read failed")
+            finally:
+                self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
+                p.kill()
 
         for k, v in sensors.items():
             self.logger.error("no data for %s=\n%s", k, v)

@@ -45,6 +45,10 @@ class Timelapse:
         :param vid_folder: destination video folder
         :return: video file path
         """
+        if not self._timelapse_config.enable:
+            self.logger.warn("timelapse not enabled")
+            return None
+
         start = datetime.now()
 
         if d is None:
@@ -62,7 +66,7 @@ class Timelapse:
 
         if not images:
             self.logger.warning("No images for %s found in: %s", stamp, img_folder)
-            return
+            return None
 
         img = cv2.imread(images[0].resolve())
         height, width, _ = img.shape

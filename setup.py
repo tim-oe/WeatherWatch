@@ -1,10 +1,10 @@
-#!/usr/bin/env python
 # setup script
 # https://docs.python.org/3/distutils/setupscript.html
 # https://godatadriven.com/blog/a-practical-guide-to-using-setup-py/
 # https://coderwall.com/p/3q_czg/custom-subcommand-at-setup-py
 # TODO https://godatadriven.com/blog/a-practical-guide-to-setuptools-and-pyproject-toml/
 
+from pathlib import Path
 import os
 from setuptools import setup, find_packages, Command
 
@@ -17,12 +17,21 @@ class CleanCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("py3clean -v .")
         os.system("rm -vrf ./WeatherWatch.log*")
         os.system("rm -vrf ./report.html")
@@ -42,15 +51,50 @@ class FormatCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("poetry run black weatherwatch")
         os.system("poetry run isort weatherwatch")
         os.system("poetry run flake8 weatherwatch")
+
+class LintCommand(Command):
+    """pylint processing"""
+
+    user_options = []
+
+    def initialize_options(self):
+        """
+        noop
+        """
+
+
+    def finalize_options(self):
+        """
+        noop
+        """
+
+
+    def run(self):
+        """
+        run
+        """
+        report_dir: Path = Path("reports")
+        report_dir.mkdir(parents=True, exist_ok=True)
+
+        os.system("pylint weatherwatch | pylint-json2html -o reports/pylint.html")
 
 class CoverageCommand(Command):
     """
@@ -63,12 +107,21 @@ class CoverageCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("coverage run -m pytest")
         os.system("coverage html")
         os.system("coverage report")
@@ -82,12 +135,21 @@ class SonarCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         
         sonar_url = os.environ.get('SONAR_URL') 
         #print(sonar_url)
@@ -110,12 +172,21 @@ class SQLInitCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("python3 weatherwatch/SampleLoader.py")
 
 class DockerMysqlUpCommand(Command):
@@ -124,12 +195,21 @@ class DockerMysqlUpCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("docker compose --file mariadb-docker-compose.yml up -d")
 
 class DockerMysqlDownCommand(Command):
@@ -138,27 +218,44 @@ class DockerMysqlDownCommand(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         os.system("docker compose --file mariadb-docker-compose.yml down")
 
-# load sample data
 class ReportCPCommand(Command):
     """copy test results to net share"""
 
     user_options = []
 
     def initialize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def finalize_options(self):
-        pass
+        """
+        noop
+        """
+
 
     def run(self):
+        """
+        run
+        """
         
         os.system("sudo rm -fR /mnt/clones/data/test/*")
         os.system("sudo cp -r reports/* /mnt/clones/data/test/")
@@ -168,11 +265,12 @@ class ReportCPCommand(Command):
 setup(
     packages=find_packages(),
     cmdclass={"clean": CleanCommand, 
-              "format": FormatCommand, 
               "cover": CoverageCommand, 
-              "reportcp": ReportCPCommand, 
-              "sonar": SonarCommand,
               "dbInit": SQLInitCommand,
+              "format": FormatCommand, 
+              "lint": LintCommand, 
+              "reportcp": ReportCPCommand, 
               'mysqlUp': DockerMysqlUpCommand,
-              'mysqlDown': DockerMysqlDownCommand},
+              'mysqlDown': DockerMysqlDownCommand,
+              "sonar": SonarCommand},
 )

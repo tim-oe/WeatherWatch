@@ -92,6 +92,8 @@ class Converter:
             if datetime.now(pytz.timezone(timezone)).tzname():
                 return timezone
 
+        raise ValueError(f"unkown tz {tzname}")
+
     @staticmethod
     def duration_seconds(start: datetime) -> int:
         """

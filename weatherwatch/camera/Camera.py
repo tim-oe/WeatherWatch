@@ -58,7 +58,7 @@ class Camera:
         """
         if self._camera_config.enable is False:
             self.logger.debug("camera not enabled")
-            return
+            return None
 
         try:
             self._picam2.start_preview(Preview.NULL)
