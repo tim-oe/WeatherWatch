@@ -33,6 +33,7 @@ class App:
     https://dash.plotly.com/dash-daq
     https://github.com/ucg8j/awesome-dash
     https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/page-2#sourceCode
+    https://flask.palletsprojects.com/en/stable/config/
     """  # noqa
 
     ROOT_PATH = "/"
@@ -77,9 +78,20 @@ class App:
         self._app_config = AppConfig()
         self._dash_config: DashConfig = self._app_config.dashboard
 
-        self._server = Flask(__name__)
+        self._server = Flask(__name__)  # NOSONAR (python:S4502)
 
-        self._app = Dash(__name__, server=self._server, external_stylesheets=[dbc.themes.DARKLY])
+        self._server.config["SECRET_KEY"] = self._dash_config.salt_key
+
+        # csrf not applicable to dash
+        # https://github.com/plotly/dash/issues/141
+        # https://flask-wtf.readthedocs.io/en/0.15.x/csrf/
+        # self._csrf = CSRFProtect(self._server)
+
+        self._app = Dash(
+            __name__,
+            server=self._server,
+            external_stylesheets=[dbc.themes.DARKLY],
+        )
 
         content = html.Div([dcc.Location(id="url"), self.sidebar(), html.Div(id="page-content", style=App.CONTENT_STYLE)])
 

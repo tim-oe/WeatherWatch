@@ -81,7 +81,7 @@ class SensorConfig:
         """
         # TODO rename config when moved to DB
         # pylint: disable=invalid-name
-        return self._dataClass
+        return self._dataClass  # NOSONAR (python:S116)
 
     @data_class.setter
     def data_class(self, data_class):
@@ -92,7 +92,7 @@ class SensorConfig:
         """
         # TODO rename config when moved to DB
         # pylint: disable=invalid-name
-        self._dataClass = data_class
+        self._dataClass = data_class  # NOSONAR (python:S116)
 
     @property
     def key(self):

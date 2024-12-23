@@ -49,7 +49,7 @@ class Camera:
 
         self._picam2 = Picamera2(tuning=tuning, allocator=PersistentAllocator())
 
-    def process(self, lux: int) -> str:
+    def process(self, lux: int) -> str | None:
         """
         camera processing entry point
         :param self: this

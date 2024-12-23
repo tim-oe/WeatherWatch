@@ -36,7 +36,7 @@ class Timelapse:
 
         self._base_dir.mkdir(parents=True, exist_ok=True)
 
-    def process(self, d: date = None, img_folder: Path = None, vid_folder: Path = None) -> Path:
+    def process(self, d: date = None, img_folder: Path = None, vid_folder: Path = None) -> Path | None:
         """
         entry point for timelapse video creation
         :param self: this

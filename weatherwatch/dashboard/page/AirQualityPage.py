@@ -16,6 +16,7 @@ class AirQualityPage(BasePage):
     """  # noqa
 
     PATH = "/aqisensor"
+    AQI_SCALE = "ug/m3"
 
     def __init__(self):
         """
@@ -63,7 +64,7 @@ class AirQualityPage(BasePage):
                         Graph(
                             "PM1.0 atmospheric concentration",
                             "PM1.0 atm conc",
-                            "ug/m3",
+                            AirQualityPage.AQI_SCALE,
                             "pm_1_0_conctrt_atmosph",
                             data=seven_day,
                         )
@@ -74,7 +75,7 @@ class AirQualityPage(BasePage):
                         Graph(
                             "PM2.5 atmospheric concentration",
                             "PM2.5 atm conc",
-                            "ug/m3",
+                            AirQualityPage.AQI_SCALE,
                             "pm_2_5_conctrt_atmosph",
                             data=seven_day,
                         )
@@ -83,7 +84,11 @@ class AirQualityPage(BasePage):
                 dbc.Row(
                     children=dbc.Col(
                         Graph(
-                            "PM10 atmospheric concentration", "PM10 atm conc", "ug/m3", "pm_10_conctrt_atmosph", data=seven_day
+                            "PM10 atmospheric concentration",
+                            "PM10 atm conc",
+                            AirQualityPage.AQI_SCALE,
+                            "pm_10_conctrt_atmosph",
+                            data=seven_day,
                         )
                     )
                 ),

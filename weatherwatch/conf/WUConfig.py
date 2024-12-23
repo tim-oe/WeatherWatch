@@ -10,9 +10,9 @@ class WUConfig:
     """
 
     ENABLE_KEY = "enable"
-    STATION_ID = "station_id"
-    STATION_KEY = "station_key"
-    API_KEY = "api_key"
+    STATION_ID_KEY = "station_id"
+    STATION_KEY_KEY = "station_key"
+    API_KEY_KEY = "api_key"
     RETRIES_KEY = "retries"
     INDOOR_CHANNEL_KEY = "indoor_channel"
 
@@ -50,7 +50,7 @@ class WUConfig:
         :param self: this
         :return: the stationId
         """
-        return self.__dict__[WUConfig.STATION_ID]
+        return self.__dict__[WUConfig.STATION_ID_KEY]
 
     @property
     def station_key(self):
@@ -59,7 +59,7 @@ class WUConfig:
         :param self: this
         :return: the stationKey
         """
-        return self.__dict__[WUConfig.STATION_KEY]
+        return self.__dict__[WUConfig.STATION_KEY_KEY]
 
     @property
     def api_key(self):
@@ -68,10 +68,10 @@ class WUConfig:
         :param self: this
         :return: the apiKey
         """
-        return self.__dict__[WUConfig.API_KEY]
+        return self.__dict__[WUConfig.API_KEY_KEY]
 
     @property
-    def indoor_channel_key(self) -> int:
+    def indoor_channel(self) -> int:
         """
         indoorchannel property getter
         :param self: this

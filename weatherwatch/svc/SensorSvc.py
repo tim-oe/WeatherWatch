@@ -89,7 +89,7 @@ class SensorSvc:
 
             ent.rain_cum_mm = data.rain_mm
 
-            delta: Decimal = 0.0
+            delta: Decimal = Decimal("0.0")
 
             if last_read is not None:  # edge will happen with new DB
                 delta = round(Decimal(str(data.rain_mm)) - last_read.rain_cum_mm, 2)

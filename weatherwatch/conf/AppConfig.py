@@ -107,7 +107,7 @@ class AppConfig:
 
         lc: dict = parse_config(AppConfig.LOG_CONFIG_FILE)
 
-        logging.config.dictConfig(lc)
+        logging.config.dictConfig(lc)  # NOSONAR (python:S4792)
 
         # https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers
         if os.getenv(AppConfig.ENVAR_NO_CONSOLE, "0") == "1":

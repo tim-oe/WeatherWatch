@@ -49,35 +49,48 @@ class BackupSvc:
 
     def camera(self):
         """
-        backup camera image and timelapse files
+        backup camera resource files
         :param self: this
         """
         if self._backup_config.file_enable:
             backup_folder = str(self._backup_config.folder.resolve())
-            if self._camera_config.enable:
-                self.logger.info("starting camera backup")
-                folder = str(self._camera_config.folder.resolve())
-                if folder.endswith("/"):
-                    folder = folder.rstrip("/")
+            self.backup_stills(backup_folder)
+            self.backup_vids(backup_folder)
 
-                self._rsync.archive(folder, backup_folder)
+    def backup_stills(self, backup_folder):
+        """
+        backup camera image
+        :param self: this
+        """
+        if self._camera_config.enable:
+            self.logger.info("starting camera backup")
+            folder = str(self._camera_config.folder.resolve())
+            if folder.endswith("/"):
+                folder = folder.rstrip("/")
 
-                if self._backup_config.purge_enable:
-                    self._rsync.purge(folder, self._backup_config.img_old)
+            self._rsync.archive(folder, backup_folder)
 
-                self.logger.info("camera backup complete")
+            if self._backup_config.purge_enable:
+                self._rsync.purge(folder, self._backup_config.img_old)
 
-            if self._timelapse_config.enable:
-                self.logger.info("starting timelapse backup")
-                folder = str(self._timelapse_config.folder.resolve())
-                if folder.endswith("/"):
-                    folder = folder.rstrip("/")
+            self.logger.info("camera backup complete")
 
-                self._rsync.archive(folder, backup_folder)
+    def backup_vids(self, backup_folder):
+        """
+        backup camera image
+        :param self: this
+        """
+        if self._timelapse_config.enable:
+            self.logger.info("starting timelapse backup")
+            folder = str(self._timelapse_config.folder.resolve())
+            if folder.endswith("/"):
+                folder = folder.rstrip("/")
 
-                if self._backup_config.purge_enable:
-                    self._rsync.purge(folder, self._backup_config.vid_old)
-                self.logger.info("timelapse backup complete")
+            self._rsync.archive(folder, backup_folder)
+
+            if self._backup_config.purge_enable:
+                self._rsync.purge(folder, self._backup_config.vid_old)
+            self.logger.info("timelapse backup complete")
 
     def db(self):
         """

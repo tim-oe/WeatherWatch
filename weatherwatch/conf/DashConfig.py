@@ -12,6 +12,7 @@ class DashConfig:
     HOST_KEY = "host"
     PORT_KEY = "port"
     DEBUG_KEY = "debug"
+    SALT_KEY_KEY = "salt_key"
 
     def __init__(self, config: dict):
         """
@@ -30,6 +31,15 @@ class DashConfig:
         :return: the host
         """
         return self.__dict__[DashConfig.HOST_KEY]
+
+    @property
+    def salt_key(self) -> str:
+        """
+        salt_key property getter
+        :param self: this
+        :return: the salt_key
+        """
+        return self.__dict__[DashConfig.SALT_KEY_KEY]
 
     @property
     def port(self) -> int:
