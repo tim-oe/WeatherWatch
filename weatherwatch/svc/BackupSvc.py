@@ -1,5 +1,7 @@
 import concurrent
 import functools
+import glob
+import zipfile
 from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 
@@ -107,6 +109,8 @@ class BackupSvc:
             for future in concurrent.futures.as_completed(active_threads):
                 self.logger.info("thread complete %s", future.result)
 
+            self.archive_monthly()
+
     def outdoor_sensor_backup(self):
         """
         backup database outdoor sensor tables
@@ -159,3 +163,35 @@ class BackupSvc:
 
         except Exception:
             self.logger.exception("error performing backup for %s", repo.entity.__table__)
+
+    def archive_monthly(self):
+        """
+        archive monthly files if created
+        performs monthly and weekly backup
+        pruning weeklys whe monthy is in place
+        :param self: this
+        :param repo: the db repo for backup
+        """
+        self.logger.info("archive monthly files")
+        try:
+            m: BackupRange = BackupRange.prev_month()
+
+            mf: Path = Path(self._db_m_dir / f"{m.file_prefix}.bz2.zip")
+
+            pattern = f"{m.file_prefix}*.sql"
+
+            if not mf.is_file() and len(glob.glob(str(self._db_m_dir / pattern))) > 2:
+                self.logger.info("creating archive %s", mf.absolute())
+
+                with zipfile.ZipFile(mf.resolve(), "w", zipfile.ZIP_BZIP2, compresslevel=9) as archive:
+                    for file in self._db_m_dir.glob(pattern):
+                        archive.write(file.absolute(), file.name)
+
+                for file in self._db_m_dir.glob(pattern):
+                    file.unlink()
+
+            else:
+                self.logger.info("skiping ar chive %s", mf.absolute())
+
+        except Exception:
+            self.logger.exception("error performing monthly archive")

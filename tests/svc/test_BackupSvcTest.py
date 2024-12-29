@@ -32,7 +32,7 @@ class BackupSvcTest(unittest.TestCase):
         self.purge()
 
     def teardown_method(self, test_method):
-        self.purge()
+       self.purge()
         
     def purge(self):
         for f in self.fbc.folder.iterdir():
@@ -135,7 +135,7 @@ class BackupSvcTest(unittest.TestCase):
         
         self.svc.db()
 
-        self.assertLess(0, len(glob.glob(str(dir / '*'))))
+        self.assertLess(0, len(glob.glob(str(dir / '*.zip'))))
 
         for f in dir.iterdir():
             self.assertTrue(f.is_file())
