@@ -1,7 +1,7 @@
 # https://python-poetry.org/docs/configuration/
 [tool.poetry]
 name = "weatherwatch"
-version = "1.0.0"
+version = "1.5.0"
 description = "PI based weather station"
 authors = ["tim cronin <tecronin@gmail.com>"]
 readme = "README.md"
