@@ -60,21 +60,32 @@
     - [pyway](https://github.com/jasondcamp/pyway?tab=readme-ov-file#configuration)
 - initialize db ```pyway migrate``` 
 
-## loading sample date for dashboard development
-- ```python3 setup.py dbInit```
 
 ## helpfull commands
-- all tests:   ```poetry run pytest```
-- single test: ```poetry run pytest -v -s <path/to/test/file.py>```
+- testing
+    - all tests:   ```poetry run pytest```
+    - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
 - coverage: ```python3 setup.py cover```
+    - runs all tests 
+- py lint: ```python3 setup.py lint```
 - formating: ```python3 setup.py format```
 - clean the cruft: ```python3 setup.py clean```
+- sonar
+    - assumes sonar setup knowledge
+    - command: ```python3 setup.py sonar```
+    - depends on coverage run for reports
+    - set the following envars: SONAR_URL, WEATHER_SONAR_TOKEN 
+- UI
+    - load sample data ```python3 setup.py dbInit```
+    - launch dash app: ```python3 weatherwatch/dashboard.py```
+
+## reports
+all located in $PROJECT_ROOT/reports
 
 ## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
 - [lint sample config](https://github.com/atlassian-api/atlassian-python-api/blob/master/pyproject.toml)
 - [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
-- [packaging](https://packaging.python.org/en/latest/guides/creating-command-line-tools/)
 - [pylint vscode](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)
 - [tuning sonar violations](https://www.baeldung.com/sonar-exclude-violations)

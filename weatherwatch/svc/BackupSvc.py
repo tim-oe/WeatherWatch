@@ -187,7 +187,12 @@ class BackupSvc:
                     for file in self._db_m_dir.glob(pattern):
                         archive.write(file.absolute(), file.name)
 
+                # delete files now in archive
                 for file in self._db_m_dir.glob(pattern):
+                    file.unlink()
+
+                # delete weekly backups tied to the month
+                for file in self._db_w_dir.glob(pattern):
                     file.unlink()
 
             else:

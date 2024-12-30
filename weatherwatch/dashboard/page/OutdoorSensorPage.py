@@ -50,6 +50,9 @@ class OutdoorSensorPage(BasePage):
         d = date.today() - timedelta(days=7)
         seven_day: List[OutdoorSensor] = self._outdoor_repo.find_greater_than_read_time(d)
 
+        min_temp = min(0, int(data.temperature_f) - 5)
+        max_temp = max(100, int(data.temperature_f) + 5)
+
         return dbc.Container(
             [
                 dbc.Row(children=dbc.Col(html.Center(children=html.H4(f"time: {curr_date}")))),
@@ -61,8 +64,8 @@ class OutdoorSensorPage(BasePage):
                             id="out-t-col",
                             children=TempratureGauge(
                                 label="temprature",
-                                min_val=-10,
-                                max_val=120,
+                                min_val=min_temp,
+                                max_val=max_temp,
                                 mid=75,
                                 high=90,
                                 value=round(data.temperature_f, 1),

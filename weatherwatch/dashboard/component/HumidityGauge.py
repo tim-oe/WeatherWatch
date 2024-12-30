@@ -22,7 +22,10 @@ class HumidityGauge(dbc.Container):
                 daq.Gauge(
                     label="humidity",
                     value=round(humidity, 1),
-                    color={"gradient": True, "ranges": {"green": [0, 50], "yellow": [50, 85], "red": [85, 100]}},
+                    color={
+                        "gradient": True,
+                        "ranges": {"yellow": [0, 40], "green": [40, 70], "red": [70, 100]},
+                    },
                     max=100,
                     showCurrentValue=True,
                     units="%",

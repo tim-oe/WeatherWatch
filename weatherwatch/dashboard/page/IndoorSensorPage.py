@@ -40,6 +40,9 @@ class IndoorSensorPage(BasePage):
         data: IndoorSensor = self._indoor_repo.find_latest(sensor.channel)
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
+        min_temp = min(0, int(data.temperature_f) - 5)
+        max_temp = max(100, int(data.temperature_f) + 5)
+
         d = date.today() - timedelta(days=7)
         seven_day: List[IndoorSensor] = self._indoor_repo.find_greater_than_read_time(sensor.channel, d)
 
@@ -56,8 +59,8 @@ class IndoorSensorPage(BasePage):
                             id="in-t-col",
                             children=TempratureGauge(
                                 label="temprature",
-                                min_val=-10,
-                                max_val=120,
+                                min_val=min_temp,
+                                max_val=max_temp,
                                 mid=75,
                                 high=90,
                                 value=round(data.temperature_f, 1),

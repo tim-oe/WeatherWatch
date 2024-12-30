@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import List
 
 import dash_bootstrap_components as dbc
@@ -52,8 +51,16 @@ class Graph(dbc.Container):
             min_val = min(min_val, v)
             max_val = max(max_val, v)
 
-        min_val = min_val * Decimal(0.9)
-        max_val = max_val * Decimal(1.10)
+        delta = int(max_val - min_val)
+        if delta > 100:
+            min_val = int(min_val - 10)
+            max_val = int(max_val + 10)
+        elif delta > 20:
+            min_val = int(min_val - 5)
+            max_val = int(max_val + 5)
+        else:
+            min_val = int(min_val - 1)
+            max_val = int(max_val + 1)
 
         fig = go.Figure()
 
