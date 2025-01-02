@@ -1,5 +1,6 @@
 import io
 
+from apscheduler.jobstores.base import JobLookupError
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from conf.AppConfig import AppConfig
@@ -136,6 +137,19 @@ class SchedulerSvc:
             misfire_grace_time=60,
         )
 
+        self.init_camera()
+        self.init_wu()
+        self.init_timelapse()
+        self.init_backup_file()
+        self.init_backup_db()
+        self.init_aqi()
+        self.init_wu()
+
+    def init_camera(self):
+        """
+        initialize camera
+        :param self: this
+        """
         if self._app_config.camera.enable is True:
             self._scheduler.add_job(
                 camera,
@@ -148,7 +162,17 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.CAMERA_JOB)
+            except JobLookupError:
+                pass
 
+    def init_timelapse(self):
+        """
+        initialize timelapse
+        :param self: this
+        """
         if self._app_config.timelapse.enable is True:
             self._scheduler.add_job(
                 timelapse,
@@ -162,7 +186,17 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.TIMELAPSE_JOB)
+            except JobLookupError:
+                pass
 
+    def init_backup_file(self):
+        """
+        initialize backup file
+        :param self: this
+        """
         if self._app_config.backup.file_enable is True:
             self._scheduler.add_job(
                 file_backup,
@@ -176,7 +210,17 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.FILE_BACKUP_JOB)
+            except JobLookupError:
+                pass
 
+    def init_backup_db(self):
+        """
+        initialize backup db
+        :param self: this
+        """
         if self._app_config.backup.db_enable is True:
             self._scheduler.add_job(
                 db_backup,
@@ -190,7 +234,17 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.DB_BACKUP_JOB)
+            except JobLookupError:
+                pass
 
+    def init_aqi(self):
+        """
+        initialize backup
+        :param self: this
+        """
         if self._app_config.aqi.enable is True:
             self._scheduler.add_job(
                 aqi,
@@ -203,7 +257,17 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.AQI_JOB)
+            except JobLookupError:
+                pass
 
+    def init_wu(self):
+        """
+        initialize wu
+        :param self: this
+        """
         if self._app_config.wu.enable is True:
             self._scheduler.add_job(
                 wu,
@@ -216,6 +280,11 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
+        else:
+            try:
+                self._scheduler.remove_job(SchedulerSvc.WU_JOB)
+            except JobLookupError:
+                pass
 
     def __str__(self):
         """
