@@ -13,6 +13,7 @@ from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 from svc.TimelapseSvc import TimelapseSvc
 from svc.WUSvc import WUSvc
+from util.Logger import logger
 
 __all__ = ["SchedulerSvc"]
 
@@ -81,6 +82,7 @@ def pimetrics():
     svc.process()
 
 
+@logger
 @singleton
 class SchedulerSvc:
     """
@@ -166,7 +168,7 @@ class SchedulerSvc:
             try:
                 self._scheduler.remove_job(SchedulerSvc.CAMERA_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.CAMERA_JOB)
 
     def init_timelapse(self):
         """
@@ -188,9 +190,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.TIMELAPSE_JOB)
+                self._scheduler.lookup_job(SchedulerSvc.TIMELAPSE_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.TIMELAPSE_JOB)
 
     def init_backup_file(self):
         """
@@ -212,9 +214,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.FILE_BACKUP_JOB)
+                self._scheduler.lookup_job(SchedulerSvc.FILE_BACKUP_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.FILE_BACKUP_JOB)
 
     def init_backup_db(self):
         """
@@ -236,9 +238,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.DB_BACKUP_JOB)
+                self._scheduler.lookup_job(SchedulerSvc.DB_BACKUP_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.DB_BACKUP_JOB)
 
     def init_aqi(self):
         """
@@ -259,9 +261,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.AQI_JOB)
+                self._scheduler.lookup_job(SchedulerSvc.AQI_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.AQI_JOB)
 
     def init_wu(self):
         """
@@ -282,9 +284,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.WU_JOB)
+                self._scheduler.lookup_job(SchedulerSvc.WU_JOB)
             except JobLookupError:
-                pass
+                logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
 
     def __str__(self):
         """
