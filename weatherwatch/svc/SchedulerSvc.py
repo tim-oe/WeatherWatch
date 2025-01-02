@@ -108,8 +108,9 @@ class SchedulerSvc:
         self._app_config = AppConfig()
         self._scheduler_config: SchedulerConfig = self._app_config.scheduler
 
-        # in order to use this the task functions need to be static
-        jobstores = {"default": SQLAlchemyJobStore(url=AppConfig().database.url)}
+        # upgrade of apscheduler is currently breaking impl...
+        self._jobstore = SQLAlchemyJobStore(url=AppConfig().database.url)
+        jobstores = {"default": self._jobstore}
 
         job_defaults = {"coalesce": True, "max_instances": 1, "replace_existing": True, "misfire_grace_time": 60}
 
@@ -166,9 +167,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.remove_job(SchedulerSvc.CAMERA_JOB)
+                self._jobstore.remove_job(SchedulerSvc.CAMERA_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.CAMERA_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.CAMERA_JOB)
 
     def init_timelapse(self):
         """
@@ -190,9 +191,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.lookup_job(SchedulerSvc.TIMELAPSE_JOB)
+                self._jobstore.remove_job(SchedulerSvc.TIMELAPSE_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.TIMELAPSE_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.TIMELAPSE_JOB)
 
     def init_backup_file(self):
         """
@@ -214,9 +215,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.lookup_job(SchedulerSvc.FILE_BACKUP_JOB)
+                self._jobstore.remove_job(SchedulerSvc.FILE_BACKUP_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.FILE_BACKUP_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.FILE_BACKUP_JOB)
 
     def init_backup_db(self):
         """
@@ -238,9 +239,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.lookup_job(SchedulerSvc.DB_BACKUP_JOB)
+                self._jobstore.remove_job(SchedulerSvc.DB_BACKUP_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.DB_BACKUP_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.DB_BACKUP_JOB)
 
     def init_aqi(self):
         """
@@ -261,9 +262,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.lookup_job(SchedulerSvc.AQI_JOB)
+                self._jobstore.remove_job(SchedulerSvc.AQI_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.AQI_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.AQI_JOB)
 
     def init_wu(self):
         """
@@ -284,9 +285,9 @@ class SchedulerSvc:
             )
         else:
             try:
-                self._scheduler.lookup_job(SchedulerSvc.WU_JOB)
+                self._jobstore.remove_job(SchedulerSvc.WU_JOB)
             except JobLookupError:
-                logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
+                self.logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
 
     def __str__(self):
         """
