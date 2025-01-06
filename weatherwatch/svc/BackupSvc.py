@@ -100,45 +100,53 @@ class BackupSvc:
         :param self: this
         """
         if self._backup_config.db_enable:
+            m: BackupRange = BackupRange.prev_month()
+
+            mf: Path = Path(self._db_m_dir / f"{m.file_prefix}.bz2.zip")
+
             active_threads = set()
-            active_threads.add(self._backup_pool.submit(functools.partial(self.outdoor_sensor_backup)))
-            active_threads.add(self._backup_pool.submit(functools.partial(self.indoor_sensor_backup)))
-            active_threads.add(self._backup_pool.submit(functools.partial(self.aqi_sensor_backup)))
+            active_threads.add(self._backup_pool.submit(functools.partial(self.outdoor_sensor_backup, mf)))
+            active_threads.add(self._backup_pool.submit(functools.partial(self.indoor_sensor_backup, mf)))
+            active_threads.add(self._backup_pool.submit(functools.partial(self.aqi_sensor_backup, mf)))
 
             future: Future
             for future in concurrent.futures.as_completed(active_threads):
                 self.logger.info("thread complete %s", future.result)
 
-            self.archive_monthly()
+            self.archive_monthly(mf)
 
-    def outdoor_sensor_backup(self):
+    def outdoor_sensor_backup(self, monthly_archive):
         """
         backup database outdoor sensor tables
         :param self: this
+        :param monthly_archive: the monthly archive file
         """
-        self.db_backup(OutdoorSensorRepository())
+        self.db_backup(OutdoorSensorRepository(), monthly_archive)
 
-    def indoor_sensor_backup(self):
+    def indoor_sensor_backup(self, monthly_archive):
         """
         backup database indoor sensor tables
         :param self: this
+        :param monthly_archive: the monthly archive file
         """
-        self.db_backup(IndoorSensorRepository())
+        self.db_backup(IndoorSensorRepository(), monthly_archive)
 
-    def aqi_sensor_backup(self):
+    def aqi_sensor_backup(self, monthly_archive):
         """
         backup database aqi sensor tables
         :param self: this
+        :param monthly_archive: the monthly archive file
         """
-        self.db_backup(AQISensorRepository())
+        self.db_backup(AQISensorRepository(), monthly_archive)
 
-    def db_backup(self, repo):
+    def db_backup(self, repo, monthly_archive):
         """
         backup database table
         performs monthly and weekly backup
         pruning weeklys whe monthy is in place
         :param self: this
         :param repo: the db repo for backup
+        :param monthly_archive: the monthly archive file
         """
         self.logger.info("backup %s", repo.entity.__table__)
         try:
@@ -148,15 +156,16 @@ class BackupSvc:
             mf: Path = Path(self._db_m_dir / f"{m.file_prefix}_{repo.entity.__table__}.sql")
             wf: Path = Path(self._db_w_dir / f"{w.file_prefix}_{repo.entity.__table__}.sql")
 
-            if not mf.is_file():
-                self.logger.info("peforming monthly backup of %s %s %s", m.from_date, m.to_date, repo.entity.__table__)
+            if not monthly_archive.is_file():
+                self.logger.info("peforming monthly backup of %s %s %s", m.from_date, m.to_date, mf.absolute())
                 repo.backup(m.from_date, m.to_date, mf)
                 self._rsync.purge(self._db_w_dir, self._backup_config.db_weekly_old)
             else:
                 self.logger.info("skiping backup of %s", mf)
 
+            # TODO edge case when prev week is in the prev month
             if not wf.is_file():
-                self.logger.info("peforming weekly backup of %s %s %s", w.from_date, w.to_date, repo.entity.__table__)
+                self.logger.info("peforming weekly backup of %s %s %s", w.from_date, w.to_date, wf.absolute())
                 repo.backup(w.from_date, w.to_date, wf)
             else:
                 self.logger.info("skiping backup of %s", wf)
@@ -164,19 +173,17 @@ class BackupSvc:
         except Exception:
             self.logger.exception("error performing backup for %s", repo.entity.__table__)
 
-    def archive_monthly(self):
+    def archive_monthly(self, mf):
         """
         archive monthly files if created
         performs monthly and weekly backup
         pruning weeklys whe monthy is in place
         :param self: this
-        :param repo: the db repo for backup
+        :param mf: the monthly archive file
         """
         self.logger.info("archive monthly files")
         try:
             m: BackupRange = BackupRange.prev_month()
-
-            mf: Path = Path(self._db_m_dir / f"{m.file_prefix}.bz2.zip")
 
             pattern = f"{m.file_prefix}*.sql"
 
@@ -189,10 +196,7 @@ class BackupSvc:
 
                 # delete files now in archive
                 for file in self._db_m_dir.glob(pattern):
-                    file.unlink()
-
-                # delete weekly backups tied to the month
-                for file in self._db_w_dir.glob(pattern):
+                    self.logger.info("deleting %s", file.absolute())
                     file.unlink()
 
             else:
