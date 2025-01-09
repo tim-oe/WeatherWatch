@@ -23,6 +23,7 @@ class WUData:
         windspeedmph,
         windgustmph,
         humidity,
+        dewptf,
         tempf,
         dailyrainin,
         baromin,
@@ -44,6 +45,7 @@ class WUData:
         self.windspeedmph = str(windspeedmph)
         self.windgustmph = str(windgustmph)
         self.humidity = str(humidity)
+        self.dewptf = str(dewptf)
         self.tempf = str(tempf)
         self.dailyrainin = str(dailyrainin)
         self.baromin = str(baromin)

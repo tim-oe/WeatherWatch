@@ -21,6 +21,24 @@ class Converter:
     UNITS = Units()
 
     @staticmethod
+    def f_to_c(f: float) -> float:
+        """
+        convert fahrenheit to celsius
+        :param f: fahrenheit to convert
+        :return: celsius
+        """
+        return (f - 32) * 5 / 9
+
+    @staticmethod
+    def c_to_f(c: float) -> float:
+        """
+        convert celsius to fahrenheit
+        :param c: celsius to convert
+        :return: fahrenheit
+        """
+        return (c * 9 / 5) + 32
+
+    @staticmethod
     def mm_to_inch(mm: float) -> float:
         """
         convert milimeters to inches
