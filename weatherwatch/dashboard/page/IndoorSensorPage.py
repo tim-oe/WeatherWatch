@@ -72,7 +72,7 @@ class IndoorSensorPage(BasePage):
                 ),
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
-                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "f", "temperature_f", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=seven_day))),
             ],
         )

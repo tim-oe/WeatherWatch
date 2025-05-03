@@ -91,7 +91,7 @@ class OutdoorSensorPage(BasePage):
                 dbc.Row(children=dbc.Col(html.Hr())),
                 dbc.Row(children=dbc.Col(html.Center(html.H2("7 day historical data")))),
                 dbc.Row(children=dbc.Col(WindCompass(seven_day))),
-                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "c", "temperature_f", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("temprature", "temprature", "f", "temperature_f", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("uv", "uv", "index", "uv", data=seven_day))),

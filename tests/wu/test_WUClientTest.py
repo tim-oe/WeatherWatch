@@ -23,7 +23,8 @@ class WUClientTest(unittest.TestCase):
             solarradiation=Decimal('1.2'),
             uv=Decimal('1.1'),
             indoortempf=Decimal('68.3'),
-            indoorhumidity=40)
+            indoorhumidity=40,
+            dewptf=Decimal('60.0'))
 
         data.aqpm2_5(2)
         data.aqpm10(3)

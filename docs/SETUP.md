@@ -39,6 +39,7 @@
     - [to load gobal libs like Picamera2 set POETRY_VIRTUALENVS_OPTIONS_SYSTEM_SITE_PACKAGES=true](https://python-poetry.org/docs/configuration/#virtualenvsoptionssystem-site-packages)
 - see [init.sh](/init.sh?raw=true) for sdr, project, and circuit python install
     - it's using pip for some local libs, but these should be in he project manifest
+- [package upgrade plugin](https://github.com/MousaZeidBaker/poetry-plugin-up)
 
 ## database
 - for dev a docker container can be leveraged with [compose file](/mariadb-docker-compose.yml?raw=true)
@@ -60,8 +61,15 @@
     - [pyway](https://github.com/jasondcamp/pyway?tab=readme-ov-file#configuration)
 - initialize db ```pyway migrate``` 
 
-
 ## helpfull commands
+- activate python virtual environment
+    - ```source .venv/bin/activate```
+- install libs
+    - ```poetry install```
+- upgrade libs
+    - ```poetry up --latest```
+- list dependencies
+    - ```poetry show```
 - testing
     - all tests:   ```poetry run pytest```
     - single test: ```poetry run pytest -v -s <path/to/test/file.py>```

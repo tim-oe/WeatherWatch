@@ -17,7 +17,7 @@ class Rsync:
 
     ON_POSIX = "posix" in sys.builtin_module_names
 
-    BASE_CMD = ["rsync", "-a"]
+    BASE_CMD = ["rsync", "-a", "--no-perms", "--no-owner", "--no-group"]
 
     def archive(self, src: str, dest: str):
         """

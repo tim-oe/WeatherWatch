@@ -3,10 +3,7 @@ raspbery pi based weather data collector using OTC sensors.
 
 ![weather station](docs/img/station_full.jpg?raw=true)
 
-
-
 https://github.com/user-attachments/assets/523e9238-fdcc-4cb3-9ceb-55d5e1081674
-
 
 
 ## Motivation
@@ -66,3 +63,4 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - profiling
     - [cprofile](https://docs.python.org/3/library/profile.html#module-cProfile)
     - [guide](https://www.turing.com/kb/python-code-with-cprofile)
+
