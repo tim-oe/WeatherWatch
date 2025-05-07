@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime
 from pathlib import Path
@@ -26,7 +27,6 @@ class Camera:
 
     # second to micro second multiplier
     MICRO_SECOND: int = 1000000
-
     def __init__(self):
         """
         ctor
@@ -87,6 +87,9 @@ class Camera:
 
             img_file: str = self.image_file()
             capture_config = self._picam2.create_still_configuration(controls=controls)
+            # default=lambda obj: obj.to_dict()
+            self.logger.warn("capture config %s", capture_config)
+         
             # TODO inject exif data here
             self._picam2.switch_mode_and_capture_file(capture_config, img_file, wait=True)
 
