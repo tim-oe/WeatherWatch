@@ -12,15 +12,15 @@ backup:
     enable: !ENV tag:yaml.org,2002:bool ${WW_PURGE_ENABLE:true}
     img_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_IMG_OLD:14}
     vid_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_VID_OLD:90}
-  db:  
+  db:
     enable: !ENV tag:yaml.org,2002:bool ${WW_DB_BACKUP_ENABLE:true}
     weekly_old: !ENV tag:yaml.org,2002:int ${WW_DB_WEEKLY_OLD:35}
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}
   lux_limit: !ENV tag:yaml.org,2002:int ${WW_CAM_LUX_LIMIT:0}
-  exposure_time: !ENV tag:yaml.org,2002:int ${WW_CAM_EXP_TIME:4}
-  analogue_gain: !ENV tag:yaml.org,2002:int ${WW_CAM_ISO_GAIN:8}
+  exposure_time: !ENV tag:yaml.org,2002:int ${WW_CAM_EXP_TIME:5}
+  analogue_gain: !ENV tag:yaml.org,2002:int ${WW_CAM_ISO_GAIN:6}
   extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
   tuning:
     enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
