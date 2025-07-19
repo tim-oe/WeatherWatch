@@ -79,6 +79,10 @@ class Camera:
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
                     "AeEnable": False,  # Disable auto exposure
+                    "Brightness": 0.1,        # Slight brightness boost
+                    "Contrast": 1.2,          # Increase contrast
+                    "Saturation": 1.1,        # Slight saturation boost
+                    "Sharpness": 1.0          # Maintain sharpness
                 }
             else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
                 controls = {
@@ -87,6 +91,10 @@ class Camera:
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Daylight,
                     "AeEnable": True, 
+                    "Brightness": 0.0,      
+                    "Contrast": 1.0,
+                    "Saturation": 1.0,
+                    "Sharpness": 1.0
                 }
 
             self._picam2.start()
