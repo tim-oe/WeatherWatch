@@ -97,3 +97,10 @@ all located in $PROJECT_ROOT/reports
 - [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
 - [pylint vscode](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)
 - [tuning sonar violations](https://www.baeldung.com/sonar-exclude-violations)
+
+- project reset
+    1. shut down vscode
+    2. on the remote instance `rm -rf ~/.vscode-server`
+    3. relaunch vscode.
+    4. install Python Extension Pack
+    5. activate virtual environment in the vscode terminal `./.venv/bin/activate`

@@ -1,4 +1,5 @@
 import time
+import libcamera
 from datetime import datetime
 from pathlib import Path
 
@@ -74,6 +75,8 @@ class Camera:
                 controls = {
                     "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
                     "AnalogueGain": self._camera_config.analogue_gain,
+                    "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
+                    "AwbMode": libcamera.controls.AwbModeEnum.Auto,
                 }
             else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
                 controls = {
