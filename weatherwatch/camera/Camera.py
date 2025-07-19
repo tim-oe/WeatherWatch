@@ -76,12 +76,17 @@ class Camera:
                     "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
                     "AnalogueGain": self._camera_config.analogue_gain,
                     "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
+                    "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
+                    "AeEnable": False,  # Disable auto exposure
                 }
             else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
                 controls = {
                     "ExposureTime": 0,
                     "AnalogueGain": 0,
+                    "AwbEnable": True,
+                    "AwbMode": libcamera.controls.AwbModeEnum.Daylight,
+                    "AeEnable": True, 
                 }
 
             self._picam2.start()
