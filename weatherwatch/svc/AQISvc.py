@@ -75,7 +75,7 @@ class AQISvc:
         if d.high(self._config.ceiling):
             for _ in range(self._config.poll):
                 time.sleep(2)
-                d.lower(self._hm_3301_reader.read())
+                d.lower(self._hm_3301_reader.read(), self._config.ceiling)
                 if d.high(self._config.ceiling) is False:
                     break
 
