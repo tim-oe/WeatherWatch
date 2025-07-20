@@ -62,7 +62,7 @@ class Emailer:
 
         Args:
             stack (str): the stack trace in string
-            
+
             returns:
             MIMEBase: the mime base part with the stack trace as attachment
         """
@@ -81,9 +81,7 @@ class Emailer:
                 part.set_payload(attachment.read())
 
             encoders.encode_base64(part)
-            part.add_header(
-                "Content-Disposition", f"attachment; filename= stack_trace_{int(round(time.time() * 1000))}.txt"
-            )
+            part.add_header("Content-Disposition", f"attachment; filename= stack_trace_{int(round(time.time() * 1000))}.txt")
 
         finally:
             # Clean up temporary file
@@ -91,9 +89,9 @@ class Emailer:
                 os.unlink(temp_filename)
             except OSError:
                 pass
-        
+
         return part
-        
+
     def build_message(self, subject: str, exception: Exception) -> MIMEMultipart:
         """
         build email mime message with exception stack as attachement

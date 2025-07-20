@@ -44,6 +44,12 @@ class AQISvc:
         try:
             data: Hm3301Data = self.read()
 
+            while data.high():
+                self.logger.warning("bad data detected, retrying read")
+                time.sleep(2)
+                d2: Hm3301Data = self.read()
+                data.lower(d2)
+
             ent: AQISensor = AQISensor()
 
             ent.pm_1_0_conctrt_std = data.pm_1_0_conctrt_std
