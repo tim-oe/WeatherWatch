@@ -75,7 +75,8 @@ class WUSvc:
                 indoorhumidity=in_data.humidity,
             )
 
-            self.set_aqi(data)
+            # TODO reporting 00000
+            #self.set_aqi(data)
 
             self._client.post(out_data.read_time, data)
         except Exception as e:
