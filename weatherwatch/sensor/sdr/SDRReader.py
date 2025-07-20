@@ -16,6 +16,7 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from util.Converter import Converter
+from util.Emailer import Emailer
 from util.Logger import logger
 
 __all__ = ["SDRReader"]
@@ -43,11 +44,15 @@ class SensorEvent:
         :param self: this
         """
         self.logger.debug("fire %s", self._evt)
-
+        emailer = Emailer()
         try:
             EventBus.call(self._evt, self._data)
-        except Exception:
+        except Exception as e:
             self.logger.exception("event processing error %s data\n%s", self._evt, self._data)
+            emailer.send_error_notification(
+                e,
+                subject_prefix="sdr event Error",
+            )
 
 
 @logger
@@ -75,6 +80,8 @@ class SDRReader:
         """
 
         self._app_config: AppConfig = AppConfig()
+
+        self._emailer = Emailer()
 
         self._timeout = self._app_config.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
 
@@ -179,7 +186,6 @@ class SDRReader:
         :param self: this
         """
         self.logger.debug("starting cmd: %s", self._cmd)
-
         sensors = self._sensors.copy()
         processed = []
         self._reads = []
@@ -215,14 +221,23 @@ class SDRReader:
                     self.logger.debug("duration: %s reads %s", duration, len(reads))
                 self._reads = reads
                 self.log_metrics(start, datetime.now(), duration, len(reads))
-            except Exception:
-                self.logger.exception("sensor read failed")
+            except Exception as e:
+                self._emailer.send_error_notification(
+                    e,
+                    subject_prefix="SDR Read Error",
+                )
             finally:
                 self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
                 p.kill()
 
         for k, v in sensors.items():
-            self.logger.error("no data for %s=\n%s", k, v)
+            try:
+                raise Exception(f"no data for {k}={v}")
+            except Exception as e:
+                self._emailer.send_error_notification(
+                    e,
+                    subject_prefix="SDR Sensor unread",
+                )
 
     def log_metrics(self, start_time: datetime, end_time: datetime, duration: int, sensor_cnt: int):
         """

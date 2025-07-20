@@ -16,6 +16,7 @@ from repository.AQISensorRepository import AQISensorRepository
 from repository.IndoorSensorRepository import IndoorSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from util.Converter import Converter
+from util.Emailer import Emailer
 from util.Logger import logger
 from wu.WUClient import WUClient
 from wu.WUData import WUData
@@ -45,6 +46,7 @@ class WUSvc:
         self._indoor_repo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoor_repo: OutdoorSensorRepository = OutdoorSensorRepository()
         self._aqi_repo: AQISensorRepository = AQISensorRepository()
+        self._emailer = Emailer()
 
     def process(self):
         """
@@ -76,8 +78,11 @@ class WUSvc:
             self.set_aqi(data)
 
             self._client.post(out_data.read_time, data)
-        except Exception:
-            self.logger.exception("failed to upload data to weather underground")
+        except Exception as e:
+            self._emailer.send_error_notification(
+                e,
+                subject_prefix="WU Upload Error",
+            )
 
     def set_aqi(self, data: WUData):
         """

@@ -1,13 +1,14 @@
 import time
-import libcamera
 from datetime import datetime
 from pathlib import Path
 
+import libcamera
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from picamera2 import Picamera2, Preview
 from picamera2.allocators import PersistentAllocator
 from py_singleton import singleton
+from util.Emailer import Emailer
 from util.Logger import logger
 
 
@@ -39,6 +40,8 @@ class Camera:
         Picamera2.set_logging()
 
         self._camera_config: CameraConfig = AppConfig().camera
+
+        self._emailer = Emailer()
 
         self._base_dir: Path = self._camera_config.folder
 
@@ -79,10 +82,10 @@ class Camera:
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
                     "AeEnable": False,  # Disable auto exposure
-                    "Brightness": 0.1,        # Slight brightness boost
-                    "Contrast": 1.2,          # Increase contrast
-                    "Saturation": 1.1,        # Slight saturation boost
-                    "Sharpness": 1.0          # Maintain sharpness
+                    "Brightness": 0.1,  # Slight brightness boost
+                    "Contrast": 1.2,  # Increase contrast
+                    "Saturation": 1.1,  # Slight saturation boost
+                    "Sharpness": 1.0,  # Maintain sharpness
                 }
             else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
                 controls = {
@@ -90,11 +93,11 @@ class Camera:
                     "AnalogueGain": 0,
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Daylight,
-                    "AeEnable": True, 
-                    "Brightness": 0.0,      
+                    "AeEnable": True,
+                    "Brightness": 0.0,
                     "Contrast": 1.0,
                     "Saturation": 1.0,
-                    "Sharpness": 1.0
+                    "Sharpness": 1.0,
                 }
 
             self._picam2.start()
@@ -104,18 +107,17 @@ class Camera:
             img_file: str = self.image_file()
             capture_config = self._picam2.create_still_configuration(controls=controls)
             # default=lambda obj: obj.to_dict()
-            self.logger.warn("capture config %s", capture_config)
+            self.logger.info("capture config %s", capture_config)
 
             # from docs fishing for fix...
             self._picam2.set_controls(controls)
-                     
+
             # TODO inject exif data here
             self._picam2.switch_mode_and_capture_file(capture_config, img_file, wait=True)
 
             return img_file
         except Exception as e:
-            self.logger.exception("failed to take pic...")
-            raise Exception("failed to take pic...") from e
+            self._emailer.send_error_notification(e, subject_prefix="failed to take pic")
         finally:
             self._picam2.stop_preview()
             self._picam2.stop()

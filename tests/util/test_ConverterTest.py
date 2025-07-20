@@ -4,7 +4,6 @@ import unittest
 
 from tzlocal import get_localzone_name
 
-
 from util.Converter import Converter
 
 class ConverterTest(unittest.TestCase):

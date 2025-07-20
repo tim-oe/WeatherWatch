@@ -10,6 +10,7 @@ from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
 from util.Converter import Converter
+from util.Emailer import Emailer
 from util.Logger import logger
 
 
@@ -32,6 +33,8 @@ class Timelapse:
         self._camera_config: CameraConfig = AppConfig().camera
         self._timelapse_config: TimelapseConfig = AppConfig().timelapse
 
+        self._emailer = Emailer()
+
         self._base_dir: Path = self._timelapse_config.folder
 
         self._base_dir.mkdir(parents=True, exist_ok=True)
@@ -49,44 +52,52 @@ class Timelapse:
             self.logger.warn("timelapse not enabled")
             return None
 
-        start = datetime.now()
-
-        if d is None:
-            d = date.today() - timedelta(days=1)
-
-        if img_folder is None:
-            img_folder = self._camera_config.folder
-
-        if vid_folder is None:
-            vid_folder = self._base_dir
-
-        stamp = d.strftime("%Y-%m-%d")
-
-        images: List[Path] = sorted(img_folder.glob(f"{stamp}*{self._camera_config.extension}"))
-
-        if not images:
-            self.logger.warning("No images for %s found in: %s", stamp, img_folder)
-            return None
-
-        img = cv2.imread(images[0].resolve())
-        height, width, _ = img.shape
-        size = (width, height)
-
-        vid_file = (vid_folder / f"{stamp}{self._timelapse_config.extension}").resolve()
-
-        video = cv2.VideoWriter(
-            vid_file, cv2.VideoWriter.fourcc(*self._timelapse_config.codec), self._timelapse_config.frames_per_second, size
-        )
-
         try:
-            for image in images:
-                i = cv2.imread(image.resolve())
-                video.write(i)
+            start = datetime.now()
 
-        finally:
-            video.release()
-            cv2.destroyAllWindows()
+            if d is None:
+                d = date.today() - timedelta(days=1)
 
-        self.logger.info("time lapse for %s complete  duration %s", stamp, Converter.duration_seconds(start))
+            if img_folder is None:
+                img_folder = self._camera_config.folder
 
-        return vid_file
+            if vid_folder is None:
+                vid_folder = self._base_dir
+
+            stamp = d.strftime("%Y-%m-%d")
+
+            images: List[Path] = sorted(img_folder.glob(f"{stamp}*{self._camera_config.extension}"))
+
+            if not images:
+                self.logger.warning("No images for %s found in: %s", stamp, img_folder)
+                return None
+
+            img = cv2.imread(images[0].resolve())
+            height, width, _ = img.shape
+            size = (width, height)
+
+            vid_file = (vid_folder / f"{stamp}{self._timelapse_config.extension}").resolve()
+
+            video = cv2.VideoWriter(
+                vid_file, cv2.VideoWriter.fourcc(*self._timelapse_config.codec), self._timelapse_config.frames_per_second, size
+            )
+
+            try:
+                for image in images:
+                    i = cv2.imread(image.resolve())
+                    video.write(i)
+
+            finally:
+                video.release()
+                cv2.destroyAllWindows()
+
+            self.logger.info("time lapse for %s complete  duration %s", stamp, Converter.duration_seconds(start))
+
+            return vid_file
+        except Exception as e:
+            self._emailer.send_error_notification(
+                e,
+                subject_prefix="Timelapse Error",
+            )
+
+        return None

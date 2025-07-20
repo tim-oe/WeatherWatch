@@ -7,6 +7,7 @@ from conf.BackupConfig import BackupConfig
 from conf.CameraConfig import CameraConfig
 from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
+from conf.EmailConfig import EmailConfig
 from conf.GPSConfig import GPSConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
@@ -40,6 +41,7 @@ class AppConfig:
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
     DATABASE_KEY = "database"
+    EMAIL_KEY = "email"
     CAMERA_KEY = "camera"
     BACKUP_KEY = "backup"
     SCHEDULER_KEY = "scheduler"
@@ -80,6 +82,9 @@ class AppConfig:
 
         self._database = DatabaseConfig(self._conf[AppConfig.DATABASE_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.DATABASE_KEY)
+
+        self._email = EmailConfig(self._conf[AppConfig.EMAIL_KEY])
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.EMAIL_KEY)
 
         self._file_backup = BackupConfig(self._conf[AppConfig.BACKUP_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.BACKUP_KEY)
@@ -177,6 +182,15 @@ class AppConfig:
         :return: the database
         """
         return self._database
+
+    @property
+    def email(self) -> EmailConfig:
+        """
+        email property getter
+        :param self: this
+        :return: the email
+        """
+        return self._email
 
     @property
     def backup(self) -> BackupConfig:

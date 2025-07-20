@@ -48,6 +48,14 @@ database:
   pool:
     size: 3
     overflow: 3
+email:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_EMAIL_ENABLE:true}
+  smtp_host: !ENV ${WW_EMAIL_SMTP_HOST:smtp.gmail.com}
+  smtp_port: !ENV tag:yaml.org,2002:int ${WW_EMAIL_SMTP_PORT:465}
+  username: !ENV ${WW_EMAIL_USERNAME}
+  password: !ENV ${WW_EMAIL_PASSWORD}
+  from_email: !ENV ${WW_EMAIL_FROM}
+  to_email: !ENV ${WW_EMAIL_TO}
 gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
   serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
