@@ -24,13 +24,13 @@ class Hm3301Data:
         self.pm_2_5_conctrt_atmosph = 0
         self.pm_10_conctrt_atmosph = 0
 
-    def high(self) -> bool:
+    def high(self, ceiling: int) -> bool:
         """
         test if data has out of range value
         :param self: this
         """
         is_high: bool = False
-        ceiling: int = 1000
+
         if self.pm_1_0_conctrt_std > ceiling:
             is_high = True
         if self.pm_2_5_conctrt_std > ceiling:

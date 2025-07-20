@@ -11,6 +11,7 @@ class AQIConfig:
 
     ENABLE_KEY = "enable"
     RETRY_KEY = "retry"
+    CEILING_KEY = "ceiling"
     POLL_KEY = "poll"
     WAIT_SEC_KEY = "wait_sec"
 
@@ -40,6 +41,15 @@ class AQIConfig:
         :return: the retry
         """
         return self.__dict__[AQIConfig.RETRY_KEY]
+
+    @property
+    def ceiling(self) -> int:
+        """
+        ceiling property getter
+        :param self: this
+        :return: the ceiling
+        """
+        return self.__dict__[AQIConfig.CEILING_KEY]
 
     @property
     def poll(self) -> int:

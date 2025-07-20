@@ -2,8 +2,9 @@ version: 1.0.0
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
+  ceiling: !ENV tag:yaml.org,2002:int ${WW_AQI_CEILING:100}
   poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
-  wait_sec: !ENV tag:yaml.org,2002:int ${WW_AQI_WAIT_SEC:5}
+  wait_sec: !ENV tag:yaml.org,2002:int ${WW_AQI_WAIT_SEC:10}
 backup:
   folder: !ENV ${WW_BACKUP_FOLDER:backup}
   file:

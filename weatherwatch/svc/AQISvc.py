@@ -44,12 +44,6 @@ class AQISvc:
         try:
             data: Hm3301Data = self.read()
 
-            while data.high():
-                self.logger.warning("bad data detected, retrying read")
-                time.sleep(2)
-                d2: Hm3301Data = self.read()
-                data.lower(d2)
-
             ent: AQISensor = AQISensor()
 
             ent.pm_1_0_conctrt_std = data.pm_1_0_conctrt_std
@@ -78,11 +72,11 @@ class AQISvc:
         """
         d: Hm3301Data = self._hm_3301_reader.read()
 
-        if d.high():
+        if d.high(self._config.ceiling):
             for _ in range(self._config.poll):
                 time.sleep(2)
                 d.lower(self._hm_3301_reader.read())
-                if d.high() is False:
+                if d.high(self._config.ceiling) is False:
                     break
 
         return d
