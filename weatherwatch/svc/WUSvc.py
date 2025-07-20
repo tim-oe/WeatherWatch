@@ -76,7 +76,7 @@ class WUSvc:
             )
 
             # TODO reporting 00000
-            #self.set_aqi(data)
+            # self.set_aqi(data)
 
             self._client.post(out_data.read_time, data)
         except Exception as e:

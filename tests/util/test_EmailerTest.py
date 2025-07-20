@@ -1,4 +1,3 @@
-import traceback
 import unittest
 
 from util.Emailer import Emailer
