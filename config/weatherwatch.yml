@@ -25,7 +25,7 @@ camera:
   extension: !ENV ${WW_CAM_FILE_EXT:.jpg}
   tuning:
     enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_TUNE_ENABLE:true}
-    file: !ENV ${WW_CAM_TUNE_FILE:imx708_noir.json}
+    file: !ENV ${WW_CAM_TUNE_FILE:ov5647_noir.json}
   lens:
     make: !ENV ${WW_CAM_LENS_MAKE:Arducam}
     model: !ENV ${WW_CAM_LENS_MODEL:120 Degree Wide Angle M12}
