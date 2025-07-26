@@ -1,6 +1,6 @@
 version: 1.0.0
 aqi:
-  enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
+  enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:false}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
   ceiling: !ENV tag:yaml.org,2002:int ${WW_AQI_CEILING:100}
   poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
