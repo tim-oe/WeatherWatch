@@ -81,7 +81,6 @@ class Camera:
                     "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
-                    "AeEnable": False,  # Disable auto exposure
                     "Brightness": 0.1,  # Slight brightness boost
                     "Contrast": 1.2,  # Increase contrast
                     "Saturation": 1.1,  # Slight saturation boost
@@ -93,7 +92,6 @@ class Camera:
                     "AnalogueGain": 0,
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Daylight,
-                    "AeEnable": True,
                     "Brightness": 0.0,
                     "Contrast": 1.0,
                     "Saturation": 1.0,
