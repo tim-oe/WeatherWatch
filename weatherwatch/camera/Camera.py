@@ -79,7 +79,7 @@ class Camera:
                     "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
                     "AnalogueGain": self._camera_config.analogue_gain,
                     "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
-                    "NoiseReductionStrength": 0.8,                    
+                    #"NoiseReductionStrength": 0.8,                    
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
                     "Brightness": 0.1,  # Slight brightness boost
