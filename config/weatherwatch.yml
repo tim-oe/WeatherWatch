@@ -100,7 +100,7 @@ sdr:
       device: 153
     - name: indoor_3dfloor
       model: Ambientweather-F007TH
-      id: 196
+      id: 169
       channel: 2
       dataClass: IndoorData
       device: 20
