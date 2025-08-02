@@ -71,7 +71,7 @@ class SDRReader:
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
-    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "log", "-F", "json"]
+    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "log", "-F", "json", "-f", "433990000", "-Y", "level=0"]
 
     def __init__(self):
         """
