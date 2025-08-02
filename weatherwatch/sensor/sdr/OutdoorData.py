@@ -14,7 +14,7 @@ class OutdoorData(IndoorData):
     WIND_MAX_KEY = "wind_max_m_s"
     WIND_DIR_KEY = "wind_dir_deg"
     LUX_KEY = "light_lux"
-    UV_KEY = "uv"
+    UV_KEY = "uvi"
 
     def __init__(
         self,
