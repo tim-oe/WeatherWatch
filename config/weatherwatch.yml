@@ -86,7 +86,7 @@ scheduler:
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
-    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:240}
+    timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:280}
   sensors:
     # doing device reset of outdoor sensor will change the id
     # device is the
@@ -100,13 +100,13 @@ sdr:
       device: 153
     - name: indoor_3dfloor
       model: Ambientweather-F007TH
-      id: 192
+      id: 196
       channel: 2
       dataClass: IndoorData
       device: 20
     - name: indoor_basement
       model: Ambientweather-F007TH
-      id: 11
+      id: 10
       channel: 3
       dataClass: IndoorData
       device: 20

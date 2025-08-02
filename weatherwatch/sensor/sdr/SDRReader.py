@@ -231,13 +231,14 @@ class SDRReader:
                 p.kill()
 
         for k, v in sensors.items():
-            try:
-                raise Exception(f"no data for {k}={v}")
-            except Exception as e:
-                self._emailer.send_error_notification(
-                    e,
-                    subject_prefix="SDR Sensor unread",
-                )
+            self.logger.warning("no data for %s=%s", k, v)
+            # try:
+            #     raise Exception(f"no data for {k}={v}")
+            # except Exception as e:
+            #     self._emailer.send_error_notification(
+            #         e,
+            #         subject_prefix="SDR Sensor unread",
+            #     )
 
     def log_metrics(self, start_time: datetime, end_time: datetime, duration: int, sensor_cnt: int):
         """
