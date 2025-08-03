@@ -1,6 +1,6 @@
-version: 1.0.0
+version: 1.1.0
 aqi:
-  enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:false}
+  enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
   ceiling: !ENV tag:yaml.org,2002:int ${WW_AQI_CEILING:100}
   poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
@@ -93,7 +93,7 @@ sdr:
     - name: outdoor
       # rtl_433 model (might not match actual sensor)
       model: Cotech-367959
-      id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:78}
+      id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:189}
       # class that will process the data from raw json
       dataClass: OutdoorData
       # rtl_433 device id
@@ -104,12 +104,17 @@ sdr:
       channel: 2
       dataClass: IndoorData
       device: 20
+      freq: 433990000
+      level: 0
     - name: indoor_basement
       model: Ambientweather-F007TH
       id: 10
       channel: 3
       dataClass: IndoorData
       device: 20
+      freq: 433990000
+      level: 0
+
 timelapse:
   enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}
   folder: !ENV ${WW_TIMELAPSE_FOLDER:vid}
