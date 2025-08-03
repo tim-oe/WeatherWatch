@@ -72,13 +72,13 @@ class AQISvc:
         """
         d: Hm3301Data = self._hm_3301_reader.read()
 
-        self.logger.info("start aqi %s", d)
+        self.logger.debug("start aqi %s", d)
 
         if d.high(self._config.ceiling):
             for _ in range(self._config.poll):
                 time.sleep(2)
                 d.lower(self._hm_3301_reader.read(), self._config.ceiling)
-                self.logger.info("lowered aqi %s", d)
+                self.logger.debug("lowered aqi %s", d)
                 if d.high(self._config.ceiling) is False:
                     break
 

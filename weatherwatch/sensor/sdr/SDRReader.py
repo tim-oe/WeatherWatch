@@ -64,6 +64,7 @@ class SDRReader:
     lib: https://github.com/merbanan/rtl_433
     dev receiver: https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-smart-sdr.html?srsltid=AfmBOoqsEaIcHnJ1mghLBbE5q-Gf0NjyJYp46zaCQwDXRngPQauzruzT
     nano receiver: https://www.nooelec.com/store/nesdr-nano-three.html?srsltid=AfmBOoqo75MWaw153HkAv74eAI2DQ20mXLbyGMAAxUaYlXcehXMSOOzr
+    linux install: https://www.nooelec.com/store/downloads/dl/file/id/72/product/0/nesdr_installation_manual_for_ubuntu.pdf
     indoor: /usr/local/bin/rtl_433 -M level -F json -R 20
     outdoor: /usr/local/bin/rtl_433 -M level -F json -R 153
     """  # noqa
@@ -71,6 +72,8 @@ class SDRReader:
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
+    
+    # TODO externalize 
     CMD_BASE = [
         "/usr/local/bin/rtl_433",
         "-q",
@@ -109,10 +112,12 @@ class SDRReader:
             self._cmd.append(SDRReader.DEVICE_FLAG)
             self._cmd.append(str(s.device))
             self._sensors[s.key] = s
+        
+        self.logger.debug("sensors: %s", (str(self._sensors)))
 
         self._ignores: dict = self._app_config.ignores
 
-        self.logger.info(str(self._sensors))
+        self.logger.debug("ignores: %s", (str(self._ignores)))
 
         # sensor data thread to fire event async
         self._data_pool = ThreadPoolExecutor(max_workers=len(self._sensors))
