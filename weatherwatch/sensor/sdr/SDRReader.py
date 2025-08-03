@@ -71,7 +71,22 @@ class SDRReader:
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
-    CMD_BASE = ["/usr/local/bin/rtl_433", "-q", "-M", "level", "-F", "log", "-F", "json", "-f", "433990000", "-Y", "level=0", "-Y", "autolevel"]
+    CMD_BASE = [
+        "/usr/local/bin/rtl_433",
+        "-q",
+        "-M",
+        "level",
+        "-F",
+        "log",
+        "-F",
+        "json",
+        "-f",
+        "433990000",
+        "-Y",
+        "level=0",
+        "-Y",
+        "autolevel",
+    ]
 
     def __init__(self):
         """
@@ -94,6 +109,8 @@ class SDRReader:
             self._cmd.append(SDRReader.DEVICE_FLAG)
             self._cmd.append(str(s.device))
             self._sensors[s.key] = s
+
+        self._ignores: dict = self._app_config.ignores
 
         self.logger.info(str(self._sensors))
 
@@ -150,34 +167,38 @@ class SDRReader:
         j = json.loads(line)
 
         key = BaseData.key(j)
+        self.logger.debug("incoming key: %s", key)
 
-        if key in sensors:
-            sensor: SensorConfig = sensors[key]
-            r: BaseData = None
-            evt = None
-            match sensor.data_class:
-                case IndoorData.__name__:
-                    r = json.loads(line, object_hook=IndoorData.json_decoder)
-                    evt = IndoorData.__name__
-                case OutdoorData.__name__:
-                    r = json.loads(line, object_hook=OutdoorData.json_decoder)
-                    evt = OutdoorData.__name__
-                case _:
-                    self.logger.error("unkown impl for sensor: %s", sensor)
-
-            if r is not None:
-                r.raw = json.loads(line)
-                r.config = sensor
-                reads.append(r)
-                # EventBus.call(evt, r)
-                se: SensorEvent = SensorEvent(evt, r)
-                self._data_pool.submit(se.fire)
-
-            del sensors[key]
-            processed.append(key)
+        if key in self._ignores:
+            self.logger.debug("ignoring: %s", key)
         else:
-            if key not in processed:
-                self.logger.warning("skipping: %s\n%s", key, line)
+            if key in sensors:
+                sensor: SensorConfig = sensors[key]
+                r: BaseData = None
+                evt = None
+                match sensor.data_class:
+                    case IndoorData.__name__:
+                        r = json.loads(line, object_hook=IndoorData.json_decoder)
+                        evt = IndoorData.__name__
+                    case OutdoorData.__name__:
+                        r = json.loads(line, object_hook=OutdoorData.json_decoder)
+                        evt = OutdoorData.__name__
+                    case _:
+                        self.logger.error("unkown impl for sensor: %s", sensor)
+
+                if r is not None:
+                    r.raw = json.loads(line)
+                    r.config = sensor
+                    reads.append(r)
+                    # EventBus.call(evt, r)
+                    se: SensorEvent = SensorEvent(evt, r)
+                    self._data_pool.submit(se.fire)
+
+                del sensors[key]
+                processed.append(key)
+            else:
+                if key not in processed:
+                    self.logger.warning("skipping: %s\n%s", key, line)
 
     def read(self):
         """

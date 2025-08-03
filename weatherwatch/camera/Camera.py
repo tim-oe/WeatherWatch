@@ -22,6 +22,7 @@ class Camera:
     examples: https://github.com/raspberrypi/picamera2/tree/main/examples
     tuning: https://forums.raspberrypi.com/viewtopic.php?t=351189
     cli (for noir cam): libcamera-still --tuning-file /usr/share/libcamera/ipa/rpi/vc4/imx219_noir.json  --output preview.jpg
+    controls: https://libcamera.org/api-html/namespacelibcamera_1_1controls.html
     TODO: https://github.com/raspberrypi/picamera2/issues/239
     work around: https://rockyshikoku.medium.com/use-h264-codec-with-cv2-videowriter-e00145ded181
     """  # noqa
@@ -79,7 +80,6 @@ class Camera:
                     "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
                     "AnalogueGain": self._camera_config.analogue_gain,
                     "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
-                    #"NoiseReductionStrength": 0.8,                    
                     "AwbEnable": True,
                     "AwbMode": libcamera.controls.AwbModeEnum.Auto,
                     "Brightness": 0.1,  # Slight brightness boost
@@ -106,7 +106,7 @@ class Camera:
             img_file: str = self.image_file()
             capture_config = self._picam2.create_still_configuration(controls=controls)
             # default=lambda obj: obj.to_dict()
-            self.logger.info("capture config %s", capture_config)
+            self.logger.debug("capture config %s", capture_config)
 
             # from docs fishing for fix...
             self._picam2.set_controls(controls)

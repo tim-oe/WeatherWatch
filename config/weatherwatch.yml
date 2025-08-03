@@ -104,16 +104,18 @@ sdr:
       channel: 2
       dataClass: IndoorData
       device: 20
-      freq: 433990000
-      level: 0
     - name: indoor_basement
       model: Ambientweather-F007TH
       id: 10
       channel: 3
       dataClass: IndoorData
       device: 20
-      freq: 433990000
-      level: 0
+  ignores: # extraneous sensors that are not used
+    - name: unknown_outdoor
+      model: Cotech-367959
+      dataClass: OutdoorData
+      id: 181
+      device: 153
 
 timelapse:
   enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}

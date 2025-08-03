@@ -4,18 +4,31 @@ import unittest
 import piexif
 import pprint
 
+from picamera2 import Picamera2 
 from camera.Camera import Camera
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 
 class CameraTest(unittest.TestCase):
 
+    # def test_controls(self):
+    #     print(f"***************************************************************")
+    #     print(f"***************************************************************")
+    #     picam2 = Picamera2()
+    #     try:
+    #         controls_info = picam2.camera_controls
+    #         for control_name in controls_info:
+    #             print(f"{control_name}: {controls_info[control_name]}")
+    #     finally:
+    #         picam2.close()
+    #     print(f"***************************************************************")
+    #     print(f"***************************************************************")
+       
     def test(self):
         ac: AppConfig = AppConfig()
         cc: CameraConfig = ac.camera
         
         c: Camera = Camera()
-        
         for f in cc.folder.iterdir():
             f.unlink()
 

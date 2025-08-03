@@ -1,6 +1,6 @@
 import logging.config
 import os
-from typing import List
+from typing import Dict, List
 
 from conf.AQIConfig import AQIConfig
 from conf.BackupConfig import BackupConfig
@@ -40,6 +40,7 @@ class AppConfig:
     AQI_KEY = "aqi"
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
+    IGNORES_KEY = "ignores"
     DATABASE_KEY = "database"
     EMAIL_KEY = "email"
     CAMERA_KEY = "camera"
@@ -63,11 +64,19 @@ class AppConfig:
 
         self.logger.info("loaded application config file %s", AppConfig.CONFIG_FILE)
 
-        self._sensors = {}
+        self._sensors: dict = {}
 
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY]:
             ss: SensorConfig = SensorConfig(s)
             self._sensors[ss.name] = ss
+            self.logger.debug("monitored sensor %s", ss.key)
+
+        self._ignores: dict = {}
+
+        for s in self._conf[AppConfig.SDR_KEY][AppConfig.IGNORES_KEY]:
+            ss: SensorConfig = SensorConfig(s)
+            self._ignores[ss.key] = ss
+            self.logger.debug("ignored sensor %s", ss.key)
 
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SENSORS_KEY)
 
@@ -146,6 +155,24 @@ class AppConfig:
         :return: the sensor config
         """
         return self._sensors[name]
+
+    @property
+    def ignores(self) -> Dict[str, SensorConfig]:
+        """
+        ignores property getter
+        :param self: this
+        :return: the ignores
+        """
+        return list(self._ignores)
+
+    def get_ignore(self, key: str) -> SensorConfig:
+        """
+        get ignore config based on name
+        :param self: this
+        :param key: the key of the ignore config
+        :return: the ignore config
+        """
+        return self._ignores[key]
 
     @property
     def aqi(self) -> AQIConfig:
