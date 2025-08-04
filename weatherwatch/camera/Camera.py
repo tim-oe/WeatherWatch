@@ -18,6 +18,7 @@ class Camera:
     """
     encapsulates camera functionality
     lib: https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf
+    libcamera: https://libcamera.org/introduction.html
     software: https://www.raspberrypi.com/documentation/computers/camera_software.html#rpicam-apps
     examples: https://github.com/raspberrypi/picamera2/tree/main/examples
     tuning: https://forums.raspberrypi.com/viewtopic.php?t=351189
