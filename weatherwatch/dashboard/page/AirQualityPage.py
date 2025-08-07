@@ -53,7 +53,7 @@ class AirQualityPage(BasePage):
                             id="out-pm2.5-col", children=AirQualityGauge("PM2.5 atm concentration", data.pm_2_5_conctrt_atmosph)
                         ),
                         dbc.Col(
-                            id="out-pm10-col", children=AirQualityGauge("PM1.0 atm concentration", data.pm_10_conctrt_atmosph)
+                            id="out-pm10-col", children=AirQualityGauge("PM10 atm concentration", data.pm_10_conctrt_atmosph)
                         ),
                     ],
                 ),
