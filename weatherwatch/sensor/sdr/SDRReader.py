@@ -72,8 +72,8 @@ class SDRReader:
 
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
-    
-    # TODO externalize 
+
+    # TODO externalize
     CMD_BASE = [
         "/usr/local/bin/rtl_433",
         "-q",
@@ -112,7 +112,7 @@ class SDRReader:
             self._cmd.append(SDRReader.DEVICE_FLAG)
             self._cmd.append(str(s.device))
             self._sensors[s.key] = s
-        
+
         self.logger.debug("sensors: %s", (str(self._sensors)))
 
         self._ignores: dict = self._app_config.ignores
@@ -258,7 +258,7 @@ class SDRReader:
 
         for k, v in sensors.items():
             self.logger.warning("no data for %s=%s", k, v)
-            if v.name == 'outdoor':
+            if v.name == "outdoor":
                 try:
                     raise Exception(f"no data for {k}={v}")
                 except Exception as e:

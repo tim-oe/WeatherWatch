@@ -42,6 +42,10 @@ class Emailer:
         """
         self.logger.exception(subject_prefix)
 
+        if not self._config.enable:
+            self.logger.debug("Email notifications are disabled in the configuration.")
+            return
+
         try:
 
             msg: MIMEMultipart = self.build_message(f"{subject_prefix}: {type(exception).__name__}", exception)
