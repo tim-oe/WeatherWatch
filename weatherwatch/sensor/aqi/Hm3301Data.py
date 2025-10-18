@@ -50,6 +50,7 @@ class Hm3301Data:
         set values to the lower value
         :param self: this
         :param that: the object to level set with
+        :param ceiling: the ceiling value that triggers out of range
         """
         if self.pm_1_0_conctrt_std > ceiling:
             self.pm_1_0_conctrt_std = min(self.pm_1_0_conctrt_std, that.pm_1_0_conctrt_std)
