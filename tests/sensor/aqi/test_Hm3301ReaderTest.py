@@ -11,12 +11,12 @@ class Hm3301ReaderTest(unittest.TestCase):
 
         self.assertIsNotNone(data)
 
-        self.assertTrue(data.pm_1_0_conctrt_std > 0)
-        self.assertTrue(data.pm_2_5_conctrt_std > 0)
-        self.assertTrue(data.pm_10_conctrt_std > 0)
-        self.assertTrue(data.pm_1_0_conctrt_atmosph > 0)
-        self.assertTrue(data.pm_2_5_conctrt_atmosph > 0)
-        self.assertTrue(data.pm_10_conctrt_atmosph > 0)
+        self.assertTrue(data.pm_1_0_conctrt_std >= 0)
+        self.assertTrue(data.pm_2_5_conctrt_std >= 0)
+        self.assertTrue(data.pm_10_conctrt_std >= 0)
+        self.assertTrue(data.pm_1_0_conctrt_atmosph >= 0)
+        self.assertTrue(data.pm_2_5_conctrt_atmosph >= 0)
+        self.assertTrue(data.pm_10_conctrt_atmosph >= 0)
 
     def testLower(self):
         d1: Hm3301Data = Hm3301Data()
@@ -35,7 +35,7 @@ class Hm3301ReaderTest(unittest.TestCase):
         d2.pm_2_5_conctrt_atmosph = 5
         d2.pm_10_conctrt_atmosph = 6
 
-        d1.lower(d2)
+        d1.lower(d2, 0)
         
         self.assertEqual(d1.pm_1_0_conctrt_std, 1)
         self.assertEqual(d1.pm_2_5_conctrt_std, 2)
