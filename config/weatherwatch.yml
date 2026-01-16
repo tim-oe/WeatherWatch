@@ -50,7 +50,7 @@ database:
     size: 3
     overflow: 3
 email:
-  enable: !ENV tag:yaml.org,2002:bool ${WW_EMAIL_ENABLE:true}
+  enable: !ENV tag:yaml.org,2002:bool ${WW_EMAIL_ENABLE:false}
   smtp_host: !ENV ${WW_EMAIL_SMTP_HOST:smtp.gmail.com}
   smtp_port: !ENV tag:yaml.org,2002:int ${WW_EMAIL_SMTP_PORT:465}
   username: !ENV ${WW_EMAIL_USERNAME}
@@ -93,7 +93,7 @@ sdr:
     - name: outdoor
       # rtl_433 model (might not match actual sensor)
       model: Cotech-367959
-      id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:221}
+      id: !ENV tag:yaml.org,2002:int ${WW_OUT_SENSOR_ID:238}
       # class that will process the data from raw json
       dataClass: OutdoorData
       # rtl_433 device id
@@ -110,11 +110,11 @@ sdr:
       channel: 3
       dataClass: IndoorData
       device: 20
-  ignores: # extraneous sensors that are not used
+  ignores: # extraneous sensors that are not ours
     - name: unknown_outdoor
       model: Cotech-367959
       dataClass: OutdoorData
-      id: 181
+      id: 65
       device: 153
 
 timelapse:
