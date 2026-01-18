@@ -54,6 +54,8 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
 - [config](/docs/CONFIG.md)
 
 ## TODOs
+- *AQI data cleanup*
+- lux sensor
 - [lightning sensor](https://www.seeedstudio.com/Grove-Lightning-Sensor-AS3935-p-5603.html)
 - DB sensor configuration
     - data extension points    

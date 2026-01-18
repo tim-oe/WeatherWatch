@@ -1,0 +1,19 @@
+# sensitive props that i'd keep out of yml file
+# USE WITH CAUTION
+WW_DB_PROD=false
+# dashbaord settings
+WW_DASH_SALT_KEY=
+# weatherwatch db configs
+WW_DB_USERNAME=
+WW_DB_PASSWORD=
+PYWAY_DATABASE_USERNAME=
+PYWAY_DATABASE_PASSWORD=
+# weather underground
+WW_WU_STATION_ID=
+WW_WU_STATION_KEY=
+WW_WU_API_KEY=
+# email notifier
+WW_EMAIL_USERNAME=
+WW_EMAIL_PASSWORD=
+WW_EMAIL_FROM=
+WW_EMAIL_TO=

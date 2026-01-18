@@ -28,13 +28,14 @@
     - [sdr playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
     - [python deps playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
 
-## weather undergrount data upload
+## weather underground data upload
 - [register](https://www.wunderground.com/signup)
 - [upload protocol](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
 
 ## project setup
 - project uses poetry for dependency managment
-    - poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)
+    - --poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)--
+    - trixie or newer based OSes get latest version of pipx
     - [local venv for service set POETRY_VIRTUALENVS_IN_PROJECT=true](https://python-poetry.org/docs/configuration/#virtualenvsin-project)
     - [to load gobal libs like Picamera2 set POETRY_VIRTUALENVS_OPTIONS_SYSTEM_SITE_PACKAGES=true](https://python-poetry.org/docs/configuration/#virtualenvsoptionssystem-site-packages)
 - see [init.sh](/init.sh?raw=true) for sdr, project, and circuit python install
@@ -50,7 +51,7 @@
     - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/apps/mysql.yml)
     - create db ```create database weather;``` 
     - create user ```CREATE user 'weather'@'%' identified by 'weather';``` 
-    - grant privileges ```GRANT lock tables, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
+    - grant privileges ```GRANT lock tables, drop, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
     - might want to lock down host to source
 - pyway user (for managing DDL)
     - ```CREATE user 'pyway'@'%' identified by 'pyway';``` 
@@ -89,6 +90,27 @@
 
 ## reports
 all located in $PROJECT_ROOT/reports
+
+## complete system initialization
+- [piAptInit](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/pi-init.yml)
+- [alias](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
+- [motd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/motd.yml)
+- [console](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/console-resize.yml)
+- [brutoof](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
+- [timesyncd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/nm-timesyncd.yml)
+- [piSwap](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/rpi-swap.yml)
+- [wPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
+- [circuitPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/circuit-python.yml)
+- [poetry](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/poetry.yml)
+- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/i2c.yml)
+- [sdr](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
+- [mysql](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
+- [git](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/git.yml)
+- set timezone 
+- clone [git@github.com:merbanan/rtl_433.git](https://github.com/merbanan/rtl_433)
+- clone [git@github.com:tim-oe/WeatherWatch.git](https://github.com/tim-oe/WeatherWatch/tree/main)
+- initialize DB users db
+- run test suite
 
 ## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
