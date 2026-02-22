@@ -19,5 +19,9 @@
     "pylint.args": [
         "--rcfile=${env:HOME}/src/WeatherWatch/.pylintrc",
         "--disable=unrecognized-option"
-    ]    
+    ],
+    "cursorpyright.analysis.diagnosticMode": "workspace",
+    "cursorpyright.analysis.extraPaths": [
+        "${workspaceFolder}/weatherwatch"
+    ]
 }

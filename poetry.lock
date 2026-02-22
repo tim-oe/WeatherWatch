@@ -124,6 +124,22 @@ Adafruit-Circuitpython-ConnectionManager = "*"
 optional = ["requests"]
 
 [[package]]
+name = "adafruit-circuitpython-tsl2591"
+version = "1.4.6"
+description = "CircuitPython library for TSL2591 high precision light sensor."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "adafruit_circuitpython_tsl2591-1.4.6-py3-none-any.whl", hash = "sha256:07bceb5094d4c94704afaf4bf0239d2e1c413f9cd9efcee5f96ecaabd05cb9fe"},
+    {file = "adafruit_circuitpython_tsl2591-1.4.6.tar.gz", hash = "sha256:79c1186d0d4d1fd9acc6c28afbe2f4b1227d364dcaa1986a4912680f55519d01"},
+]
+
+[package.dependencies]
+Adafruit-Blinka = "*"
+adafruit-circuitpython-busdevice = "*"
+
+[[package]]
 name = "adafruit-circuitpython-typing"
 version = "1.12.2"
 description = "Types needed for type annotation that are not in `typing`"
@@ -3036,4 +3052,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "61fa99f437f3b15c54e2f8fa1ccb758223c4c541ebeecab632f9a2f485723c4a"
+content-hash = "5e79c49d534017b477b87f049a6e6d59c433caee6a508b995dccb03ea840bd49"

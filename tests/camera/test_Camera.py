@@ -32,7 +32,7 @@ class CameraTest(unittest.TestCase):
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.lux_limit - 1) 
+        c.process(0.001) 
         
         found: bool = False
         image_path: str
@@ -56,12 +56,12 @@ class CameraTest(unittest.TestCase):
         print(f"ISOSpeedRatings {iso}")
 
         self.assertGreater(num, den)
-        self.assertGreater(iso, 350)
+        self.assertEqual(iso, 800)
     
         for f in cc.folder.iterdir():
             f.unlink()
 
-        c.process(cc.lux_limit + 1) 
+        c.process(100.00) 
         
         found: bool = False
         image_path: str
@@ -85,8 +85,7 @@ class CameraTest(unittest.TestCase):
         print(f"ISOSpeedRatings {iso}")
     
         self.assertLess(num, den)
-        # TODO fixme
-        # self.assertLess(iso, 600)
+        self.assertEqual(iso, 100)
 
     # def test(self):
     #     ac: AppConfig = AppConfig()
