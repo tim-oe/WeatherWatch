@@ -1,6 +1,7 @@
 from datetime import date, datetime
-from typing import List
+from typing import List, Optional
 
+from conf.AppConfig import AppConfig
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
@@ -22,6 +23,7 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         :param self: this
         """
         super().__init__(entity=AQISensor)
+        self._ceiling: int = AppConfig().aqi.ceiling
 
     def find_latest(self) -> AQISensor:
         """
@@ -65,72 +67,80 @@ class AQISensorRepository(BaseRepository[AQISensor]):
                 f.close()
                 session.close()
 
-    ##################################################################
-    # below functions are for data cleaup with funky sensor readings
-    # it's a lazy kludge
-    ##################################################################
-    def find_previous(self, session: Session, record_id: int) -> AQISensor:
+    def _find_previous_valid(self, session: Session, record_id: int) -> Optional[AQISensor]:
         """
-        find previous record based on id
+        find the nearest previous record where all PM fields are within range
         :param self: this
-        :param session: session the db session
-        :param id: the current record id
-        :return the previous record
+        :param session: the db session
+        :param record_id: the current record id
+        :return: the nearest previous valid record, or None
         """
-        return session.query(AQISensor).filter(AQISensor.id < record_id).order_by(AQISensor.id.desc()).first()
+        return (
+            session.query(AQISensor)
+            .filter(
+                AQISensor.id < record_id,
+                AQISensor.pm_1_0_conctrt_std <= self._ceiling,
+                AQISensor.pm_2_5_conctrt_std <= self._ceiling,
+                AQISensor.pm_10_conctrt_std <= self._ceiling,
+                AQISensor.pm_1_0_conctrt_atmosph <= self._ceiling,
+                AQISensor.pm_2_5_conctrt_atmosph <= self._ceiling,
+                AQISensor.pm_10_conctrt_atmosph <= self._ceiling,
+            )
+            .order_by(AQISensor.id.desc())
+            .first()
+        )
 
-    def find_next(self, session: Session, record_id: int) -> AQISensor:
+    def _find_next_valid(self, session: Session, record_id: int) -> Optional[AQISensor]:
         """
-        find next record based on id
+        find the nearest next record where all PM fields are within range
         :param self: this
-        :param session: session the db session
-        :param id: the current record id
-        :return the next record
+        :param session: the db session
+        :param record_id: the current record id
+        :return: the nearest next valid record, or None
         """
-        return session.query(AQISensor).filter(AQISensor.id > record_id).order_by(AQISensor.id.asc()).first()
+        return (
+            session.query(AQISensor)
+            .filter(
+                AQISensor.id > record_id,
+                AQISensor.pm_1_0_conctrt_std <= self._ceiling,
+                AQISensor.pm_2_5_conctrt_std <= self._ceiling,
+                AQISensor.pm_10_conctrt_std <= self._ceiling,
+                AQISensor.pm_1_0_conctrt_atmosph <= self._ceiling,
+                AQISensor.pm_2_5_conctrt_atmosph <= self._ceiling,
+                AQISensor.pm_10_conctrt_atmosph <= self._ceiling,
+            )
+            .order_by(AQISensor.id.asc())
+            .first()
+        )
 
-    def clean(self):
+    def clean(self, start_date: date, end_date: date):
         """
-        clean records of date outside of data range
+        clean records with readings outside of valid range within the given date range
         :param self: this
+        :param start_date: the start date
+        :param end_date: the end date
         """
         session: Session = self._datastore.session
         try:
             for d in (
                 session.query(AQISensor)
                 .filter(
+                    cast(AQISensor.read_time, DATE).between(start_date, end_date),
                     or_(
-                        AQISensor.pm_1_0_conctrt_std > 1000,
-                        AQISensor.pm_2_5_conctrt_std > 1000,
-                        AQISensor.pm_10_conctrt_std > 1000,
-                        AQISensor.pm_1_0_conctrt_atmosph > 1000,
-                        AQISensor.pm_2_5_conctrt_atmosph > 1000,
-                        AQISensor.pm_10_conctrt_atmosph > 1000,
-                    )
+                        AQISensor.pm_1_0_conctrt_std > self._ceiling,
+                        AQISensor.pm_2_5_conctrt_std > self._ceiling,
+                        AQISensor.pm_10_conctrt_std > self._ceiling,
+                        AQISensor.pm_1_0_conctrt_atmosph > self._ceiling,
+                        AQISensor.pm_2_5_conctrt_atmosph > self._ceiling,
+                        AQISensor.pm_10_conctrt_atmosph > self._ceiling,
+                    ),
                 )
                 .order_by(AQISensor.id.asc())
                 .all()
             ):
-
-                print(f"d {d.id}")
-                p: AQISensor = self.find_previous(session, d.id)
-                if p is not None:
-                    print(f"p {p.id}")
-                    d.fudge(p)
-                p2: AQISensor = self.find_previous(session, p.id)
-                if p2 is not None:
-                    print(f"p2 {p2.id}")
-                    d.fudge(p2)
-                n: AQISensor = self.find_next(session, d.id)
-                if n is not None:
-                    print(f"n {p.id}")
-                    d.fudge(n)
-                n2: AQISensor = self.find_next(session, n.id)
-                if n2 is not None:
-                    print(f"n2 {n2.id}")
-                    d.fudge(n2)
-
+                prev: Optional[AQISensor] = self._find_previous_valid(session, d.id)
+                nxt: Optional[AQISensor] = self._find_next_valid(session, d.id)
+                d.fudge(prev, nxt, self._ceiling)
                 session.commit()
-
         finally:
             session.close()

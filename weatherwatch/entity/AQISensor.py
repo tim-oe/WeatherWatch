@@ -1,11 +1,20 @@
 from datetime import datetime
-from typing import Self
+from typing import Optional, Self
 
 from entity.BaseEntity import BaseEntity
 from sqlalchemy import DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
 __all__ = ["AQISensor"]
+
+PM_FIELDS: list[str] = [
+    "pm_1_0_conctrt_std",
+    "pm_2_5_conctrt_std",
+    "pm_10_conctrt_std",
+    "pm_1_0_conctrt_atmosph",
+    "pm_2_5_conctrt_atmosph",
+    "pm_10_conctrt_atmosph",
+]
 
 
 class AQISensor(BaseEntity):
@@ -25,22 +34,19 @@ class AQISensor(BaseEntity):
     pm_2_5_conctrt_atmosph: Mapped[int] = mapped_column(Integer, nullable=False, default=None)
     pm_10_conctrt_atmosph: Mapped[int] = mapped_column(Integer, nullable=False, default=None)
 
-    def fudge(self, that: Self):
+    def fudge(self, prev: Optional[Self], nxt: Optional[Self], ceiling: int):
         """
-        hack to levelsetup outlying reads
+        replace outlying reads with the average of the nearest valid neighbors
         :param self: this
-        :param that: the object to balance with
+        :param prev: the nearest previous record not out of range
+        :param nxt: the nearest next record not out of range
+        :param ceiling: the max valid reading
         """
-        ceiling: int = 1000
-        if self.pm_1_0_conctrt_std > ceiling:
-            self.pm_1_0_conctrt_std = that.pm_1_0_conctrt_std
-        if self.pm_2_5_conctrt_std > ceiling:
-            self.pm_2_5_conctrt_std = that.pm_2_5_conctrt_std
-        if self.pm_10_conctrt_std > ceiling:
-            self.pm_10_conctrt_std = that.pm_10_conctrt_std
-        if self.pm_1_0_conctrt_atmosph > ceiling:
-            self.pm_1_0_conctrt_atmosph = that.pm_1_0_conctrt_atmosph
-        if self.pm_2_5_conctrt_atmosph > ceiling:
-            self.pm_2_5_conctrt_atmosph = that.pm_2_5_conctrt_atmosph
-        if self.pm_10_conctrt_atmosph > ceiling:
-            self.pm_10_conctrt_atmosph = that.pm_10_conctrt_atmosph
+        for field in PM_FIELDS:
+            if getattr(self, field) > ceiling:
+                if prev is not None and nxt is not None:
+                    setattr(self, field, (getattr(prev, field) + getattr(nxt, field)) // 2)
+                elif prev is not None:
+                    setattr(self, field, getattr(prev, field))
+                elif nxt is not None:
+                    setattr(self, field, getattr(nxt, field))

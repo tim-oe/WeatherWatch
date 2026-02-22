@@ -1,4 +1,5 @@
 import io
+from datetime import date, timedelta
 
 from apscheduler.jobstores.base import JobLookupError
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
@@ -6,6 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
 from py_singleton import singleton
+from repository.AQISensorRepository import AQISensorRepository
 from svc.AQISvc import AQISvc
 from svc.BackupSvc import BackupSvc
 from svc.CameraSvc import CameraSvc
@@ -40,6 +42,16 @@ def aqi():
     """
     svc = AQISvc()
     svc.process()
+
+
+def aqi_clean():
+    """
+    schedule entry point for aqi clean task
+    """
+    end_date: date = date.today() - timedelta(days=1)
+    start_date: date = end_date - timedelta(days=9)
+    repo = AQISensorRepository()
+    repo.clean(start_date, end_date)
 
 
 def camera():
@@ -91,6 +103,7 @@ class SchedulerSvc:
     https://apscheduler.readthedocs.io/en/3.x/index.html
     """
 
+    AQI_CLEAN_JOB = "aqi_clean"
     AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
     DB_BACKUP_JOB = "db_backup"
@@ -146,6 +159,7 @@ class SchedulerSvc:
         self.init_backup_file()
         self.init_backup_db()
         self.init_aqi()
+        self.init_aqi_clean()
         self.init_wu()
 
     def init_camera(self):
@@ -265,6 +279,30 @@ class SchedulerSvc:
                 self._jobstore.remove_job(SchedulerSvc.AQI_JOB)
             except JobLookupError:
                 self.logger.exception("no job to remove %s", SchedulerSvc.AQI_JOB)
+
+    def init_aqi_clean(self):
+        """
+        initialize aqi clean
+        :param self: this
+        """
+        if self._app_config.aqi.enable is True:
+            self._scheduler.add_job(
+                aqi_clean,
+                "cron",
+                day_of_week="mon",
+                hour=8,
+                name=SchedulerSvc.AQI_CLEAN_JOB,
+                id=SchedulerSvc.AQI_CLEAN_JOB,
+                coalesce=True,
+                max_instances=1,
+                replace_existing=True,
+                misfire_grace_time=60,
+            )
+        else:
+            try:
+                self._jobstore.remove_job(SchedulerSvc.AQI_CLEAN_JOB)
+            except JobLookupError:
+                self.logger.exception("no job to remove %s", SchedulerSvc.AQI_CLEAN_JOB)
 
     def init_wu(self):
         """
