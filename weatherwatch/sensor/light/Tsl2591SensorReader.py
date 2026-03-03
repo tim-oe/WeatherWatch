@@ -33,15 +33,10 @@ class Tsl2591SensorReader:
         """
         read sensor data
         """
-        try:
-            lux: float = self.tsl2591.lux
-        except Exception as e:
-            self.logger.exception("failed to read lux")
-            self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
-            time.sleep(0.2)
+        lux: float = self.get_lux()
 
         return Tsl2591Data(
-            lux=self.tsl2591.lux,
+            lux=lux,
             visible=self.tsl2591.visible,
             infrared=self.tsl2591.infrared,
             full_spectrum=self.tsl2591.full_spectrum,
@@ -56,8 +51,8 @@ class Tsl2591SensorReader:
         """
         try:
             lux: float = self.tsl2591.lux
-        except Exception as e:
-            self.logger.exception("failed to read lux")
+        except RuntimeError:
+            self.logger.exception("lux overflow, switching to GAIN_LOW")
             self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
             time.sleep(0.2)
             lux = self.tsl2591.lux
