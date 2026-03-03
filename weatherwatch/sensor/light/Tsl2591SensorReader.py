@@ -32,6 +32,13 @@ class Tsl2591SensorReader:
         """
         read sensor data
         """
+        try:
+            lux: float = self.tsl2591.lux
+        except Exception as e:
+            self.logger.exception("failed to read lux")
+            self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
+            time.sleep(0.2)
+
         return Tsl2591Data(
             lux=self.tsl2591.lux,
             visible=self.tsl2591.visible,
