@@ -5,10 +5,11 @@ import board
 from adafruit_tsl2591 import TSL2591
 from py_singleton import singleton
 from sensor.light.Tsl2591Data import Tsl2591Data
+from util.Logger import logger
 
 __all__ = ["Tsl2591SensorReader"]
 
-
+@logger
 @singleton
 class Tsl2591SensorReader:
     """
