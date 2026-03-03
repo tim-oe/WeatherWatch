@@ -46,7 +46,14 @@ class Tsl2591SensorReader:
         :param tsl: the tsl2591 sensor
         :return: the lux
         """
-        lux: float = self.tsl2591.lux
+        try:
+            lux: float = self.tsl2591.lux
+        except Exception as e:
+            self.logger.exception("failed to read lux")
+            self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
+            time.sleep(0.2)
+            lux = self.tsl2591.lux
+
         # If sensor is saturated (raw counts maxed), switch to lower gain
         if self.tsl2591.full_spectrum >= 37000 and self.tsl2591.gain != adafruit_tsl2591.GAIN_LOW:
             self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
