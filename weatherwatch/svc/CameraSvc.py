@@ -1,5 +1,6 @@
 import json
 import shutil
+import time
 
 import piexif
 from camera.Camera import Camera
@@ -56,6 +57,12 @@ class CameraSvc:
 
         try:
             lux: float = self.tslSensorReader.get_lux()
+            self.logger.info(f"lux read[0] {lux}" )
+            time.sleep(0.2)
+
+            float = self.tslSensorReader.get_lux()
+            self.logger.info(f"lux read[1] {lux}" )
+
             img_file: str = self.camera.process(lux)
 
             self.add_custom_exif(img_file, data, lux)
