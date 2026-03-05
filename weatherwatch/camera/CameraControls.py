@@ -54,7 +54,7 @@ class CameraControls:
             self.AnalogueGain = 1.0
         elif lux >= 1.0:
             self.AnalogueGain = 2.0
-        elif lux >= 0.1:
+        elif lux >= 0.5:
             self.AnalogueGain = 4.0
         else:
             self.AnalogueGain = 8.0
@@ -70,7 +70,7 @@ class CameraControls:
         10     lux (dim indoor)  →  80,000µs (1/12s)
         5      lux (dusk)        →  400,000µs (0.4s)
         1    lux (twilight)    →  1,000,000µs (1s)
-        0.01   lux (night)       →  3,000,000µs (3s)
+        0.5   lux (night)       →  3,000,000µs (3s)
 
         :param lux: the ambient light level to contol exposure/iso settings
         :returns exposure time
@@ -84,7 +84,7 @@ class CameraControls:
             (10, 80_000),
             (5, 400_000),
             (1, 1_000_000),
-            (0.1, 3_000_000),
+            (0.5, 3_000_000)
         ]
 
         lux = max(lux, 0.001)
