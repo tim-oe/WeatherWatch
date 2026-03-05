@@ -33,44 +33,64 @@ class Tsl2591SensorReader:
 
         self.i2c = board.I2C()  # uses board.SCL and board.SDA
         self.tsl2591 = TSL2591(self.i2c)
+        self.tsl2591.disable()
 
     def read(self):  # -> Tsl2591Data:
         """
         read sensor data
         """
-        lux: float = self.get_lux()
+        self._enable()
 
-        return Tsl2591Data(
-            lux=lux,
-            visible=self.tsl2591.visible,
-            infrared=self.tsl2591.infrared,
-            full_spectrum=self.tsl2591.full_spectrum,
-            raw_luminosity=self.tsl2591.raw_luminosity,
-        )
+        try:
+            lux: float = self.get_lux(wake=False)
 
-    def get_lux(self) -> float:
+            return Tsl2591Data(
+                lux=lux,
+                visible=self.tsl2591.visible,
+                infrared=self.tsl2591.infrared,
+                full_spectrum=self.tsl2591.full_spectrum,
+                raw_luminosity=self.tsl2591.raw_luminosity,
+            )
+        finally:
+            self.tsl2591.disable()
+
+    def get_lux(self, wake: bool = True) -> float:
         """
         read lux, with sensor gain auto-switching to avoid saturation or underflow.
-        :param tsl: the tsl2591 sensor
+        :param wake: enable/disable sensor around the read (default True)
         :return: the lux
         """
+        if wake:
+            self._enable()
+
         try:
-            lux: float = self.tsl2591.lux
-        except RuntimeError:
-            self.logger.exception("lux overflow, switching to GAIN_LOW")
-            self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
-            time.sleep(0.2)
-            lux = self.tsl2591.lux
+            try:
+                lux: float = self.tsl2591.lux
+            except RuntimeError:
+                self.logger.warning("lux overflow, switching to GAIN_LOW")
+                self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
+                time.sleep(0.2)
+                lux = self.tsl2591.lux
 
-        # If sensor is saturated (raw counts maxed), switch to lower gain
-        if self.tsl2591.full_spectrum >= 37000 and self.tsl2591.gain != adafruit_tsl2591.GAIN_LOW:
-            self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
-            time.sleep(0.2)
-            lux = self.tsl2591.lux
-        # If sensor is too dark for low gain, switch to higher gain
-        elif self.tsl2591.full_spectrum < 100 and self.tsl2591.gain == adafruit_tsl2591.GAIN_LOW:
-            self.tsl2591.gain = adafruit_tsl2591.GAIN_MED
-            time.sleep(0.2)
-            lux = self.tsl2591.lux
+            # If sensor is saturated (raw counts maxed), switch to lower gain
+            if self.tsl2591.full_spectrum >= 37000 and self.tsl2591.gain != adafruit_tsl2591.GAIN_LOW:
+                self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
+                time.sleep(0.2)
+                lux = self.tsl2591.lux
+            # If sensor is too dark for low gain, switch to higher gain
+            elif self.tsl2591.full_spectrum < 100 and self.tsl2591.gain == adafruit_tsl2591.GAIN_LOW:
+                self.tsl2591.gain = adafruit_tsl2591.GAIN_MED
+                time.sleep(0.2)
+                lux = self.tsl2591.lux
 
-        return round(max(lux, 0.001), 4)  # floor to avoid log(0)
+            return round(max(lux, 0.001), 4)  # floor to avoid log(0)
+        finally:
+            if wake:
+                self.tsl2591.disable()
+
+    def _enable(self):
+        """
+        wake sensor and wait for first integration cycle
+        """
+        self.tsl2591.enable()
+        time.sleep(0.12)
