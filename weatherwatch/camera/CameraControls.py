@@ -50,9 +50,9 @@ class CameraControls:
         :returns gain
         """
         # Prefer longer exposure over high gain to minimize noise
-        if lux >= 5.0:
+        if lux >= 10.0:
             self.AnalogueGain = 1.0
-        elif lux >= 1.0:
+        elif lux >= 5.0:
             self.AnalogueGain = 2.0
         elif lux >= 0.5:
             self.AnalogueGain = 4.0
@@ -64,28 +64,20 @@ class CameraControls:
         Map lux to exposure time
         Anchor points based on real-world targets:
 
-        10,000 lux (bright sun)  →  500µs   (1/2000s)
-        1,000  lux (overcast)    →  2,000µs  (1/500s)
+        10,000 lux (bright sun)   →  500µs   (1/2000s)
+        1,000  lux (overcast)     →  2,000µs  (1/500s)
         100    lux (indoor bright)→ 20,000µs (1/50s)
-        10     lux (dim indoor)  →  80,000µs (1/12s)
-        5      lux (dusk)        →  400,000µs (0.4s)
-        1    lux (twilight)    →  1,000,000µs (1s)
-        0.5   lux (night)       →  3,000,000µs (3s)
+        10     lux (dim indoor)   →  80,000µs (1/12s)
+        5      lux (dusk)         →  400,000µs (0.4s)
+        1    lux (twilight)       →  1,000,000µs (1s)
+        0.5   lux (night)         →  3,000,000µs (3s)
 
         :param lux: the ambient light level to contol exposure/iso settings
         :returns exposure time
         """
         # Anchor points: (lux, exposure_us)
         # tweakking setting for sensor in use
-        anchors = [
-            (10000, 500),
-            (1000, 2_000),
-            (100, 20_000),
-            (10, 80_000),
-            (5, 400_000),
-            (1, 1_000_000),
-            (0.5, 3_000_000)
-        ]
+        anchors = [(10000, 500), (1000, 2_000), (100, 20_000), (10, 80_000), (5, 400_000), (1, 1_000_000), (0.5, 3_000_000)]
 
         lux = max(lux, 0.001)
 

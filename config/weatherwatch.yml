@@ -1,10 +1,12 @@
-version: 1.1.0
+version: 1.2.0
+
 aqi:
   enable: !ENV tag:yaml.org,2002:bool ${WW_AQI_ENABLE:true}
   retry: !ENV tag:yaml.org,2002:int ${WW_AQI_RETRY:3}
   ceiling: !ENV tag:yaml.org,2002:int ${WW_AQI_CEILING:100}
   poll: !ENV tag:yaml.org,2002:int ${WW_AQI_POLL:5}
   wait_sec: !ENV tag:yaml.org,2002:int ${WW_AQI_WAIT_SEC:10}
+
 backup:
   folder: !ENV ${WW_BACKUP_FOLDER:backup}
   file:
@@ -16,6 +18,7 @@ backup:
   db:
     enable: !ENV tag:yaml.org,2002:bool ${WW_DB_BACKUP_ENABLE:true}
     weekly_old: !ENV tag:yaml.org,2002:int ${WW_DB_WEEKLY_OLD:35}
+
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
   folder: !ENV ${WW_CAM_FOLDER:pix}
@@ -26,6 +29,7 @@ camera:
   lens:
     make: !ENV ${WW_CAM_LENS_MAKE:Arducam}
     model: !ENV ${WW_CAM_LENS_MODEL:120 Degree Wide Angle M12}
+
 # dashboard app
 dashboard:
   # listen host
@@ -34,6 +38,7 @@ dashboard:
   port: !ENV tag:yaml.org,2002:int ${WW_DASH_PORT:8000}
   debug: !ENV tag:yaml.org,2002:bool ${WW_DASH_DEBUG:false}
   salt_key: !ENV ${WW_DASH_SALT_KEY}
+
 database:
   dialect: !ENV ${WW_DB_DIALECT:mariadb}
   driver: !ENV ${WW_DB_DRIVER:mariadbconnector}
@@ -46,6 +51,7 @@ database:
   pool:
     size: 3
     overflow: 3
+
 email:
   enable: !ENV tag:yaml.org,2002:bool ${WW_EMAIL_ENABLE:false}
   smtp_host: !ENV ${WW_EMAIL_SMTP_HOST:smtp.gmail.com}
@@ -54,11 +60,16 @@ email:
   password: !ENV ${WW_EMAIL_PASSWORD}
   from_email: !ENV ${WW_EMAIL_FROM}
   to_email: !ENV ${WW_EMAIL_TO}
+
+light:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_LIGHT_ENABLE:true}
+
 gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
   serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
   baud_rate: !ENV tag:yaml.org,2002:int ${WW_GPS_SER_BAUD:9600}
   init_timeout: !ENV tag:yaml.org,2002:int ${WW_GPS_INIT_TIMEOUT:30}
+
 scheduler:
   aqi:
     # air quality sensor interval
@@ -70,6 +81,8 @@ scheduler:
     hour: !ENV tag:yaml.org,2002:int ${WW_FILE_BACKUP_HOUR:3}
   file_backup:
     hour: !ENV tag:yaml.org,2002:int ${WW_FILE_BACKUP_HOUR:2}
+  light:
+    interval: !ENV tag:yaml.org,2002:int ${WW_LIGHT_INTERVAL:5}
   pimetrics:
     # system metrics polling for looking for resource issues
     interval: !ENV tag:yaml.org,2002:int ${WW_PIMETRICS_INTERVAL:10}
@@ -80,6 +93,7 @@ scheduler:
     hour: !ENV tag:yaml.org,2002:int ${WW_TIMELAPSE_HOUR:1}
   weather_undergound:
     interval: !ENV tag:yaml.org,2002:int ${WW_WU_INTERVAL:10}
+
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
@@ -120,6 +134,7 @@ timelapse:
   extension: !ENV ${WW_CAM_TIMELAPSE_EXT:.mp4}
   fps: !ENV tag:yaml.org,2002:int ${WW_CAM_TIMELAPSE_FPS:10}
   codec: !ENV ${WW_CAM_TIMELAPSE_CODEC:avc1}
+
 weather_undergound:
   enable: !ENV tag:yaml.org,2002:bool ${WW_WU_ENABLE:true}
   retries: !ENV tag:yaml.org,2002:int ${WW_WU_RETRIES:5}

@@ -3,11 +3,14 @@ import time
 import adafruit_tsl2591
 import board
 from adafruit_tsl2591 import TSL2591
+from conf.AppConfig import AppConfig
+from conf.LightConfig import LightConfig
 from py_singleton import singleton
 from sensor.light.Tsl2591Data import Tsl2591Data
 from util.Logger import logger
 
 __all__ = ["Tsl2591SensorReader"]
+
 
 @logger
 @singleton
@@ -26,6 +29,8 @@ class Tsl2591SensorReader:
         ctor
         :param self: this
         """
+        self._light_config: LightConfig = AppConfig().light
+
         self.i2c = board.I2C()  # uses board.SCL and board.SDA
         self.tsl2591 = TSL2591(self.i2c)
 
