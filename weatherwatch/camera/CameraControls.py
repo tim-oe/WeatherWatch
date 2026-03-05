@@ -68,22 +68,23 @@ class CameraControls:
         1,000  lux (overcast)    →  2,000µs  (1/500s)
         100    lux (indoor bright)→ 20,000µs (1/50s)
         10     lux (dim indoor)  →  80,000µs (1/12s)
-        1      lux (dusk)        →  400,000µs (0.4s)
-        0.1    lux (twilight)    →  1,000,000µs (1s)
+        5      lux (dusk)        →  400,000µs (0.4s)
+        1    lux (twilight)    →  1,000,000µs (1s)
         0.01   lux (night)       →  3,000,000µs (3s)
 
         :param lux: the ambient light level to contol exposure/iso settings
         :returns exposure time
         """
         # Anchor points: (lux, exposure_us)
+        # tweakking setting for sensor in use
         anchors = [
             (10000, 500),
             (1000, 2_000),
             (100, 20_000),
             (10, 80_000),
-            (1, 400_000),
-            (0.1, 1_000_000),
-            (0.01, 3_000_000),
+            (5, 400_000),
+            (1, 1_000_000),
+            (0.1, 3_000_000),
         ]
 
         lux = max(lux, 0.001)
