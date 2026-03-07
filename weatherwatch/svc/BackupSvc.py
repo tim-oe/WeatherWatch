@@ -4,6 +4,7 @@ import glob
 import zipfile
 from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
+from datetime import date, timedelta
 
 from backup.BackupRange import BackupRange
 from conf.AppConfig import AppConfig
@@ -137,7 +138,8 @@ class BackupSvc:
         :param self: this
         :param monthly_archive: the monthly archive file
         """
-        AQISensorRepository().clean()
+
+        AQISensorRepository().clean(date.today(), date.today() - timedelta(days=2))
         self.db_backup(AQISensorRepository(), monthly_archive)
 
     def db_backup(self, repo, monthly_archive):
