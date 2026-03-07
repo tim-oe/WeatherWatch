@@ -113,19 +113,19 @@ class AQISensorRepository(BaseRepository[AQISensor]):
             ):
 
                 print(f"d {d.id}")
-                p: AQISensor = self.find_previous(session, d.id)
+                p = self.find_previous(session, d.id)
                 if p is not None:
                     print(f"p {p.id}")
                     d.fudge(p)
-                p2: AQISensor = self.find_previous(session, p.id)
+                p2 = self.find_previous(session, p.id)
                 if p2 is not None:
                     print(f"p2 {p2.id}")
                     d.fudge(p2)
-                n: AQISensor = self.find_next(session, d.id)
+                n = self.find_next(session, d.id)
                 if n is not None:
                     print(f"n {p.id}")
                     d.fudge(n)
-                n2: AQISensor = self.find_next(session, n.id)
+                n2 = self.find_next(session, n.id)
                 if n2 is not None:
                     print(f"n2 {n2.id}")
                     d.fudge(n2)

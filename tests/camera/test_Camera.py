@@ -63,8 +63,8 @@ class CameraTest(unittest.TestCase):
 
         c.process(100.00) 
         
-        found: bool = False
-        image_path: str
+        found = False
+        image_path = ""
                 
         for file in cc.folder.glob(f"*{cc.extension}"):       
             found = True

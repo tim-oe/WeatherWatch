@@ -76,7 +76,7 @@ class AppConfig:
         self._ignores: dict = {}
 
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.IGNORES_KEY]:
-            ss: SensorConfig = SensorConfig(s)
+            ss = SensorConfig(s)
             self._ignores[ss.key] = ss
             self.logger.debug("ignored sensor %s", ss.key)
 
