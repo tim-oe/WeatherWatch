@@ -137,6 +137,7 @@ class BackupSvc:
         :param self: this
         :param monthly_archive: the monthly archive file
         """
+        AQISensorRepository().clean()
         self.db_backup(AQISensorRepository(), monthly_archive)
 
     def db_backup(self, repo, monthly_archive):

@@ -109,7 +109,8 @@ all located in $PROJECT_ROOT/reports
 - set timezone 
 - clone [git@github.com:merbanan/rtl_433.git](https://github.com/merbanan/rtl_433)
 - clone [git@github.com:tim-oe/WeatherWatch.git](https://github.com/tim-oe/WeatherWatch/tree/main)
-- initialize DB users db
+    - run ```python3 setup.py rtl433``` to install sdr client
+- initialize DB users db 
 - run test suite
 
 ## FAQ

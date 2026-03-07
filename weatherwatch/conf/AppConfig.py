@@ -9,6 +9,7 @@ from conf.DashConfig import DashConfig
 from conf.DatabaseConfig import DatabaseConfig
 from conf.EmailConfig import EmailConfig
 from conf.GPSConfig import GPSConfig
+from conf.LightConfig import LightConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
 from conf.TimelapseConfig import TimelapseConfig
@@ -43,6 +44,7 @@ class AppConfig:
     IGNORES_KEY = "ignores"
     DATABASE_KEY = "database"
     EMAIL_KEY = "email"
+    LIGHT_KEY = "light"
     CAMERA_KEY = "camera"
     BACKUP_KEY = "backup"
     SCHEDULER_KEY = "scheduler"
@@ -74,7 +76,7 @@ class AppConfig:
         self._ignores: dict = {}
 
         for s in self._conf[AppConfig.SDR_KEY][AppConfig.IGNORES_KEY]:
-            ss: SensorConfig = SensorConfig(s)
+            ss = SensorConfig(s)
             self._ignores[ss.key] = ss
             self.logger.debug("ignored sensor %s", ss.key)
 
@@ -100,6 +102,9 @@ class AppConfig:
 
         self._gps = GPSConfig(self._conf[AppConfig.GPS_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.GPS_KEY)
+
+        self._light = LightConfig(self._conf[AppConfig.LIGHT_KEY])
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.LIGHT_KEY)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SCHEDULER_KEY)
@@ -236,6 +241,15 @@ class AppConfig:
         :return: the gps
         """
         return self._gps
+
+    @property
+    def light(self) -> LightConfig:
+        """
+        light property getter
+        :param self: this
+        :return: the light
+        """
+        return self._light
 
     @property
     def scheduler(self) -> SchedulerConfig:

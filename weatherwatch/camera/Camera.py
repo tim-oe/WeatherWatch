@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-import libcamera
+from camera.CameraControls import CameraControls
 from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from picamera2 import Picamera2, Preview
@@ -75,42 +75,18 @@ class Camera:
             preview_config = self._picam2.create_preview_configuration()
             self._picam2.configure(preview_config)
 
-            controls = {}
-            if lux <= self._camera_config.lux_limit:
-                controls = {
-                    "ExposureTime": (self._camera_config.exposure_time * Camera.MICRO_SECOND),
-                    "AnalogueGain": self._camera_config.analogue_gain,
-                    "NoiseReductionMode": libcamera.controls.draft.NoiseReductionModeEnum.HighQuality,
-                    "AwbEnable": True,
-                    "AwbMode": libcamera.controls.AwbModeEnum.Auto,
-                    "Brightness": 0.1,  # Slight brightness boost
-                    "Contrast": 1.2,  # Increase contrast
-                    "Saturation": 1.1,  # Slight saturation boost
-                    "Sharpness": 1.0,  # Maintain sharpness
-                }
-            else:  # clear controls https://github.com/raspberrypi/picamera2/issues/1175
-                controls = {
-                    "ExposureTime": 0,
-                    "AnalogueGain": 0,
-                    "AwbEnable": True,
-                    "AwbMode": libcamera.controls.AwbModeEnum.Daylight,
-                    "Brightness": 0.0,
-                    "Contrast": 1.0,
-                    "Saturation": 1.0,
-                    "Sharpness": 1.0,
-                }
+            controls = CameraControls(lux)
+            self.logger.debug("lux: %s controls: %s", lux, controls)
 
             self._picam2.start()
 
             time.sleep(1)
 
             img_file: str = self.image_file()
-            capture_config = self._picam2.create_still_configuration(controls=controls)
-            # default=lambda obj: obj.to_dict()
+            capture_config = self._picam2.create_still_configuration(controls=controls.to_dict())
             self.logger.debug("capture config %s", capture_config)
 
-            # from docs fishing for fix...
-            self._picam2.set_controls(controls)
+            self._picam2.set_controls(controls.to_dict())
 
             # TODO inject exif data here
             self._picam2.switch_mode_and_capture_file(capture_config, img_file, wait=True)

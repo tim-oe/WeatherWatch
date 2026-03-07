@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import unittest
 import piexif
@@ -28,7 +29,7 @@ class SensorSvcTest(unittest.TestCase):
         
         ent: OutdoorSensor = OutdoorSensorRepositoryTest.getSample()
         
-        ent.light_lux = self.cc.lux_limit + 1
+        ent.light_lux = 100.00
         
         self.outdoorRepo.insert(ent)
         
@@ -50,9 +51,14 @@ class SensorSvcTest(unittest.TestCase):
 
         pprint.pprint(exif_dict)
         
+        # lux
+        self.assertTrue(piexif.ExifIFD.UserComment in exif_dict["Exif"])
+        user_data = json.loads(exif_dict["Exif"][piexif.ExifIFD.UserComment].decode())
+        pprint.pprint(user_data)
+        self.assertIn("lux", user_data)
+
         # camera
         self.assertTrue(piexif.ExifIFD.LightSource in exif_dict["Exif"])
-        self.assertTrue(piexif.ExifIFD.BrightnessValue in exif_dict["Exif"])
         self.assertTrue(piexif.ExifIFD.LensMake in exif_dict["Exif"])
         self.assertTrue(piexif.ExifIFD.LensModel in exif_dict["Exif"])
         # weather

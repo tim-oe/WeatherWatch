@@ -100,6 +100,7 @@ class SchedulerSvc:
     """
     SchedulerSvc service
     sets up automated tasks
+    https://github.com/agronholm/apscheduler
     https://apscheduler.readthedocs.io/en/3.x/index.html
     """
 

@@ -1,4 +1,6 @@
+import json
 import shutil
+import time
 
 import piexif
 from camera.Camera import Camera
@@ -12,6 +14,7 @@ from gps.GPSReader import GPSReader
 from py_singleton import singleton
 from pytemp import pytemp
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
+from sensor.light.Tsl2591SensorReader import Tsl2591SensorReader
 from util.Logger import logger
 
 __all__ = ["CameraSvc"]
@@ -39,6 +42,7 @@ class CameraSvc:
         :param self: this
         """
         self.camera: Camera = Camera()
+        self.tslSensorReader: Tsl2591SensorReader = Tsl2591SensorReader()
         self._camera_config: CameraConfig = AppConfig().camera
         self._gps_config: GPSConfig = AppConfig().gps
         self._repo: OutdoorSensorRepository = OutdoorSensorRepository()
@@ -52,15 +56,22 @@ class CameraSvc:
         data: OutdoorSensor = self._repo.find_latest()
 
         try:
-            img_file: str = self.camera.process(data.light_lux)
+            lux: float = self.tslSensorReader.get_lux()
+            self.logger.info(f"lux read[0] {lux}")
+            time.sleep(0.2)
 
-            self.add_custom_exif(img_file, data)
+            lux = self.tslSensorReader.get_lux()
+            self.logger.info(f"lux read[1] {lux}")
+
+            img_file: str = self.camera.process(lux)
+
+            self.add_custom_exif(img_file, data, lux)
 
             shutil.copy(img_file, self._camera_config.current_file)
         except Exception:
             self.logger.exception("failed to take picture")
 
-    def add_custom_exif(self, image_path, data: OutdoorSensor):
+    def add_custom_exif(self, image_path, data: OutdoorSensor, lux: float):
         """
         add custom exif metadata
         :param self: this
@@ -75,28 +86,26 @@ class CameraSvc:
             # Load the Exif data
             exif_dict = piexif.load(image_path)
 
-            # Add custom metadata to the Exif UserComment
-            c = pytemp(float(data.temperature_f), "f", "c")
-
-            # TODO proper value?
-            # exif_dict["0th"][piexif.ImageIFD.DocumentName] = "local weather"
-
             # daylight
             exif_dict["Exif"][piexif.ExifIFD.LightSource] = 1
-            exif_dict["Exif"][piexif.ExifIFD.BrightnessValue] = (int(data.light_lux), 1)
 
             exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._camera_config.lens_make
             exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._camera_config.lens_model
 
             # weather
+            # Add custom metadata to the Exif UserComment
+            c = pytemp(float(data.temperature_f), "f", "c")
             exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
             exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
             exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
 
             self.add_gps_exif(exif_dict)
 
-            # TODO what other data
-            # exif_dict["Exif"][piexif.ExifIFD.UserComment]
+            # custom data to persist lux
+            # TODO add other fields if needed
+            user_data = json.dumps({"lux": round(lux, 3)})
+
+            exif_dict["Exif"][piexif.ExifIFD.UserComment] = user_data.encode("utf-8")
 
             # Dump the modified Exif data
             exif_bytes = piexif.dump(exif_dict)
