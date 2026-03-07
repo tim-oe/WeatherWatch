@@ -32,6 +32,7 @@ class OutdoorSensorPage(BasePage):
         :param self: this
         """
         self._outdoor_repo: OutdoorSensorRepository = OutdoorSensorRepository()
+        self._light_repo: LightSensorRepository = LightSensorRepository()
 
         super().__init__()
 
@@ -51,7 +52,7 @@ class OutdoorSensorPage(BasePage):
 
         d = date.today() - timedelta(days=7)
         seven_day: List[OutdoorSensor] = self._outdoor_repo.find_greater_than_read_time(d)
-        seven_day_light: List[LightSensor] = LightSensorRepository().find_greater_than_read_time(d)
+        seven_day_light: List[LightSensor] = self._light_repo.find_greater_than_read_time(d)
 
         min_temp = min(0, int(data.temperature_f) - 5)
         max_temp = max(100, int(data.temperature_f) + 5)
