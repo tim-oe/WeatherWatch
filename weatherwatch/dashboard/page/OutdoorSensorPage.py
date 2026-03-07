@@ -14,7 +14,7 @@ from dashboard.component.WindGauge import WindGauge
 from dashboard.page.BasePage import BasePage
 from entity.LightSensor import LightSensor
 from entity.OutdoorSensor import OutdoorSensor
-from repository import LightSensorRepository
+from repository.LightSensorRepository import LightSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
 
