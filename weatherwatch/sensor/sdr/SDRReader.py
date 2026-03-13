@@ -80,15 +80,11 @@ class SDRReader:
         "-M",
         "level",
         "-F",
-        "log",
-        "-F",
         "json",
         "-f",
-        "433990000",
-        "-Y",
-        "level=0",
-        "-Y",
-        "autolevel",
+        "433920000",
+        "-s",
+        "1024000",
     ]
 
     def __init__(self):
@@ -222,6 +218,7 @@ class SDRReader:
             stdout=PIPE,
             stderr=PIPE,
             text=True,
+            bufsize=1,
             close_fds=SDRReader.ON_POSIX,
         ) as p:
 
@@ -254,7 +251,7 @@ class SDRReader:
                 )
             finally:
                 self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
-                p.kill()
+                p.terminate()
 
         for k, v in sensors.items():
             self.logger.warning("no data for %s=%s", k, v)
