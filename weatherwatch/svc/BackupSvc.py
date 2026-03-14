@@ -3,8 +3,8 @@ import functools
 import glob
 import zipfile
 from concurrent.futures import Future, ThreadPoolExecutor
-from pathlib import Path
 from datetime import date, timedelta
+from pathlib import Path
 
 from backup.BackupRange import BackupRange
 from conf.AppConfig import AppConfig
@@ -139,7 +139,6 @@ class BackupSvc:
         :param monthly_archive: the monthly archive file
         """
 
-        AQISensorRepository().clean(date.today(), date.today() - timedelta(days=2))
         self.db_backup(AQISensorRepository(), monthly_archive)
 
     def db_backup(self, repo, monthly_archive):
@@ -172,6 +171,10 @@ class BackupSvc:
                 repo.backup(w.from_date, w.to_date, wf)
             else:
                 self.logger.info("skiping backup of %s", wf)
+
+            self.logger.info("running aqi clean")
+            AQISensorRepository().clean(date.today(), date.today() - timedelta(days=3))
+            self.logger.info("aqi clean complete")
 
         except Exception:
             self.logger.exception("error performing backup for %s", repo.entity.__table__)
