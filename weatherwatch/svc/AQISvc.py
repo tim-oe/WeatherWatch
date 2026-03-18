@@ -1,5 +1,5 @@
 import time
-from datetime import date, datetime, timedelta
+from datetime import datetime
 
 from conf.AppConfig import AppConfig
 from conf.AQIConfig import AQIConfig
@@ -60,7 +60,7 @@ class AQISvc:
             self.logger.info("AQI processing complete  duration %s", Converter.duration_seconds(start))
 
             self.logger.info("running aqi clean")
-            self._repo.clean(date.today() - timedelta(days=1), date.today() - timedelta(days=3))
+            self._repo.clean()
             self.logger.info("aqi clean complete")
 
         except Exception:

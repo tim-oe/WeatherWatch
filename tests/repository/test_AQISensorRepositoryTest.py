@@ -53,13 +53,7 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         
         repo.exec_file("sql/sample/aqi_sensor.sql")
 
-        #from_date: date = date.fromisoformat("2024-10-20")
-        #to_date: date = date.fromisoformat("2026-02-22")
-
-        to_date: date = date.today() - timedelta(days=1)
-        from_date: date = to_date - timedelta(days=9)
-
-        repo.clean(from_date, to_date)
+        repo.clean()
         
     def test_backup(self):
         repo: BaseRepository = self.getRepo()        

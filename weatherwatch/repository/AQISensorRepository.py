@@ -1,11 +1,11 @@
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List
 
 from conf.AppConfig import AppConfig
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import DATE, cast, or_
+from sqlalchemy import DATE, cast
 from sqlalchemy.orm import Session
 
 __all__ = ["AQISensorRepository"]
@@ -67,80 +67,10 @@ class AQISensorRepository(BaseRepository[AQISensor]):
                 f.close()
                 session.close()
 
-    def _find_previous_valid(self, session: Session, record_id: int) -> Optional[AQISensor]:
+    def clean(self):
         """
-        find the nearest previous record where all PM fields are within range
+        clean records with readings outside of valid range
+        delegates to the aqi_clean stored procedure
         :param self: this
-        :param session: the db session
-        :param record_id: the current record id
-        :return: the nearest previous valid record, or None
         """
-        return (
-            session.query(AQISensor)
-            .filter(
-                AQISensor.id < record_id,
-                AQISensor.pm_1_0_conctrt_std <= self._ceiling,
-                AQISensor.pm_2_5_conctrt_std <= self._ceiling,
-                AQISensor.pm_10_conctrt_std <= self._ceiling,
-                AQISensor.pm_1_0_conctrt_atmosph <= self._ceiling,
-                AQISensor.pm_2_5_conctrt_atmosph <= self._ceiling,
-                AQISensor.pm_10_conctrt_atmosph <= self._ceiling,
-            )
-            .order_by(AQISensor.id.desc())
-            .first()
-        )
-
-    def _find_next_valid(self, session: Session, record_id: int) -> Optional[AQISensor]:
-        """
-        find the nearest next record where all PM fields are within range
-        :param self: this
-        :param session: the db session
-        :param record_id: the current record id
-        :return: the nearest next valid record, or None
-        """
-        return (
-            session.query(AQISensor)
-            .filter(
-                AQISensor.id > record_id,
-                AQISensor.pm_1_0_conctrt_std <= self._ceiling,
-                AQISensor.pm_2_5_conctrt_std <= self._ceiling,
-                AQISensor.pm_10_conctrt_std <= self._ceiling,
-                AQISensor.pm_1_0_conctrt_atmosph <= self._ceiling,
-                AQISensor.pm_2_5_conctrt_atmosph <= self._ceiling,
-                AQISensor.pm_10_conctrt_atmosph <= self._ceiling,
-            )
-            .order_by(AQISensor.id.asc())
-            .first()
-        )
-
-    def clean(self, start_date: date, end_date: date):
-        """
-        clean records with readings outside of valid range within the given date range
-        :param self: this
-        :param start_date: the start date
-        :param end_date: the end date
-        """
-        session: Session = self._datastore.session
-        try:
-            for d in (
-                session.query(AQISensor)
-                .filter(
-                    cast(AQISensor.read_time, DATE).between(start_date, end_date),
-                    or_(
-                        AQISensor.pm_1_0_conctrt_std > self._ceiling,
-                        AQISensor.pm_2_5_conctrt_std > self._ceiling,
-                        AQISensor.pm_10_conctrt_std > self._ceiling,
-                        AQISensor.pm_1_0_conctrt_atmosph > self._ceiling,
-                        AQISensor.pm_2_5_conctrt_atmosph > self._ceiling,
-                        AQISensor.pm_10_conctrt_atmosph > self._ceiling,
-                    ),
-                )
-                .order_by(AQISensor.id.asc())
-                .all()
-            ):
-                prev: Optional[AQISensor] = self._find_previous_valid(session, d.id)
-                nxt: Optional[AQISensor] = self._find_next_valid(session, d.id)
-                d.fudge(prev, nxt, self._ceiling)
-                session.commit()
-        finally:
-            session.close()
+        self.exec(f"CALL aqi_clean({self._ceiling})")
