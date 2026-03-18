@@ -3,7 +3,6 @@ import functools
 import glob
 import zipfile
 from concurrent.futures import Future, ThreadPoolExecutor
-from datetime import date, timedelta
 from pathlib import Path
 
 from backup.BackupRange import BackupRange
@@ -171,10 +170,6 @@ class BackupSvc:
                 repo.backup(w.from_date, w.to_date, wf)
             else:
                 self.logger.info("skiping backup of %s", wf)
-
-            self.logger.info("running aqi clean")
-            AQISensorRepository().clean(date.today(), date.today() - timedelta(days=3))
-            self.logger.info("aqi clean complete")
 
         except Exception:
             self.logger.exception("error performing backup for %s", repo.entity.__table__)
