@@ -121,11 +121,11 @@ sdr:
       channel: 3
       dataClass: IndoorData
       device: 20
-  ignores: # extraneous sensors that are not ours
+  ignores: # extraneous sensors that are not mine
     - name: unknown_outdoor
       model: Cotech-367959
       dataClass: OutdoorData
-      id: 65
+      id: 84
       device: 153
 
 timelapse:
