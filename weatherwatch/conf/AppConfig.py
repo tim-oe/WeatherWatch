@@ -10,6 +10,7 @@ from conf.DatabaseConfig import DatabaseConfig
 from conf.EmailConfig import EmailConfig
 from conf.GPSConfig import GPSConfig
 from conf.LightConfig import LightConfig
+from conf.MqttConfig import MqttConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
 from conf.TimelapseConfig import TimelapseConfig
@@ -38,6 +39,7 @@ class AppConfig:
 
     SDR_KEY = "sdr"
     GPS_KEY = "gps"
+    MQTT_KEY = "mqtt"
     AQI_KEY = "aqi"
     READER_KEY = "reader"
     SENSORS_KEY = "sensors"
@@ -105,6 +107,9 @@ class AppConfig:
 
         self._light = LightConfig(self._conf[AppConfig.LIGHT_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.LIGHT_KEY)
+
+        self._mqtt = MqttConfig(self._conf[AppConfig.MQTT_KEY])
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.MQTT_KEY)
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SCHEDULER_KEY)
@@ -241,6 +246,15 @@ class AppConfig:
         :return: the gps
         """
         return self._gps
+
+    @property
+    def mqtt(self) -> MqttConfig:
+        """
+        mqtt property getter
+        :param self: this
+        :return: the mqtt config
+        """
+        return self._mqtt
 
     @property
     def light(self) -> LightConfig:

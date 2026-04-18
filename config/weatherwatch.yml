@@ -64,9 +64,19 @@ email:
 light:
   enable: !ENV tag:yaml.org,2002:bool ${WW_LIGHT_ENABLE:true}
 
+mqtt:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_MQTT_ENABLE:true}
+  host: !ENV ${WW_MQTT_HOST:127.0.0.1}
+  port: !ENV tag:yaml.org,2002:int ${WW_MQTT_PORT:1883}
+  username: !ENV ${WW_MQTT_USERNAME:}
+  password: !ENV ${WW_MQTT_PASSWORD:}
+  topics:
+    solar: !ENV ${WW_MQTT_TOPIC_SOLAR:weatherwatch/solar}
+    temperature: !ENV ${WW_MQTT_TOPIC_TEMPERATURE:weatherwatch/temperature}
+
 gps:
   enable: !ENV tag:yaml.org,2002:bool ${WW_GPS_ENABLE:true}
-  serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyUSB0}
+  serial_dev: !ENV ${WW_GPS_SER_DEV:/dev/ttyACM0}
   baud_rate: !ENV tag:yaml.org,2002:int ${WW_GPS_SER_BAUD:9600}
   init_timeout: !ENV tag:yaml.org,2002:int ${WW_GPS_INIT_TIMEOUT:30}
 
