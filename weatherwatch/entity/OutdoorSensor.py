@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from entity.BaseSensor import BaseSensor
 from sqlalchemy import Integer, Numeric
-from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy.orm import Mapped, mapped_column
 
 __all__ = ["OutdoorSensor"]
@@ -17,8 +15,6 @@ class OutdoorSensor(BaseSensor):
 
     __tablename__ = "outdoor_sensor"
     __table_args__ = {"extend_existing": True}
-
-    read_time: Mapped[datetime] = mapped_column(DATETIME(fsp=6), nullable=False, default=None)
 
     pressure: Mapped[float] = mapped_column(Numeric, nullable=False, default=None)
 
