@@ -56,7 +56,7 @@ class Tsl2591SensorReader:
 
     def get_lux(self, wake: bool = True) -> float:
         """
-        read lux, with sensor gain auto-switching to avoid saturation or underflow.
+        read lux, with sensor gain/integration-time auto-switching to avoid saturation or underflow.
         :param wake: enable/disable sensor around the read (default True)
         :return: the lux
         """
@@ -67,10 +67,20 @@ class Tsl2591SensorReader:
             try:
                 lux: float = self.tsl2591.lux
             except RuntimeError:
-                self.logger.warning("lux overflow, switching to GAIN_LOW")
+                self.logger.warning("lux overflow at current gain, switching to GAIN_LOW")
                 self.tsl2591.gain = adafruit_tsl2591.GAIN_LOW
                 time.sleep(0.2)
-                lux = self.tsl2591.lux
+                try:
+                    lux = self.tsl2591.lux
+                except RuntimeError:
+                    self.logger.warning("lux overflow at GAIN_LOW, reducing integration time to 100ms")
+                    self.tsl2591.integration_time = adafruit_tsl2591.INTEGRATIONTIME_100MS
+                    time.sleep(0.2)
+                    try:
+                        lux = self.tsl2591.lux
+                    except RuntimeError:
+                        self.logger.error("lux overflow even at GAIN_LOW + 100ms integration, sensor fully saturated")
+                        lux = 88000.0
 
             # If sensor is saturated (raw counts maxed), switch to lower gain
             if self.tsl2591.full_spectrum >= 37000 and self.tsl2591.gain != adafruit_tsl2591.GAIN_LOW:
