@@ -99,7 +99,10 @@ class CameraSvc:
             exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
             exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
 
-            self.add_gps_exif(exif_dict)
+            try:
+                self.add_gps_exif(exif_dict)
+            except Exception:
+                self.logger.warning("skipping GPS exif data", exc_info=True)
 
             # custom data to persist lux
             # TODO add other fields if needed
