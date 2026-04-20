@@ -1,4 +1,4 @@
-from datetime import datetime, tzinfo
+from datetime import datetime, timezone, tzinfo
 from decimal import Decimal
 
 import axiompy
@@ -113,11 +113,19 @@ class Converter:
         raise ValueError(f"unkown tz {tzname}")
 
     @staticmethod
+    def utcnow() -> datetime:
+        """
+        current time as a naive UTC datetime
+        :return: naive UTC datetime
+        """
+        return datetime.now(timezone.utc).replace(tzinfo=None)
+
+    @staticmethod
     def duration_seconds(start: datetime) -> int:
         """
         calculate the execution duration from start to now
         :param start: the processing start time
         :return duration in seconds
         """
-        current = datetime.utcnow()
+        current = Converter.utcnow()
         return int((current - start).total_seconds())
