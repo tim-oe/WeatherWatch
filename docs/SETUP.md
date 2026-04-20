@@ -16,6 +16,11 @@
     - needed to get native h264 encoding
     - install can take a while
     - [instructions used](https://python-poetry.org/blog/announcing-poetry-1.2.0/#opting-out-of-binary-distributions)
+- [Docker](https://docs.docker.com/engine/install/debian/) — required for `@pytest.mark.db` tests (testcontainers spins up MariaDB automatically)
+    - install: follow the [Debian install guide](https://docs.docker.com/engine/install/debian/) (works on Raspberry Pi OS)
+    - add user to docker group: ```sudo usermod -aG docker $USER```
+    - apply group without logout: ```newgrp docker``` or start a new terminal session
+    - verify: ```docker run hello-world```
 
 ## python sensor libs
 - [BMP 3xx](https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX)
@@ -28,13 +33,14 @@
     - [sdr playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
     - [python deps playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
 
-## weather undergrount data upload
+## weather underground data upload
 - [register](https://www.wunderground.com/signup)
 - [upload protocol](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
 
 ## project setup
 - project uses poetry for dependency managment
-    - poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)
+    - --poetry needs to be manually installed due to [old apt version](https://github.com/pypa/pipx/issues/1481)--
+    - trixie or newer based OSes get latest version of pipx
     - [local venv for service set POETRY_VIRTUALENVS_IN_PROJECT=true](https://python-poetry.org/docs/configuration/#virtualenvsin-project)
     - [to load gobal libs like Picamera2 set POETRY_VIRTUALENVS_OPTIONS_SYSTEM_SITE_PACKAGES=true](https://python-poetry.org/docs/configuration/#virtualenvsoptionssystem-site-packages)
 - see [init.sh](/init.sh?raw=true) for sdr, project, and circuit python install
@@ -50,7 +56,7 @@
     - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/apps/mysql.yml)
     - create db ```create database weather;``` 
     - create user ```CREATE user 'weather'@'%' identified by 'weather';``` 
-    - grant privileges ```GRANT lock tables, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
+    - grant privileges ```GRANT lock tables, drop, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
     - might want to lock down host to source
 - pyway user (for managing DDL)
     - ```CREATE user 'pyway'@'%' identified by 'pyway';``` 
@@ -71,8 +77,21 @@
 - list dependencies
     - ```poetry show```
 - testing
-    - all tests:   ```poetry run pytest```
-    - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
+    - unit tests (default, no hardware or DB required):
+        - all:    ```poetry run pytest```
+        - single: ```poetry run pytest -v -s <path/to/test/file.py>```
+    - database tests (spin up MariaDB via testcontainers, requires Docker):
+        - all:    ```poetry run pytest -m db```
+        - single: ```poetry run pytest -v -s -m db <path/to/test/file.py>```
+    - integration tests (require physical SDR hardware and a live database):
+        - all:    ```poetry run pytest -m integration```
+        - single: ```poetry run pytest -v -s -m integration <path/to/test/file.py>```
+    - all tests (unit + db + integration):
+        - ```poetry run pytest -m ""```
+    - SDR mock unit tests only:
+        - ```poetry run pytest tests/sensor/sdr/test_SDRReaderMockTest.py```
+    - sensor service mock unit tests only:
+        - ```poetry run pytest tests/svc/test_SensorSvcMockTest.py```
 - coverage: ```python3 setup.py cover```
     - runs all tests 
 - py lint: ```python3 setup.py lint```
@@ -89,6 +108,28 @@
 
 ## reports
 all located in $PROJECT_ROOT/reports
+
+## complete system initialization
+- [piAptInit](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/pi-init.yml)
+- [alias](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
+- [motd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/motd.yml)
+- [console](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/console-resize.yml)
+- [brutoof](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
+- [timesyncd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/nm-timesyncd.yml)
+- [piSwap](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/rpi-swap.yml)
+- [wPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
+- [circuitPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/circuit-python.yml)
+- [poetry](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/poetry.yml)
+- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/i2c.yml)
+- [sdr](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
+- [mysql](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
+- [git](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/git.yml)
+- set timezone 
+- clone [git@github.com:merbanan/rtl_433.git](https://github.com/merbanan/rtl_433)
+- clone [git@github.com:tim-oe/WeatherWatch.git](https://github.com/tim-oe/WeatherWatch/tree/main)
+    - run ```python3 setup.py rtl433``` to install sdr client
+- initialize DB users db 
+- run test suite
 
 ## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)

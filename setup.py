@@ -6,7 +6,53 @@
 
 from pathlib import Path
 import os
+import shutil
 from setuptools import setup, find_packages, Command
+import subprocess
+
+# https://github.com/merbanan/rtl_433/blob/master/docs/BUILDING.md
+# to build rtl_433 : 
+# p3 setup.py rtl433
+class Rtl433Command(Command):
+    """Custom clean command to tidy up the project root."""
+
+    user_options = []
+
+    def initialize_options(self):
+        """
+        noop
+        """
+
+    def finalize_options(self):
+        """
+        noop
+        """
+
+    def run(self):
+        """
+        run
+        """
+
+        rtl_433_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../rtl_433'))
+
+        # Clean up old build directories
+        build_dir = os.path.join(rtl_433_dir, 'build')
+        clean_dir = os.path.join(rtl_433_dir, 'clean')
+        
+        if os.path.exists(build_dir):
+            shutil.rmtree(build_dir)
+        if os.path.exists(clean_dir):
+            shutil.rmtree(clean_dir)
+
+        commands = [
+            ["cmake", "-B", "clean"],
+            ["cmake", "-DFORCE_COLORED_BUILD:BOOL=ON", "-GNinja", "-B", "build"],
+            ["cmake", "--build", "build", "-j", "4"],
+            ["sudo", "cmake", "--build", "build", "--target", "install"]
+        ]
+        
+        for cmd in commands:
+            subprocess.run(cmd, cwd=rtl_433_dir, check=True)
 
 # https://stackoverflow.com/questions/3779915/why-does-python-setup-py-sdist-create-unwanted-project-egg-info-in-project-r
 # to clean cruft : py3clean .
@@ -32,17 +78,31 @@ class CleanCommand(Command):
         """
         run
         """
-        os.system("py3clean -v .")
-        os.system("rm -vrf ./WeatherWatch.log*")
-        os.system("rm -vrf ./report.html")
-        os.system("rm -vrf ./reports")
-        os.system("rm -vrf ./*.egg-info")
-        os.system("rm -vrf ./.coverage")
-        os.system("rm -vrf ./coverage")
-        os.system("rm -vrf ./pix")
-        os.system("rm -vrf ./vid")
-        os.system("rm -vrf ./backup")
-        os.system("find . -name \"__pycache__\" -type d -exec sudo rm -vfR {} \;")
+
+        commands = [
+            ["py3clean","-v","."],
+            ["rm","-vrf","./WeatherWatch.log*"],
+            ["rm","-vrf","./report.html"],
+            ["rm","-vrf","./reports"],
+            ["rm","-vrf","./*.egg-info"],
+            ["rm","-vrf","./.coverage"],
+            ["rm","-vrf","./coverage"],
+            ["rm","-vrf","./pix"],
+            ["rm","-vrf","./vid"],
+            ["rm","-vrf","./backup"]
+        ]
+        
+        for cmd in commands:
+            subprocess.run(cmd, check=True)
+
+        subprocess.run(["rm -vrf ./WeatherWatch.log*"], 
+            shell=True,
+            check=True)
+        
+        # Handle the find command separately with shell=True
+        subprocess.run(['find . -name "__pycache__" -type d -exec sudo rm -vfR {} \\;'], 
+            shell=True, 
+            check=True)
 
 # run black isort flake8
 class FormatCommand(Command):
@@ -269,6 +329,7 @@ setup(
               "format": FormatCommand, 
               "lint": LintCommand, 
               "reportcp": ReportCPCommand, 
+              "rtl433": Rtl433Command, 
               'mysqlUp': DockerMysqlUpCommand,
               'mysqlDown': DockerMysqlDownCommand,
               "sonar": SonarCommand},

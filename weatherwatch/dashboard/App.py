@@ -244,7 +244,7 @@ class App:
         run the dash app
         :param self: this
         """
-        if self._dash_config.debug:
+        if self._dash_config.debug:  # pragma: no cover
             self._app.run(host=self._dash_config.host, port=self._dash_config.port, debug=self._dash_config.debug)
         else:
             serve(self._server, host=self._dash_config.host, port=self._dash_config.port)

@@ -47,7 +47,7 @@ class BackupSvcTest(unittest.TestCase):
         for f in dir.iterdir():
                 f.unlink()
 
-        dir: Path = Path(self.fbc.folder / "db/w")
+        dir = Path(self.fbc.folder / "db/w")
         for f in dir.iterdir():
                 f.unlink()
 

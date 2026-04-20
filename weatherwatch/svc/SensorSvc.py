@@ -1,13 +1,19 @@
+from datetime import datetime
 from decimal import Decimal
 
+from conf.AppConfig import AppConfig
 from entity.BaseSensor import BaseSensor
 from entity.IndoorSensor import IndoorSensor
+from entity.LightSensor import LightSensor
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from python_event_bus import EventBus
 from repository.IndoorSensorRepository import IndoorSensorRepository
+from repository.LightSensorRepository import LightSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from sensor.bmp.Bmp388SensorReader import Bmp388SensorReader
+from sensor.light.Tsl2591Data import Tsl2591Data
+from sensor.light.Tsl2591SensorReader import Tsl2591SensorReader
 from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
@@ -35,8 +41,10 @@ class SensorSvc:
 
         self._sdr_reader: SDRReader = SDRReader()
         self._bmp_reader: Bmp388SensorReader = Bmp388SensorReader()
+        self._light_reader: Tsl2591SensorReader = Tsl2591SensorReader()
         self._indoor_repo: IndoorSensorRepository = IndoorSensorRepository()
         self._outdoor_repo: OutdoorSensorRepository = OutdoorSensorRepository()
+        self._light_repo: LightSensorRepository = LightSensorRepository()
 
         EventBus.subscribe(IndoorData.__name__, self.handle_indoor)
         EventBus.subscribe(OutdoorData.__name__, self.handle_outdoor)
@@ -48,9 +56,36 @@ class SensorSvc:
         """
         self.logger.info("processing sensors")
 
+        self.read_light()
+
         self._sdr_reader.read()
 
         self.logger.info("processing complete")
+
+    def read_light(self):
+        """
+        process light sensor data
+        :param self: this
+        """
+        if AppConfig().light.enable is True:
+            self.logger.debug("processing %s", Tsl2591Data.__name__)
+
+            try:
+                data: Tsl2591Data = self._light_reader.read()
+
+                ent: LightSensor = LightSensor()
+                ent.read_time = datetime.now()
+                ent.lux = data.lux
+                ent.visible = data.visible
+                ent.infrared = data.infrared
+                ent.full_spectrum = data.full_spectrum
+
+                ent.ir_visible_luminosity = data.raw_luminosity[0]
+                ent.ir_only = data.raw_luminosity[1]
+
+                self._light_repo.insert(ent)
+            except Exception:
+                self.logger.exception("failed to process light sensor")
 
     def handle_indoor(self, data: IndoorData):
         """

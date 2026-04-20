@@ -20,4 +20,8 @@ class BackupRangeTest(unittest.TestCase):
         print(f"month: [{last_month}]")
         self.assertLess(last_month.from_date, last_month.to_date)
         self.assertEqual(1, last_month.from_date.day)
+
+        # Cover file_prefix property (line 46)
+        self.assertIsNotNone(last_week.file_prefix)
+        self.assertIsNotNone(last_month.file_prefix)
         

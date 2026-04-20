@@ -24,7 +24,7 @@ class TempratureGauge(dbc.Container):
         scale = {"start": min_val, "interval": 10, "labelInterval": 2, "custom": {}}
 
         # add current instead of bottom
-        scale["custom"][f"{round(value,1)}"] = f"<----{round(value,1)}"
+        scale["custom"][f"{round(value, 1)}"] = f"<----{round(value, 1)}"
 
         super().__init__(
             [

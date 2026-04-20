@@ -1,11 +1,14 @@
 from datetime import date, timedelta, datetime
 
+import pytest
+
 from entity.AQISensor import AQISensor
 from repository.AQISensorRepository import AQISensorRepository
 from repository.BaseRepository import BaseRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
 
+@pytest.mark.db
 class AQISensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:
@@ -52,7 +55,7 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
         repo: BaseRepository = self.getRepo()
         
         repo.exec_file("sql/sample/aqi_sensor.sql")
-        
+
         repo.clean()
         
     def test_backup(self):

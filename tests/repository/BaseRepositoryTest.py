@@ -12,6 +12,7 @@ from conf.DatabaseConfig import DatabaseConfig
 from repository.AQISensorRepository import AQISensorRepository
 from repository.BaseRepository import BaseRepository
 from repository.IndoorSensorRepository import IndoorSensorRepository
+from repository.LightSensorRepository import LightSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
 class BaseRespositoryTest(unittest.TestCase, ABC):
@@ -53,6 +54,11 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
 
             shutil.copy(Path(src), outFile)
             filereplace(outFile.resolve(), "__YYYY_MM_DD__", stamp)
+
+            # use UTC to avoid DST gap rejections on TIMESTAMP columns
+            content = outFile.read_text(encoding="utf-8")
+            outFile.write_text("SET time_zone = '+00:00';\n" + content, encoding="utf-8")
+
             repo.exec_file(outFile.resolve())
             outFile.unlink()
 
@@ -73,6 +79,9 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
         aqiRepo: AQISensorRepository = AQISensorRepository()
         aqiRepo.exec(f"truncate {aqiRepo.entity.__table__}")
 
+        lightRepo: LightSensorRepository = LightSensorRepository()
+        lightRepo.exec(f"truncate {lightRepo.entity.__table__}")
+
 
     @staticmethod
     def load(start_date: date):
@@ -88,6 +97,9 @@ class BaseRespositoryTest(unittest.TestCase, ABC):
 
         aqiRepo: AQISensorRepository = AQISensorRepository()
         aqiRepo.exec(f"truncate {aqiRepo.entity.__table__}")
+
+        lightRepo: LightSensorRepository = LightSensorRepository()
+        lightRepo.exec(f"truncate {lightRepo.entity.__table__}")
 
         BaseRespositoryTest.createSql("outdoor_sensor", start_date - timedelta(days=7), outdoorRepo)
         BaseRespositoryTest.createSql("outdoor_sensor", start_date - timedelta(days=3), outdoorRepo)

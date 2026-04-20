@@ -13,9 +13,6 @@ class CameraConfig:
 
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
-    LUX_LIMIT_KEY = "lux_limit"
-    EXPOSURE_TIME_KEY = "exposure_time"
-    ANALOGUE_GAIN_KEY = "analogue_gain"
     EXTENSION_KEY = "extension"
     TUNING_KEY = "tuning"
     TUNING_FILE_KEY = "file"
@@ -40,33 +37,6 @@ class CameraConfig:
         :return: the enable
         """
         return self.__dict__[CameraConfig.ENABLE_KEY]
-
-    @property
-    def lux_limit(self) -> int:
-        """
-        luxLimit property getter
-        :param self: this
-        :return: the luxLimit
-        """
-        return self.__dict__[CameraConfig.LUX_LIMIT_KEY]
-
-    @property
-    def exposure_time(self) -> int:
-        """
-        exposureTime property getter
-        :param self: this
-        :return: the exposureTime
-        """
-        return self.__dict__[CameraConfig.EXPOSURE_TIME_KEY]
-
-    @property
-    def analogue_gain(self) -> float:
-        """
-        analogueGain property getter
-        :param self: this
-        :return: the analogueGain
-        """
-        return self.__dict__[CameraConfig.ANALOGUE_GAIN_KEY]
 
     @property
     def folder(self) -> Path:

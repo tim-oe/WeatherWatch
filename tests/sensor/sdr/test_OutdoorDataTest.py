@@ -1,9 +1,11 @@
 from datetime import datetime
 import json
+import unittest
 
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from tests.sensor.sdr.BaseTestData import BaseTestData
+
 
 class OutdoorDataTest(BaseTestData):
 
@@ -23,6 +25,11 @@ class OutdoorDataTest(BaseTestData):
         self.assertEqual(expected[OutdoorData.WIND_DIR_KEY], record.wind_dir_deg)
         self.assertEqual(expected[OutdoorData.LUX_KEY], record.light_lux)
         self.assertEqual(expected[OutdoorData.UV_KEY], record.uv)
+
+    def test_json_decoder_invalid_data_raises(self):
+        """Missing required key should cause json_decoder to raise Exception."""
+        with self.assertRaises(Exception):
+            OutdoorData.json_decoder({"model": "test"})  # missing required keys
 
     @staticmethod
     def getSample() -> OutdoorData:

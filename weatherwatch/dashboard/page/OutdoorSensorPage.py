@@ -12,7 +12,9 @@ from dashboard.component.UVGauge import UVGauge
 from dashboard.component.WindCompass import WindCompass
 from dashboard.component.WindGauge import WindGauge
 from dashboard.page.BasePage import BasePage
+from entity.LightSensor import LightSensor
 from entity.OutdoorSensor import OutdoorSensor
+from repository.LightSensorRepository import LightSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 
 
@@ -30,6 +32,7 @@ class OutdoorSensorPage(BasePage):
         :param self: this
         """
         self._outdoor_repo: OutdoorSensorRepository = OutdoorSensorRepository()
+        self._light_repo: LightSensorRepository = LightSensorRepository()
 
         super().__init__()
 
@@ -49,6 +52,7 @@ class OutdoorSensorPage(BasePage):
 
         d = date.today() - timedelta(days=7)
         seven_day: List[OutdoorSensor] = self._outdoor_repo.find_greater_than_read_time(d)
+        seven_day_light: List[LightSensor] = self._light_repo.find_greater_than_read_time(d)
 
         min_temp = min(0, int(data.temperature_f) - 5)
         max_temp = max(100, int(data.temperature_f) + 5)
@@ -95,6 +99,8 @@ class OutdoorSensorPage(BasePage):
                 dbc.Row(children=dbc.Col(Graph("humidity", "humidity", "%", "humidity", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("pressure", "pressure", "hPa", "pressure", data=seven_day))),
                 dbc.Row(children=dbc.Col(Graph("uv", "uv", "index", "uv", data=seven_day))),
-                dbc.Row(children=dbc.Col(Graph("sunlight", "sunlight", "lux", "light_lux", data=seven_day))),
+                dbc.Row(children=dbc.Col(Graph("brightness", "brightness", "lux", "lux", data=seven_day_light))),
+                dbc.Row(children=dbc.Col(Graph("infrared", "infrared", "Raw ADC counts", "infrared", data=seven_day_light))),
+                dbc.Row(children=dbc.Col(Graph("visible", "visible", "Raw ADC counts", "visible", data=seven_day_light))),
             ]
         )

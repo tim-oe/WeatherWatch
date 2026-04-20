@@ -10,9 +10,13 @@ class AQIConfigTest(unittest.TestCase):
 
         ac: AppConfig = AppConfig()
         sc: AQIConfig = ac.aqi
-        
+
         print(ac.aqi)
         pprint.pprint(ac.aqi.__dict__)
-        
+
         self.assertTrue(sc.enable)
+        self.assertIsNotNone(sc.retry)
+        self.assertIsNotNone(sc.ceiling)
+        self.assertIsNotNone(sc.poll)
+        self.assertIsNotNone(sc.wait_sec)
  

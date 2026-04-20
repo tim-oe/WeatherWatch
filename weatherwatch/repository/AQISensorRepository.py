@@ -1,10 +1,11 @@
 from datetime import date, datetime
 from typing import List
 
+from conf.AppConfig import AppConfig
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import DATE, cast, or_
+from sqlalchemy import DATE, cast
 from sqlalchemy.orm import Session
 
 __all__ = ["AQISensorRepository"]
@@ -22,6 +23,7 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         :param self: this
         """
         super().__init__(entity=AQISensor)
+        self._ceiling: int = AppConfig().aqi.ceiling
 
     def find_latest(self) -> AQISensor:
         """
@@ -65,72 +67,10 @@ class AQISensorRepository(BaseRepository[AQISensor]):
                 f.close()
                 session.close()
 
-    ##################################################################
-    # below functions are for data cleaup with funky sensor readings
-    # it's a lazy kludge
-    ##################################################################
-    def find_previous(self, session: Session, record_id: int) -> AQISensor:
-        """
-        find previous record based on id
-        :param self: this
-        :param session: session the db session
-        :param id: the current record id
-        :return the previous record
-        """
-        return session.query(AQISensor).filter(AQISensor.id < record_id).order_by(AQISensor.id.desc()).first()
-
-    def find_next(self, session: Session, record_id: int) -> AQISensor:
-        """
-        find next record based on id
-        :param self: this
-        :param session: session the db session
-        :param id: the current record id
-        :return the next record
-        """
-        return session.query(AQISensor).filter(AQISensor.id > record_id).order_by(AQISensor.id.asc()).first()
-
     def clean(self):
         """
-        clean records of date outside of data range
+        clean records with readings outside of valid range
+        delegates to the aqi_clean stored procedure
         :param self: this
         """
-        session: Session = self._datastore.session
-        try:
-            for d in (
-                session.query(AQISensor)
-                .filter(
-                    or_(
-                        AQISensor.pm_1_0_conctrt_std > 1000,
-                        AQISensor.pm_2_5_conctrt_std > 1000,
-                        AQISensor.pm_10_conctrt_std > 1000,
-                        AQISensor.pm_1_0_conctrt_atmosph > 1000,
-                        AQISensor.pm_2_5_conctrt_atmosph > 1000,
-                        AQISensor.pm_10_conctrt_atmosph > 1000,
-                    )
-                )
-                .order_by(AQISensor.id.asc())
-                .all()
-            ):
-
-                print(f"d {d.id}")
-                p: AQISensor = self.find_previous(session, d.id)
-                if p is not None:
-                    print(f"p {p.id}")
-                    d.fudge(p)
-                p2: AQISensor = self.find_previous(session, p.id)
-                if p2 is not None:
-                    print(f"p2 {p2.id}")
-                    d.fudge(p2)
-                n: AQISensor = self.find_next(session, d.id)
-                if n is not None:
-                    print(f"n {p.id}")
-                    d.fudge(n)
-                n2: AQISensor = self.find_next(session, n.id)
-                if n2 is not None:
-                    print(f"n2 {n2.id}")
-                    d.fudge(n2)
-
-                session.commit()
-
-        finally:
-            session.close()
+        self.exec(f"CALL aqi_clean({self._ceiling})")

@@ -88,6 +88,7 @@ class SchedulerSvc:
     """
     SchedulerSvc service
     sets up automated tasks
+    https://github.com/agronholm/apscheduler
     https://apscheduler.readthedocs.io/en/3.x/index.html
     """
 
@@ -118,8 +119,8 @@ class SchedulerSvc:
 
         self._scheduler.add_job(
             sensor,
-            "interval",
-            minutes=self._scheduler_config.sensor_interval,
+            "cron",
+            minute=f"*/{self._scheduler_config.sensor_interval}",
             name=SchedulerSvc.SENSOR_JOB,
             id=SchedulerSvc.SENSOR_JOB,
             coalesce=True,
@@ -289,7 +290,7 @@ class SchedulerSvc:
             except JobLookupError:
                 self.logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """
         override
         :param self: this

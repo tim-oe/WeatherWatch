@@ -1,5 +1,6 @@
 import json
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from queue import Empty, Queue
@@ -80,15 +81,11 @@ class SDRReader:
         "-M",
         "level",
         "-F",
-        "log",
-        "-F",
         "json",
         "-f",
-        "433990000",
-        "-Y",
-        "level=0",
-        "-Y",
-        "autolevel",
+        "433920000",
+        "-s",
+        "1024000",
     ]
 
     def __init__(self):
@@ -222,6 +219,7 @@ class SDRReader:
             stdout=PIPE,
             stderr=PIPE,
             text=True,
+            bufsize=1,
             close_fds=SDRReader.ON_POSIX,
         ) as p:
 
@@ -230,7 +228,8 @@ class SDRReader:
             # read sdr output
             self._read_pool.submit(self.push_record, p.stdout, q)
 
-            start = datetime.now()
+            start_monotonic = time.monotonic()
+            start_time = datetime.now()
             duration = 0
             try:
                 while len(reads) < len(self._sensors) and duration < self._timeout:
@@ -242,11 +241,11 @@ class SDRReader:
                         self.process_record(data, sensors, reads, processed)
 
                     sys.stdout.flush()
-                    duration = Converter.duration_seconds(start)
+                    duration = Converter.duration_seconds(start_monotonic)
 
                     self.logger.debug("duration: %s reads %s", duration, len(reads))
                 self._reads = reads
-                self.log_metrics(start, datetime.now(), duration, len(reads))
+                self.log_metrics(start_time, datetime.now(), duration, len(reads))
             except Exception as e:
                 self._emailer.send_error_notification(
                     e,
@@ -254,7 +253,7 @@ class SDRReader:
                 )
             finally:
                 self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
-                p.kill()
+                p.terminate()
 
         for k, v in sensors.items():
             self.logger.warning("no data for %s=%s", k, v)

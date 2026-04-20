@@ -183,7 +183,7 @@ class BaseRepository(Generic[T]):
                 return f"'{dt}'"
             case Numeric() | Integer():
                 return str(value)
-            case _:
+            case _:  # pragma: no cover
                 # value = str(value)
                 value = value.replace("'", "''")
                 return f"'{value}'"
