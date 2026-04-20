@@ -1,14 +1,25 @@
 import unittest
 
+import pytest
+
 from gps.DMSCoordinate import DMSCoordinate, Ordinal
 from gps.GPSData import GPSData
 from gps.GPSReader import GPSReader
 
 
+@pytest.mark.integration
 class GPSReaderTest(unittest.TestCase):
-    def test(self):
-        bs: GPSReader = GPSReader()
-        data: GPSData = bs.read()
+    """
+    Integration tests for GPSReader against a live GPS receiver.
+
+    Requires a physical GPS module connected to the UART serial device
+    configured in weatherwatch.yml (gps.serial_dev / gps.baud_rate).
+    Run with:  poetry run pytest -m integration tests/gps/test_GPSReaderTest.py
+    """
+
+    def test_read_returns_data(self):
+        reader: GPSReader = GPSReader()
+        data: GPSData = reader.read()
 
         self.assertIsNotNone(data)
         self.assertEqual(Ordinal.NORTH, data.latitude_dms.ordinal)

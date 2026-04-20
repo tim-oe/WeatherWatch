@@ -1,12 +1,21 @@
 import unittest
 
+import pytest
+
 from sensor.bmp.BMPData import BMPData
 from sensor.bmp.Bmp388SensorReader import Bmp388SensorReader
 
 
+@pytest.mark.integration
 class Bmp388SensorReaderTest(unittest.TestCase):
+    """
+    Integration tests for Bmp388SensorReader against the live BMP388 sensor.
 
-    def test(self):
+    Requires a physical BMP388/BMP390 connected via I2C (board.SCL / board.SDA).
+    Run with:  poetry run pytest -m integration tests/sensor/bmp/test_Bmp388SensorReaderTest.py
+    """
+
+    def test_read_returns_data(self):
         sensor: Bmp388SensorReader = Bmp388SensorReader()
         actual: BMPData = sensor.read()
 

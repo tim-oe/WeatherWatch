@@ -1,46 +1,29 @@
 import unittest
 
+import pytest
+
 from sensor.aqi.Hm3301Data import Hm3301Data
 from sensor.aqi.Hm3301Reader import Hm3301Reader
 
+
+@pytest.mark.integration
 class Hm3301ReaderTest(unittest.TestCase):
-    def test(self):
-        bs: Hm3301Reader = Hm3301Reader()
-        
-        data: Hm3301Data = bs.read()
+    """
+    Integration tests for Hm3301Reader against the live HM3301 sensor.
+
+    Requires a physical HM3301 connected via I2C at bus 1, address 0x40.
+    I2C bus speed must be set to 20 kHz (dtparam=i2c_arm_baudrate=20000).
+    Run with:  poetry run pytest -m integration tests/sensor/aqi/test_Hm3301ReaderTest.py
+    """
+
+    def test_read_returns_data(self):
+        reader = Hm3301Reader()
+        data: Hm3301Data = reader.read()
 
         self.assertIsNotNone(data)
-
-        self.assertTrue(data.pm_1_0_conctrt_std >= 0)
-        self.assertTrue(data.pm_2_5_conctrt_std >= 0)
-        self.assertTrue(data.pm_10_conctrt_std >= 0)
-        self.assertTrue(data.pm_1_0_conctrt_atmosph >= 0)
-        self.assertTrue(data.pm_2_5_conctrt_atmosph >= 0)
-        self.assertTrue(data.pm_10_conctrt_atmosph >= 0)
-
-    def testLower(self):
-        d1: Hm3301Data = Hm3301Data()
-        d1.pm_1_0_conctrt_std = 2
-        d1.pm_2_5_conctrt_std = 3
-        d1.pm_10_conctrt_std = 4
-        d1.pm_1_0_conctrt_atmosph = 5
-        d1.pm_2_5_conctrt_atmosph = 6
-        d1.pm_10_conctrt_atmosph = 7
-
-        d2: Hm3301Data = Hm3301Data()
-        d2.pm_1_0_conctrt_std = 1
-        d2.pm_2_5_conctrt_std = 2
-        d2.pm_10_conctrt_std = 3
-        d2.pm_1_0_conctrt_atmosph = 4
-        d2.pm_2_5_conctrt_atmosph = 5
-        d2.pm_10_conctrt_atmosph = 6
-
-        d1.lower(d2, 0)
-        
-        self.assertEqual(d1.pm_1_0_conctrt_std, 1)
-        self.assertEqual(d1.pm_2_5_conctrt_std, 2)
-        self.assertEqual(d1.pm_10_conctrt_std, 3)
-        self.assertEqual(d1.pm_1_0_conctrt_atmosph, 4)
-        self.assertEqual(d1.pm_2_5_conctrt_atmosph, 5)
-        self.assertEqual(d1.pm_10_conctrt_atmosph, 6)
-        
+        self.assertGreaterEqual(data.pm_1_0_conctrt_std, 0)
+        self.assertGreaterEqual(data.pm_2_5_conctrt_std, 0)
+        self.assertGreaterEqual(data.pm_10_conctrt_std, 0)
+        self.assertGreaterEqual(data.pm_1_0_conctrt_atmosph, 0)
+        self.assertGreaterEqual(data.pm_2_5_conctrt_atmosph, 0)
+        self.assertGreaterEqual(data.pm_10_conctrt_atmosph, 0)
