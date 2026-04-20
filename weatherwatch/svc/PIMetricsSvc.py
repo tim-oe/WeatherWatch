@@ -7,6 +7,7 @@ import uptime
 from entity.PIMetrics import PIMetrics
 from py_singleton import singleton
 from repository.PIMetricsRepository import PIMetricsRepository
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["PIMetricsSvc"]
@@ -103,6 +104,6 @@ class PIMetricsSvc:
 
         self.logger.debug("pi metrics %s", data)
 
-        data.read_time = datetime.utcnow()
+        data.read_time = Converter.utcnow()
 
         self._pi_metrics_repo.insert(data)

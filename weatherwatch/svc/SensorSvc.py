@@ -75,7 +75,7 @@ class SensorSvc:
                 data: Tsl2591Data = self._light_reader.read()
 
                 ent: LightSensor = LightSensor()
-                ent.read_time = datetime.utcnow()
+                ent.read_time = Converter.utcnow()
                 ent.lux = data.lux
                 ent.visible = data.visible
                 ent.infrared = data.infrared

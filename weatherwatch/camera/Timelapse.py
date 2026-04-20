@@ -1,3 +1,4 @@
+import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import List
@@ -53,7 +54,7 @@ class Timelapse:
             return None
 
         try:
-            start = datetime.now()
+            start = time.monotonic()
 
             if d is None:
                 d = date.today() - timedelta(days=1)

@@ -1,5 +1,6 @@
 import json
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from queue import Empty, Queue
@@ -227,7 +228,8 @@ class SDRReader:
             # read sdr output
             self._read_pool.submit(self.push_record, p.stdout, q)
 
-            start = datetime.utcnow()
+            start_monotonic = time.monotonic()
+            start_time = Converter.utcnow()
             duration = 0
             try:
                 while len(reads) < len(self._sensors) and duration < self._timeout:
@@ -239,11 +241,11 @@ class SDRReader:
                         self.process_record(data, sensors, reads, processed)
 
                     sys.stdout.flush()
-                    duration = Converter.duration_seconds(start)
+                    duration = Converter.duration_seconds(start_monotonic)
 
                     self.logger.debug("duration: %s reads %s", duration, len(reads))
                 self._reads = reads
-                self.log_metrics(start, datetime.utcnow(), duration, len(reads))
+                self.log_metrics(start_time, Converter.utcnow(), duration, len(reads))
             except Exception as e:
                 self._emailer.send_error_notification(
                     e,

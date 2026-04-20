@@ -39,7 +39,7 @@ class AQISvc:
         :param self: this
         """
         self.logger.info("processing aqi")
-        start = datetime.utcnow()
+        start = time.monotonic()
 
         try:
             data: Hm3301Data = self.read()
@@ -54,7 +54,7 @@ class AQISvc:
             ent.pm_2_5_conctrt_atmosph = data.pm_2_5_conctrt_atmosph
             ent.pm_10_conctrt_atmosph = data.pm_10_conctrt_atmosph
 
-            ent.read_time = datetime.utcnow()
+            ent.read_time = Converter.utcnow()
 
             self._repo.insert(ent)
             self.logger.info("AQI processing complete  duration %s", Converter.duration_seconds(start))
