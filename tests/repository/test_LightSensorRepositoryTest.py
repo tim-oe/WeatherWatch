@@ -1,11 +1,14 @@
 from datetime import date, timedelta, datetime
 
+import pytest
+
 from entity.LightSensor import LightSensor
 from repository.BaseRepository import BaseRepository
 from repository.LightSensorRepository import LightSensorRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
 
+@pytest.mark.db
 class LightSensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:

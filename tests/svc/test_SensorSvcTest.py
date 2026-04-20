@@ -1,17 +1,20 @@
-from datetime import datetime, timedelta
-from decimal import Decimal
 import time
 import unittest
+from datetime import datetime, timedelta
+from decimal import Decimal
 
-from sensor.sdr.OutdoorData import OutdoorData
-from tests.sensor.sdr.test_OutdoorDataTest import OutdoorDataTest
+import pytest
+
 from entity.IndoorSensor import IndoorSensor
 from entity.OutdoorSensor import OutdoorSensor
 from repository.IndoorSensorRepository import IndoorSensorRepository
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
-
+from sensor.sdr.OutdoorData import OutdoorData
 from svc.SensorSvc import SensorSvc
+from tests.sensor.sdr.test_OutdoorDataTest import OutdoorDataTest
 
+
+@pytest.mark.integration
 class SensorSvcTest(unittest.TestCase):
 
     def setup_method(self, test_method):

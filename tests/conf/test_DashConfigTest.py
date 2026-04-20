@@ -16,8 +16,6 @@ class DashboardConfigTest(unittest.TestCase):
         pprint.pprint(ac.dashboard.__dict__)
 
         self.assertIsNotNone(sc.host)
-        
         self.assertGreater(sc.port, 0)
-        
         self.assertFalse(sc.debug)
- 
+        self.assertIsNotNone(sc.salt_key)

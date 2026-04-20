@@ -1,9 +1,12 @@
+import time
 import unittest
 
-import time
+import pytest
 
 from sensor.sdr.SDRReader import SDRReader
 
+
+@pytest.mark.integration
 class SDRReaderTest(unittest.TestCase):
     def test(self):
         bs: SDRReader = SDRReader()

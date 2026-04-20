@@ -1,6 +1,5 @@
 import pprint
 import time
-from datetime import datetime
 
 import adafruit_gps
 import serial
@@ -47,7 +46,7 @@ class GPSReader:
             time.sleep(1)
             gps.update()
 
-            start = datetime.now()
+            start = time.monotonic()
             duration = 0
             while not gps.has_fix and duration < self._gps_config.init_timeout:
                 time.sleep(0.5)

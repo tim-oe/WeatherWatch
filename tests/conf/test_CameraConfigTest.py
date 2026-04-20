@@ -16,4 +16,6 @@ class CameraConfigTest(unittest.TestCase):
         
         self.assertTrue(sc.enable)
         self.assertIsNotNone(sc.folder)
- 
+        self.assertIsNotNone(sc.tuning_file)
+        self.assertIsNotNone(sc.lens_make)
+        self.assertIsNotNone(sc.lens_model)

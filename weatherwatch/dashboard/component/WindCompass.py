@@ -142,7 +142,7 @@ class WindCompass(dbc.Container):
         # TODO add to config
         english_metric = True
 
-        if english_metric is False:  # english units
+        if english_metric is False:  # pragma: no cover  # english units
             wind = wind * 2.23694
         return wind
 
@@ -155,7 +155,7 @@ class WindCompass(dbc.Container):
         # TODO add to config
         english_metric = True
 
-        if english_metric is False:  # english units
+        if english_metric is False:  # pragma: no cover  # english units
             units = " mph"
         else:
             units = " m/s"

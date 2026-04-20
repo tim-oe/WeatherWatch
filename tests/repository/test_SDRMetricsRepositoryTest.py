@@ -1,11 +1,15 @@
 import datetime
 import unittest
 
-from repository.BaseRepository import BaseRepository
-from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from entity.SDRMetricts import SDRMetrics
-from repository.SDRMetricsRepository import SDRMetricsRepository
+import pytest
 
+from entity.SDRMetricts import SDRMetrics
+from repository.BaseRepository import BaseRepository
+from repository.SDRMetricsRepository import SDRMetricsRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
+
+
+@pytest.mark.db
 class SDRMetrictsRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:

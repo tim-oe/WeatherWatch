@@ -290,7 +290,7 @@ class SchedulerSvc:
             except JobLookupError:
                 self.logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """
         override
         :param self: this

@@ -39,7 +39,7 @@ class AQISvc:
         :param self: this
         """
         self.logger.info("processing aqi")
-        start = datetime.now()
+        start = time.monotonic()
 
         try:
             data: Hm3301Data = self.read()

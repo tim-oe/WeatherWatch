@@ -1,13 +1,16 @@
+import json
 from datetime import date, datetime, timedelta
 
-import json
+import pytest
 
-from repository.BaseRepository import BaseRepository
-from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from repository.IndoorSensorRepository import IndoorSensorRepository
 from entity.IndoorSensor import IndoorSensor
+from repository.BaseRepository import BaseRepository
+from repository.IndoorSensorRepository import IndoorSensorRepository
 from sensor.sdr.IndoorData import IndoorData
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
+
+@pytest.mark.db
 class IndoorSensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:

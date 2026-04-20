@@ -1,4 +1,5 @@
-from datetime import datetime, tzinfo
+import time
+from datetime import datetime, timezone, tzinfo
 from decimal import Decimal
 
 import axiompy
@@ -102,22 +103,29 @@ class Converter:
         https://stackoverflow.com/questions/3489183/how-can-i-get-a-human-readable-timezone-name-in-python
         """
         # initial pass try for us...
-        for timezone in pytz.all_timezones:
-            if datetime.now(pytz.timezone(timezone)).tzname() == tzname and timezone.startswith("US/"):
-                return timezone
+        for tz in pytz.all_timezones:
+            if datetime.now(pytz.timezone(tz)).tzname() == tzname and tz.startswith("US/"):
+                return tz
 
-        for timezone in pytz.all_timezones:
-            if datetime.now(pytz.timezone(timezone)).tzname():
-                return timezone
+        for tz in pytz.all_timezones:
+            if datetime.now(pytz.timezone(tz)).tzname():
+                return tz
 
-        raise ValueError(f"unkown tz {tzname}")
+        raise ValueError(f"unkown tz {tzname}")  # pragma: no cover
 
     @staticmethod
-    def duration_seconds(start: datetime) -> int:
+    def utcnow() -> datetime:
         """
-        calculate the execution duration from start to now
-        :param start: the processing start time
+        current time as a naive UTC datetime for DB storage
+        :return: naive UTC datetime
+        """
+        return datetime.now(timezone.utc).replace(tzinfo=None)
+
+    @staticmethod
+    def duration_seconds(start: float) -> int:
+        """
+        calculate the execution duration in seconds from a monotonic start time
+        :param start: value from time.monotonic() captured at process start
         :return duration in seconds
         """
-        current = datetime.now()
-        return int((current - start).total_seconds())
+        return int(time.monotonic() - start)

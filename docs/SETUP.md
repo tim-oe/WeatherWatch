@@ -16,6 +16,11 @@
     - needed to get native h264 encoding
     - install can take a while
     - [instructions used](https://python-poetry.org/blog/announcing-poetry-1.2.0/#opting-out-of-binary-distributions)
+- [Docker](https://docs.docker.com/engine/install/debian/) — required for `@pytest.mark.db` tests (testcontainers spins up MariaDB automatically)
+    - install: follow the [Debian install guide](https://docs.docker.com/engine/install/debian/) (works on Raspberry Pi OS)
+    - add user to docker group: ```sudo usermod -aG docker $USER```
+    - apply group without logout: ```newgrp docker``` or start a new terminal session
+    - verify: ```docker run hello-world```
 
 ## python sensor libs
 - [BMP 3xx](https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX)
@@ -72,8 +77,21 @@
 - list dependencies
     - ```poetry show```
 - testing
-    - all tests:   ```poetry run pytest```
-    - single test: ```poetry run pytest -v -s <path/to/test/file.py>```
+    - unit tests (default, no hardware or DB required):
+        - all:    ```poetry run pytest```
+        - single: ```poetry run pytest -v -s <path/to/test/file.py>```
+    - database tests (spin up MariaDB via testcontainers, requires Docker):
+        - all:    ```poetry run pytest -m db```
+        - single: ```poetry run pytest -v -s -m db <path/to/test/file.py>```
+    - integration tests (require physical SDR hardware and a live database):
+        - all:    ```poetry run pytest -m integration```
+        - single: ```poetry run pytest -v -s -m integration <path/to/test/file.py>```
+    - all tests (unit + db + integration):
+        - ```poetry run pytest -m ""```
+    - SDR mock unit tests only:
+        - ```poetry run pytest tests/sensor/sdr/test_SDRReaderMockTest.py```
+    - sensor service mock unit tests only:
+        - ```poetry run pytest tests/svc/test_SensorSvcMockTest.py```
 - coverage: ```python3 setup.py cover```
     - runs all tests 
 - py lint: ```python3 setup.py lint```

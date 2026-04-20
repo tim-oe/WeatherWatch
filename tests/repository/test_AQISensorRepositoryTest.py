@@ -1,11 +1,14 @@
 from datetime import date, timedelta, datetime
 
+import pytest
+
 from entity.AQISensor import AQISensor
 from repository.AQISensorRepository import AQISensorRepository
 from repository.BaseRepository import BaseRepository
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
 
+@pytest.mark.db
 class AQISensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:
