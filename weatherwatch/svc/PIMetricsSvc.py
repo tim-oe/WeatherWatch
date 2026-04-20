@@ -103,6 +103,6 @@ class PIMetricsSvc:
 
         self.logger.debug("pi metrics %s", data)
 
-        data.read_time = datetime.now()
+        data.read_time = datetime.utcnow()
 
         self._pi_metrics_repo.insert(data)

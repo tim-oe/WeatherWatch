@@ -227,7 +227,7 @@ class SDRReader:
             # read sdr output
             self._read_pool.submit(self.push_record, p.stdout, q)
 
-            start = datetime.now()
+            start = datetime.utcnow()
             duration = 0
             try:
                 while len(reads) < len(self._sensors) and duration < self._timeout:
@@ -243,7 +243,7 @@ class SDRReader:
 
                     self.logger.debug("duration: %s reads %s", duration, len(reads))
                 self._reads = reads
-                self.log_metrics(start, datetime.now(), duration, len(reads))
+                self.log_metrics(start, datetime.utcnow(), duration, len(reads))
             except Exception as e:
                 self._emailer.send_error_notification(
                     e,

@@ -18,6 +18,7 @@ from sensor.sdr.BaseData import BaseData
 from sensor.sdr.IndoorData import IndoorData
 from sensor.sdr.OutdoorData import OutdoorData
 from sensor.sdr.SDRReader import SDRReader
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["SensorSvc"]
@@ -74,7 +75,7 @@ class SensorSvc:
                 data: Tsl2591Data = self._light_reader.read()
 
                 ent: LightSensor = LightSensor()
-                ent.read_time = datetime.now()
+                ent.read_time = datetime.utcnow()
                 ent.lux = data.lux
                 ent.visible = data.visible
                 ent.infrared = data.infrared
@@ -159,5 +160,5 @@ class SensorSvc:
         ent.humidity = data.humidity
         ent.sensor_id = data.sensor_id
         ent.battery_ok = data.battery_ok
-        ent.read_time = data.time_stamp
+        ent.read_time = Converter.to_utc(data.time_stamp).replace(tzinfo=None)
         ent.raw = data.raw

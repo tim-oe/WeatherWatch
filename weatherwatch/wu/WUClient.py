@@ -7,7 +7,6 @@ from conf.AppConfig import AppConfig
 from conf.WUConfig import WUConfig
 from py_singleton import singleton
 from requests import RequestException
-from util.Converter import Converter
 from util.Logger import logger
 from wu.WUData import WUData
 
@@ -47,7 +46,7 @@ class WUClient:
         """
         data.station_id(self._wu_config.station_id)
         data.station_key(self._wu_config.station_key)
-        data.read_time(Converter.to_utc(read_time))
+        data.read_time(read_time)
 
         resp: requests.Response = requests.get(end_point.geturl(), params=data.__dict__, timeout=30)
         self.logger.debug("request %s", resp.url)

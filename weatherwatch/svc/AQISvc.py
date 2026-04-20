@@ -54,7 +54,7 @@ class AQISvc:
             ent.pm_2_5_conctrt_atmosph = data.pm_2_5_conctrt_atmosph
             ent.pm_10_conctrt_atmosph = data.pm_10_conctrt_atmosph
 
-            ent.read_time = datetime.now()
+            ent.read_time = datetime.utcnow()
 
             self._repo.insert(ent)
             self.logger.info("AQI processing complete  duration %s", Converter.duration_seconds(start))
