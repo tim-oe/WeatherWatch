@@ -119,5 +119,5 @@ class Converter:
         :param start: the processing start time
         :return duration in seconds
         """
-        current = datetime.now()
+        current = datetime.utcnow()
         return int((current - start).total_seconds())
