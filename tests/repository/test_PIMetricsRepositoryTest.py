@@ -1,13 +1,15 @@
 import datetime
 
 import psutil
+import pytest
 
-from repository.BaseRepository import BaseRepository
-from tests.repository.BaseRepositoryTest import BaseRespositoryTest
-from repository.PIMetricsRepository import PIMetricsRepository
 from entity.PIMetrics import PIMetrics
+from repository.BaseRepository import BaseRepository
+from repository.PIMetricsRepository import PIMetricsRepository
+from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 
 
+@pytest.mark.db
 class PIMetricsRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:

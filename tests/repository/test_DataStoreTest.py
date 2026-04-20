@@ -1,7 +1,11 @@
 import unittest
 
+import pytest
+
 from repository.DataStore import DataStore
 
+
+@pytest.mark.db
 class DataStoreTest(unittest.TestCase):
 
     def test(self):

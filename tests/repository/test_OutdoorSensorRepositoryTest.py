@@ -1,14 +1,17 @@
 from datetime import date, datetime, timedelta
-
 from decimal import Decimal
 
+import pytest
+
+from entity.OutdoorSensor import OutdoorSensor
 from repository.BaseRepository import BaseRepository
+from repository.OutdoorSensorRepository import OutdoorSensorRepository
+from sensor.sdr.OutdoorData import OutdoorData
 from tests.repository.BaseRepositoryTest import BaseRespositoryTest
 from tests.sensor.sdr.test_OutdoorDataTest import OutdoorDataTest
-from repository.OutdoorSensorRepository import OutdoorSensorRepository
-from entity.OutdoorSensor import OutdoorSensor
-from sensor.sdr.OutdoorData import OutdoorData
 
+
+@pytest.mark.db
 class OutdoorSensorRepositoryTest(BaseRespositoryTest):
 
     def getRepo(self) -> BaseRepository:

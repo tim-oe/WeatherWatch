@@ -51,6 +51,8 @@ pytemp = "^0.0.1"
 python-util = "^1.2.1"
 pylint = {extras = ["spelling"], version = "^3.3.2"}
 pylint-json2html = "^0.5.0"
+testcontainers = {extras = ["mariadb"], version = "^4.9.0"}
+pymysql = "^1.1.1"
     
 [tool.poetry.group.dev.dependencies]  
 setuptools = "^75.6.0"
@@ -74,10 +76,11 @@ addopts = [
     "--cov=weatherwatch",
     "--cov-report=html:reports/coverage",
     "--cov-report=xml:reports/coverage.xml",
-    "-m", "not integration"
+    "-m", "not integration and not db"
 ]
 markers = [
-    "integration: tests that require physical SDR hardware or a live database (deselected by default)"
+    "integration: tests that require physical SDR hardware or a live database (deselected by default)",
+    "db: tests that require a MariaDB container via testcontainers (deselected by default)"
 ]
 
 # https://coverage.readthedocs.io/en/7.6.3/
