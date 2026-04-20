@@ -73,7 +73,11 @@ addopts = [
     "--junit-xml=reports/test.xml",
     "--cov=weatherwatch",
     "--cov-report=html:reports/coverage",
-    "--cov-report=xml:reports/coverage.xml"
+    "--cov-report=xml:reports/coverage.xml",
+    "-m", "not integration"
+]
+markers = [
+    "integration: tests that require physical SDR hardware or a live database (deselected by default)"
 ]
 
 # https://coverage.readthedocs.io/en/7.6.3/

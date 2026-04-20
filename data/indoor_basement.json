@@ -1,0 +1,15 @@
+{
+    "time": "2026-04-20 12:13:22",
+    "model": "Ambientweather-F007TH",
+    "id": 10,
+    "channel": 3,
+    "battery_ok": 1,
+    "temperature_F": 59.200,
+    "humidity": 44,
+    "mic": "CRC",
+    "mod": "ASK",
+    "freq": 433.990,
+    "rssi": 1.237,
+    "snr": 11.545,
+    "noise": -11.545
+}

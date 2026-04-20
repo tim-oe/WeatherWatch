@@ -19,8 +19,7 @@ class Tsl2591SensorReader:
     adafruit tsl2591 sensor reader
     lib: https://github.com/adafruit/Adafruit_CircuitPython_TSL2591
     circuitPyton: https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
-    sensor: https://learn.adafruit.com/adafruit-tsl2591-light-sensor
-    github: https://github.com/adafruit/Adafruit_CircuitPython_TSL2591
+    sensor: https://learn.adafruit.com/adafruit-tsl2591
     doc: https://docs.circuitpython.org/projects/tsl2591/en/latest/
     """
 
