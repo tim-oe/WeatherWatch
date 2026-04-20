@@ -111,7 +111,7 @@ class Converter:
             if datetime.now(pytz.timezone(tz)).tzname():
                 return tz
 
-        raise ValueError(f"unkown tz {tzname}")
+        raise ValueError(f"unkown tz {tzname}")  # pragma: no cover
 
     @staticmethod
     def utcnow() -> datetime:

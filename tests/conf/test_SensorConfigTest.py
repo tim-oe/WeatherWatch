@@ -27,3 +27,8 @@ class SensorConfigTest(unittest.TestCase):
             self.assertEqual(expected[SensorConfig.DEVICE_KEY], sc.device)
             if IndoorData.CHANNEL_KEY in expected:
                 self.assertEqual(expected[IndoorData.CHANNEL_KEY], sc.channel)
+
+        # Cover data_class setter (line 95)
+        first_sensor = SensorConfig(ac.conf[AppConfig.SDR_KEY][AppConfig.SENSORS_KEY][0])
+        first_sensor.data_class = "NewClass"
+        self.assertEqual("NewClass", first_sensor.data_class)

@@ -54,3 +54,9 @@ class ConverterTest(unittest.TestCase):
         elapsed = Converter.duration_seconds(start)
         self.assertIn(elapsed, (0, 1))
 
+    def test_tzname_to_fullname_non_us_fallback(self):
+        """A name that matches no US/ timezone falls through to the second loop."""
+        result = Converter.tzname_to_fullname("UTC")
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, str)
+

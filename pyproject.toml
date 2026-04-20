@@ -79,11 +79,23 @@ addopts = [
 # https://coverage.readthedocs.io/en/7.6.3/
 [tool.coverage.run]
 source = ["weatherwatch"]
-omit = ["/usr/**", 
+omit = ["/usr/**",
 "weatherwatch/sensor.py",
-"weatherwatch/dashboard.py", 
-"weatherwatch/timelapse.py", 
-"weatherwatch/SampleLoader.py"
+"weatherwatch/dashboard.py",
+"weatherwatch/timelapse.py",
+"weatherwatch/SampleLoader.py",
+# Hardware-dependent: require physical sensors/camera; tests are skipped via --ignore
+"weatherwatch/camera/Camera.py",
+"weatherwatch/camera/CameraControls.py",
+"weatherwatch/camera/Timelapse.py",
+"weatherwatch/sensor/aqi/Hm3301Data.py",
+"weatherwatch/sensor/aqi/Hm3301Reader.py",
+"weatherwatch/sensor/sdr/SDRReader.py",
+"weatherwatch/svc/AQISvc.py",
+"weatherwatch/svc/BackupSvc.py",
+"weatherwatch/svc/CameraSvc.py",
+"weatherwatch/svc/SensorSvc.py",
+"weatherwatch/util/Rsync.py",
 ]
 
 [tool.coverage.xml]

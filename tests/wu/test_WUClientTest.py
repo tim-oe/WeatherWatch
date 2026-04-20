@@ -65,3 +65,16 @@ class WUClientTest(unittest.TestCase):
             client.post(local, data)
 
         self.assertEqual(expected_utc_str, data.dateutc)
+
+    def test_non_200_response_raises(self):
+        """A non-200 HTTP status from WU should raise RequestException."""
+        from requests import RequestException
+        mock_resp = MagicMock()
+        mock_resp.status_code = 503
+        mock_resp.reason = "Service Unavailable"
+
+        with patch("wu.WUClient.requests.get", return_value=mock_resp):
+            client = WUClient()
+            data = _make_data()
+            with self.assertRaises(RequestException):
+                client.post(datetime.now(), data)
