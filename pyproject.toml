@@ -44,6 +44,7 @@ python-dateutil = "^2.9.0.post0"
 [tool.poetry.group.test.dependencies]  
 coverage = "^7.6.9" 
 pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
 pytest-html = "^4.1.1"
 pytest-mock = "^3.14.0"
 pytemp = "^0.0.1"
@@ -69,7 +70,10 @@ pythonpath = "weatherwatch"
 addopts = [
     "--import-mode=importlib",
     "--html=reports/test.html",
-    "--junit-xml=reports/test.xml"
+    "--junit-xml=reports/test.xml",
+    "--cov=weatherwatch",
+    "--cov-report=html:reports/coverage",
+    "--cov-report=xml:reports/coverage.xml"
 ]
 
 # https://coverage.readthedocs.io/en/7.6.3/
