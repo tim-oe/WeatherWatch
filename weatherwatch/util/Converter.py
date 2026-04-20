@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timezone, tzinfo
 from decimal import Decimal
 
@@ -115,17 +116,16 @@ class Converter:
     @staticmethod
     def utcnow() -> datetime:
         """
-        current time as a naive UTC datetime
+        current time as a naive UTC datetime for DB storage
         :return: naive UTC datetime
         """
         return datetime.now(timezone.utc).replace(tzinfo=None)
 
     @staticmethod
-    def duration_seconds(start: datetime) -> int:
+    def duration_seconds(start: float) -> int:
         """
-        calculate the execution duration from start to now
-        :param start: the processing start time
+        calculate the execution duration in seconds from a monotonic start time
+        :param start: value from time.monotonic() captured at process start
         :return duration in seconds
         """
-        current = Converter.utcnow()
-        return int((current - start).total_seconds())
+        return int(time.monotonic() - start)

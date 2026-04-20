@@ -47,7 +47,7 @@ class GPSReader:
             time.sleep(1)
             gps.update()
 
-            start = Converter.utcnow()
+            start = time.monotonic()
             duration = 0
             while not gps.has_fix and duration < self._gps_config.init_timeout:
                 time.sleep(0.5)
