@@ -103,13 +103,13 @@ class Converter:
         https://stackoverflow.com/questions/3489183/how-can-i-get-a-human-readable-timezone-name-in-python
         """
         # initial pass try for us...
-        for timezone in pytz.all_timezones:
-            if datetime.now(pytz.timezone(timezone)).tzname() == tzname and timezone.startswith("US/"):
-                return timezone
+        for tz in pytz.all_timezones:
+            if datetime.now(pytz.timezone(tz)).tzname() == tzname and tz.startswith("US/"):
+                return tz
 
-        for timezone in pytz.all_timezones:
-            if datetime.now(pytz.timezone(timezone)).tzname():
-                return timezone
+        for tz in pytz.all_timezones:
+            if datetime.now(pytz.timezone(tz)).tzname():
+                return tz
 
         raise ValueError(f"unkown tz {tzname}")
 

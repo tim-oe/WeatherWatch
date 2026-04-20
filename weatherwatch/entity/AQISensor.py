@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Optional, Self
 
 from entity.BaseEntity import BaseEntity
+from entity.types import LocalToUTCDateTime
 from sqlalchemy import Integer
-from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy.orm import Mapped, mapped_column
 
 __all__ = ["AQISensor"]
@@ -26,7 +26,7 @@ class AQISensor(BaseEntity):
     __tablename__ = "aqi_sensor"
     __table_args__ = {"extend_existing": True}
 
-    read_time: Mapped[datetime] = mapped_column(DATETIME(fsp=6), nullable=False, default=None)
+    read_time: Mapped[datetime] = mapped_column(LocalToUTCDateTime, nullable=False, default=None)
 
     pm_1_0_conctrt_std: Mapped[int] = mapped_column(Integer, nullable=False, default=None)
     pm_2_5_conctrt_std: Mapped[int] = mapped_column(Integer, nullable=False, default=None)

@@ -1,6 +1,5 @@
 import pprint
 import time
-from datetime import datetime
 
 import adafruit_gps
 import serial

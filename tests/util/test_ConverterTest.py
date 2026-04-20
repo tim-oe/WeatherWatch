@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+import time
 import unittest
 
 from tzlocal import get_localzone_name
@@ -25,4 +26,31 @@ class ConverterTest(unittest.TestCase):
         self.assertTrue(dif == 6 or dif == 5)
         
         print()
-        
+
+    def test_utcnow_is_naive(self):
+        """utcnow() must return a naive datetime (no tzinfo)."""
+        result = Converter.utcnow()
+        self.assertIsNone(result.tzinfo)
+
+    def test_utcnow_is_utc_offset(self):
+        """utcnow() should be 5 or 6 hours ahead of local datetime.now()."""
+        local = datetime.now()
+        utc = Converter.utcnow()
+        diff_hours = round((utc - local).total_seconds() / 3600)
+        self.assertIn(diff_hours, (5, 6), f"expected UTC offset of 5 or 6 hours, got {diff_hours}")
+
+    def test_duration_seconds_measures_elapsed(self):
+        """duration_seconds(start) returns elapsed seconds from a monotonic start."""
+        start = time.monotonic()
+        time.sleep(0.1)
+        elapsed = Converter.duration_seconds(start)
+        # allow a wide window to avoid flaky failures under load
+        self.assertGreaterEqual(elapsed, 0)
+        self.assertLessEqual(elapsed, 5)
+
+    def test_duration_seconds_zero_at_start(self):
+        """duration_seconds called immediately after capture returns 0 or 1."""
+        start = time.monotonic()
+        elapsed = Converter.duration_seconds(start)
+        self.assertIn(elapsed, (0, 1))
+
