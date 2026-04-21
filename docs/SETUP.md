@@ -25,7 +25,9 @@
 ## python sensor libs
 - [BMP 3xx](https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX)
 - [GPS](https://github.com/adafruit/Adafruit_CircuitPython_GPS)
+- [lux sensor (TSL2591)](https://github.com/adafruit/Adafruit_CircuitPython_TSL2591)
 - [PiCamera2](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)
+- [PM2.5 PM10 detect sensor (HM3301)](https://github.com/Seeed-Studio/grove.py/blob/master/grove/grove_PM2_5_HM3301.py)
 
 ## System initialization
 - used [sdm](https://github.com/gitbls/sdm) for burning sd image

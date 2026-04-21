@@ -17,7 +17,7 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
     - rain fall
     - wind
     - uv
-    - illimuation 
+    - illumination 
 - read and record indoor weather metrices at a fixed time interval
     - more than 1 sensor
     - temprature
