@@ -60,6 +60,27 @@ class OutdoorSensorPageUnitTest(unittest.TestCase):
 
         self.assertIsInstance(result, dbc.Container)
 
+    def test_find_greater_than_read_time_receives_datetime(self):
+        """Regression: date.today() was passed instead of datetime, crashing the type converter."""
+        outdoor = self._make_outdoor_entity()
+        light = self._make_light_entity()
+
+        with patch("dashboard.page.OutdoorSensorPage.OutdoorSensorRepository") as MockOutdoor, \
+             patch("dashboard.page.OutdoorSensorPage.LightSensorRepository") as MockLight, \
+             patch("dashboard.page.BasePage.AppConfig"):
+
+            MockOutdoor.return_value.find_latest.return_value = outdoor
+            MockOutdoor.return_value.get_days_rainfall.return_value = Decimal("0.5")
+            MockOutdoor.return_value.find_greater_than_read_time.return_value = [outdoor]
+            MockLight.return_value.find_greater_than_read_time.return_value = [light]
+
+            OutdoorSensorPage().content()
+
+        outdoor_arg = MockOutdoor.return_value.find_greater_than_read_time.call_args[0][0]
+        light_arg = MockLight.return_value.find_greater_than_read_time.call_args[0][0]
+        self.assertIsInstance(outdoor_arg, datetime, "outdoor find_greater_than_read_time must receive a datetime, not a date")
+        self.assertIsInstance(light_arg, datetime, "light find_greater_than_read_time must receive a datetime, not a date")
+
     def test_content_high_temperature_uses_red_gauge(self):
         """temperature_f >= 90 triggers red TempratureGauge."""
         outdoor = self._make_outdoor_entity(temp_f=92.0)

@@ -58,6 +58,24 @@ class IndoorSensorPageUnitTest(unittest.TestCase):
 
         self.assertIsInstance(result, dbc.Container)
 
+    def test_find_greater_than_read_time_receives_datetime(self):
+        """Regression: date.today() was passed instead of datetime, crashing the type converter."""
+        entity = self._make_sensor_entity()
+        mock_sensor_cfg = MagicMock()
+        mock_sensor_cfg.channel = 2
+
+        with patch("dashboard.page.IndoorSensorPage.IndoorSensorRepository") as MockRepo:
+            mock_repo_inst = MockRepo.return_value
+            mock_repo_inst.find_latest.return_value = entity
+            mock_repo_inst.find_greater_than_read_time.return_value = [entity]
+
+            with patch("dashboard.page.BasePage.AppConfig") as MockCfg:
+                MockCfg.return_value.get_sensor.return_value = mock_sensor_cfg
+                IndoorSensorPage().content(name="TestSensor")
+
+        arg = mock_repo_inst.find_greater_than_read_time.call_args[0][1]
+        self.assertIsInstance(arg, datetime, "find_greater_than_read_time must receive a datetime, not a date")
+
     def test_content_high_temperature_uses_red_gauge(self):
         """temperature_f >= 90 triggers red TempratureGauge."""
         entity = self._make_sensor_entity(temp_f=95.0)
