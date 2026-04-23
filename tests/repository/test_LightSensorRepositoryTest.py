@@ -40,6 +40,10 @@ class LightSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(l)
         self.assertTrue(len(l) > 0)
 
+        l_by_date = repo.find_greater_than_read_time(date.today() - timedelta(days=1))
+        self.assertIsNotNone(l_by_date)
+        self.assertTrue(len(l_by_date) > 0)
+
     def test_backup(self):
         repo: BaseRepository = self.getRepo()        
         repo.exec(f'truncate {repo.entity.__table__}')

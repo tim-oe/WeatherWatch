@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import List
 
 import dash_bootstrap_components as dbc
@@ -43,7 +43,7 @@ class IndoorSensorPage(BasePage):
         min_temp = min(0, int(data.temperature_f) - 5)
         max_temp = max(100, int(data.temperature_f) + 5)
 
-        d = datetime.combine(date.today() - timedelta(days=7), datetime.min.time())
+        d = date.today() - timedelta(days=7)
         seven_day: List[IndoorSensor] = self._indoor_repo.find_greater_than_read_time(sensor.channel, d)
 
         return dbc.Container(

@@ -43,6 +43,10 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(l)
         self.assertTrue(len(l) > 0)
 
+        l_by_date = repo.find_greater_than_read_time(date.today() - timedelta(days=1))
+        self.assertIsNotNone(l_by_date)
+        self.assertTrue(len(l_by_date) > 0)
+
         x = repo.get_days_rainfall(date.today())
         
         self.assertIsNotNone(x)

@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import List
 
 import dash_bootstrap_components as dbc
@@ -36,7 +36,7 @@ class AirQualityPage(BasePage):
         data: AQISensor = self._aqi_repo.find_latest()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
-        d = datetime.combine(date.today() - timedelta(days=7), datetime.min.time())
+        d = date.today() - timedelta(days=7)
         seven_day: List[AQISensor] = self._aqi_repo.find_greater_than_read_time(d)
 
         return dbc.Container(

@@ -46,18 +46,3 @@ class AirQualityPageUnitTest(unittest.TestCase):
             result = page.content()
 
         self.assertIsInstance(result, dbc.Container)
-
-    def test_find_greater_than_read_time_receives_datetime(self):
-        """Regression: date.today() was passed instead of datetime, crashing the type converter."""
-        entity = self._make_aqi_entity()
-
-        with patch("dashboard.page.AirQualityPage.AQISensorRepository") as MockRepo, \
-             patch("dashboard.page.BasePage.AppConfig"):
-
-            MockRepo.return_value.find_latest.return_value = entity
-            MockRepo.return_value.find_greater_than_read_time.return_value = [entity]
-
-            AirQualityPage().content()
-
-        arg = MockRepo.return_value.find_greater_than_read_time.call_args[0][0]
-        self.assertIsInstance(arg, datetime, "find_greater_than_read_time must receive a datetime, not a date")

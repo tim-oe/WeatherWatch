@@ -1,6 +1,7 @@
 import json
 import re
-from typing import Generic, List, TypeVar
+from datetime import date, datetime
+from typing import Generic, List, TypeVar, Union
 
 from conf.AppConfig import AppConfig
 from conf.DatabaseConfig import DatabaseConfig
@@ -51,6 +52,20 @@ class BaseRepository(Generic[T]):
         :return: the entity
         """
         return self._entity
+
+    @staticmethod
+    def _coerce_to_datetime(dt: Union[date, datetime]) -> datetime:
+        """
+        Ensure dt is a datetime before it reaches the LocalToUTCDateTime type
+        converter, which requires a datetime (not a bare date).
+
+        Callers may pass either a date or a datetime; this normalises both so
+        the persistence layer is the only code that needs to be aware of the
+        distinction.  A bare date is promoted to midnight of that day.
+        """
+        if isinstance(dt, datetime):
+            return dt
+        return datetime(dt.year, dt.month, dt.day)
 
     def insert(self, o: T):
         """

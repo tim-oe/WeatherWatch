@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import List
+from typing import List, Union
 
 from entity.IndoorSensor import IndoorSensor
 from py_singleton import singleton
@@ -37,18 +37,19 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
             session.close()
 
     # pylint: disable=duplicate-code
-    def find_greater_than_read_time(self, channel: int, dt: datetime) -> List[IndoorSensor]:
+    def find_greater_than_read_time(self, channel: int, dt: Union[date, datetime]) -> List[IndoorSensor]:
         """
         get records greater than the given date
         :param self: this
-        :param dt: the lower bound date
+        :param channel: the channel id
+        :param dt: the lower bound date (date or datetime; a bare date is treated as midnight)
         :return the list of records
         """
         session: Session = self._datastore.session
         try:
             return (
                 session.query(IndoorSensor)
-                .filter(and_(IndoorSensor.channel == channel, IndoorSensor.read_time > dt))
+                .filter(and_(IndoorSensor.channel == channel, IndoorSensor.read_time > self._coerce_to_datetime(dt)))
                 .order_by(IndoorSensor.read_time.desc())
                 .all()
             )

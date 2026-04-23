@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import List
+from typing import List, Union
 
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
@@ -38,17 +38,17 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
             session.close()
 
     # pylint: disable=duplicate-code
-    def find_greater_than_read_time(self, dt: datetime) -> List[OutdoorSensor]:
+    def find_greater_than_read_time(self, dt: Union[date, datetime]) -> List[OutdoorSensor]:
         """
         get records greater than the given date
         :param self: this
-        :param dt: the lower bound date
+        :param dt: the lower bound date (date or datetime; a bare date is treated as midnight)
         :return the list of records
         """
         session: Session = self._datastore.session
         try:
             return (
-                session.query(OutdoorSensor).filter(OutdoorSensor.read_time > dt).order_by(OutdoorSensor.read_time.desc()).all()
+                session.query(OutdoorSensor).filter(OutdoorSensor.read_time > self._coerce_to_datetime(dt)).order_by(OutdoorSensor.read_time.desc()).all()
             )
         finally:
             session.close()

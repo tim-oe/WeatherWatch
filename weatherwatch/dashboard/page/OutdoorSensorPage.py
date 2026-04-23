@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import List
 
 import dash_bootstrap_components as dbc
@@ -50,7 +50,7 @@ class OutdoorSensorPage(BasePage):
         # for lazy testing...
         # rainFail = self._outdoorRepo.getDaysRainfall(date.today() - timedelta(days=3))
 
-        d = datetime.combine(date.today() - timedelta(days=7), datetime.min.time())
+        d = date.today() - timedelta(days=7)
         seven_day: List[OutdoorSensor] = self._outdoor_repo.find_greater_than_read_time(d)
         seven_day_light: List[LightSensor] = self._light_repo.find_greater_than_read_time(d)
 
