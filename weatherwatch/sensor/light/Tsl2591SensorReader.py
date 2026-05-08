@@ -9,6 +9,10 @@ from py_singleton import singleton
 from sensor.light.Tsl2591Data import Tsl2591Data
 from util.Logger import logger
 
+# Maximum measurable lux at GAIN_LOW + 100ms integration time.
+# Values above this indicate full sensor saturation (e.g. direct midday sun).
+LUX_SATURATED_MAX = 88000.0
+
 __all__ = ["Tsl2591SensorReader"]
 
 
@@ -78,8 +82,8 @@ class Tsl2591SensorReader:
                     try:
                         lux = self.tsl2591.lux
                     except RuntimeError:
-                        self.logger.error("lux overflow even at GAIN_LOW + 100ms integration, sensor fully saturated")
-                        lux = 88000.0
+                        self.logger.warning("lux overflow even at GAIN_LOW + 100ms integration, sensor fully saturated")
+                        lux = LUX_SATURATED_MAX
 
             # If sensor is saturated (raw counts maxed), switch to lower gain
             if self.tsl2591.full_spectrum >= 37000 and self.tsl2591.gain != adafruit_tsl2591.GAIN_LOW:
