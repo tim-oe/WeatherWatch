@@ -20,7 +20,7 @@ class CameraControls:
     100-1,000    : indoor ambient
     10-100       : dim indoor / dusk
     1-10         : twilight
-    < 1          : night
+    0.1-1        : moonlit / dark night
     """
 
     AeEnable: bool
@@ -29,6 +29,10 @@ class CameraControls:
     NoiseReductionMode: libcamera.controls.draft.NoiseReductionModeEnum
     AwbEnable: bool
     AwbMode: libcamera.controls.AwbModeEnum
+    Brightness: float
+    Contrast: float
+    Saturation: float
+    Sharpness: float
 
     def __init__(self, lux: float):
         """
@@ -42,6 +46,7 @@ class CameraControls:
 
         self.lux_to_gain(lux)
         self.lux_to_exposure(lux)
+        self.lux_to_image_controls(lux)
 
     def lux_to_gain(self, lux: float):
         """
@@ -64,20 +69,31 @@ class CameraControls:
         Map lux to exposure time
         Anchor points based on real-world targets:
 
-        10,000 lux (bright sun)   →  500µs   (1/2000s)
-        1,000  lux (overcast)     →  2,000µs  (1/500s)
-        100    lux (indoor bright)→ 20,000µs (1/50s)
-        10     lux (dim indoor)   →  80,000µs (1/12s)
-        5      lux (dusk)         →  400,000µs (0.4s)
-        1    lux (twilight)       →  1,000,000µs (1s)
-        0.5   lux (night)         →  3,000,000µs (3s)
+        10,000 lux (bright sun)    →     500µs  (1/2000s)
+        1,000  lux (overcast)      →   2,000µs  (1/500s)
+        100    lux (indoor bright) →  20,000µs  (1/50s)
+        10     lux (dim indoor)    →  80,000µs  (1/12s)
+        5      lux (dusk)          → 400,000µs  (0.4s)
+        1      lux (twilight)      → 1,000,000µs (1s)
+        0.5    lux (deep twilight) → 3,000,000µs (3s)
+        0.1    lux (moonlit night) → 5,000,000µs (5s)
+        0.01   lux (dark night)    → 10,000,000µs (10s)
 
         :param lux: the ambient light level to contol exposure/iso settings
         :returns exposure time
         """
         # Anchor points: (lux, exposure_us)
-        # tweakking setting for sensor in use
-        anchors = [(10000, 500), (1000, 2_000), (100, 20_000), (10, 80_000), (5, 400_000), (1, 1_000_000), (0.5, 3_000_000)]
+        anchors = [
+            (10000, 500),
+            (1000, 2_000),
+            (100, 20_000),
+            (10, 80_000),
+            (5, 400_000),
+            (1, 1_000_000),
+            (0.5, 3_000_000),
+            (0.1, 5_000_000),
+            (0.01, 10_000_000),
+        ]
 
         lux = max(lux, 0.001)
 
@@ -98,38 +114,28 @@ class CameraControls:
 
         self.ExposureTime = exposure
 
-    # def lux_to_image_controls(self, lux: float):
-    #     """
-    #     Map lux to image controls
-    #     TODO need to see if tweaks are needed  but only after sampling lux
-    #     :param lux: the ambient light level to contol exposure/iso settings
-    #     :returns image controls
-    #     """
-    #     if lux > 1000:  # bright daylight
-    #         brightness = 0.05
-    #         contrast = 1.2
-    #         saturation = 1.1
-    #         sharpness = 1.5
-    #     elif lux > 100:  # indoor bright / overcast
-    #         brightness = 0.02
-    #         contrast = 1.1
-    #         saturation = 1.05
-    #         sharpness = 1.2
-    #     elif lux > 10:  # dim indoor (~where you are now at 28 lux)
-    #         brightness = 0.0
-    #         contrast = 1.0
-    #         saturation = 1.0
-    #         sharpness = 1.0
-    #     elif lux > 1:  # dusk / twilight
-    #         brightness = 0.0
-    #         contrast = 0.95
-    #         saturation = 0.9
-    #         sharpness = 0.8
-    #     else:  # night
-    #         brightness = 0.0
-    #         contrast = 0.9
-    #         saturation = 0.8
-    #         sharpness = 0.7
+    def lux_to_image_controls(self, lux: float):
+        """
+        Map lux to image processing controls.
+        Boosts brightness/contrast/saturation for low-light conditions to
+        compensate for sensor noise and reduced dynamic range at night.
+        :param lux: the ambient light level to contol exposure/iso settings
+        """
+        if lux > 10:
+            self.Brightness = 0.0
+            self.Contrast = 1.0
+            self.Saturation = 1.0
+            self.Sharpness = 1.0
+        elif lux > 1:  # dusk / twilight
+            self.Brightness = 0.05
+            self.Contrast = 1.1
+            self.Saturation = 1.05
+            self.Sharpness = 1.0
+        else:  # night
+            self.Brightness = 0.1
+            self.Contrast = 1.2
+            self.Saturation = 1.1
+            self.Sharpness = 1.0
 
     def to_dict(self) -> dict:
         """
