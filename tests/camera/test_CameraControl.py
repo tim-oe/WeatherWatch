@@ -41,16 +41,16 @@ class CameraControlsTest(unittest.TestCase):
         self.assert_controls(0.5, 3_000_000, 4.0)
 
     def test_night_0_4_lux(self):
-        self.assert_controls(0.4, 3_277_293, 8.0)
+        self.assert_controls(0.4, 3_000_000, 10.0)
 
     def test_moonlit_night_0_1_lux(self):
-        self.assert_controls(0.1, 5_000_000, 8.0)
+        self.assert_controls(0.1, 3_000_000, 10.0)
 
     def test_dark_night_0_05_lux(self):
-        self.assert_controls(0.05, 6_505_149, 8.0)
+        self.assert_controls(0.05, 3_903_089, 10.0)
 
     def test_dark_night_floor_0_01_lux(self):
-        self.assert_controls(0.01, 10_000_000, 8.0)
+        self.assert_controls(0.01, 6_000_000, 10.0)
 
     def test_image_controls_daylight(self):
         self.assert_image_controls(100.0, 0.0, 1.0, 1.0)

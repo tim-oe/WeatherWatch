@@ -54,7 +54,8 @@ class CameraControls:
         :param lux: the ambient light level to contol exposure/iso settings
         :returns gain
         """
-        # Prefer longer exposure over high gain to minimize noise
+        # Prefer longer exposure over high gain to minimize noise,
+        # but allow max gain at night to match historical moonlit captures.
         if lux >= 10.0:
             self.AnalogueGain = 1.0
         elif lux >= 5.0:
@@ -62,7 +63,7 @@ class CameraControls:
         elif lux >= 0.5:
             self.AnalogueGain = 4.0
         else:
-            self.AnalogueGain = 8.0
+            self.AnalogueGain = 10.0
 
     def lux_to_exposure(self, lux: float):
         """
@@ -76,8 +77,8 @@ class CameraControls:
         5      lux (dusk)          → 400,000µs  (0.4s)
         1      lux (twilight)      → 1,000,000µs (1s)
         0.5    lux (deep twilight) → 3,000,000µs (3s)
-        0.1    lux (moonlit night) → 5,000,000µs (5s)
-        0.01   lux (dark night)    → 10,000,000µs (10s)
+        0.1    lux (moonlit night) → 3,000,000µs (3s)
+        0.01   lux (dark night)    → 6,000,000µs (6s)
 
         :param lux: the ambient light level to contol exposure/iso settings
         :returns exposure time
@@ -91,8 +92,8 @@ class CameraControls:
             (5, 400_000),
             (1, 1_000_000),
             (0.5, 3_000_000),
-            (0.1, 5_000_000),
-            (0.01, 10_000_000),
+            (0.1, 3_000_000),
+            (0.01, 6_000_000),
         ]
 
         lux = max(lux, 0.001)

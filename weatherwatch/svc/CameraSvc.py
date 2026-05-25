@@ -105,10 +105,15 @@ class CameraSvc:
                 self.logger.warning("skipping GPS exif data", exc_info=True)
 
             # custom data to persist lux
-            # TODO add other fields if needed
-            user_data = json.dumps({"lux": round(lux, 3)})
+            # Keep JSON in UserComment for machine parsing, and add human-readable
+            # strings in common tags shown by standard EXIF viewers.
+            lux_value = round(lux, 3)
+            user_data = json.dumps({"lux": lux_value})
+            display_data = f"WeatherWatch lux={lux_value}"
 
             exif_dict["Exif"][piexif.ExifIFD.UserComment] = user_data.encode("utf-8")
+            exif_dict["0th"][piexif.ImageIFD.ImageDescription] = display_data.encode("utf-8")
+            exif_dict["0th"][piexif.ImageIFD.XPComment] = (display_data + "\x00").encode("utf-16le")
 
             # Dump the modified Exif data
             exif_bytes = piexif.dump(exif_dict)
