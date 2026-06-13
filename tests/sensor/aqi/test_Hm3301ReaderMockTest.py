@@ -14,11 +14,6 @@ class Hm3301ReaderMockTest(unittest.TestCase):
     SMBus, i2c_msg, AppConfig, and time are all patched so no physical
     sensor or Pi GPIO is required.  The singleton is reset before and
     after every test to ensure isolation.
-
-    Note: the production code initialises `cnt = 0` but never increments
-    it, so the while-loop exits only when CRC passes (data is set) or when
-    retry == 0 (loop body never executes).  Tests are written against this
-    observed behaviour.
     """
 
     # ------------------------------------------------------------------
@@ -153,6 +148,32 @@ class Hm3301ReaderMockTest(unittest.TestCase):
         self._mock_aqi_config.retry = 0
         with self.assertRaises(ValueError, msg="retry exceeded"):
             self._reader.read()
+
+    def test_read_raises_after_retries_exhausted_on_persistent_crc_fail(self):
+        """Persistent CRC failures stop after `retry` attempts and raise."""
+        self._mock_aqi_config.retry = 3
+        self._mock_i2c_msg.read.side_effect = [self._bad_raw() for _ in range(10)]
+        with self.assertRaises(ValueError, msg="retry exceeded"):
+            self._reader.read()
+        # the read is bounded by the configured retry count, no infinite loop
+        self.assertEqual(3, self._mock_i2c_msg.read.call_count)
+
+    def test_read_retries_on_i2c_oserror_then_succeeds(self):
+        """An OSError on the bus is retried rather than propagated."""
+        self._mock_aqi_config.retry = 2
+        self._mock_i2c_msg.read.side_effect = [
+            OSError("i2c read error"),
+            self._make_raw(pm_2_5_std=42),
+        ]
+        data = self._reader.read()
+        self.assertEqual(42, data.pm_2_5_conctrt_std)
+
+    def test_read_warms_up_sensor_only_once_across_reads(self):
+        """The 0x88 select / warm-up is issued once, not on every read."""
+        self._reader.read()
+        self._reader.read()
+        self._reader.read()
+        self.assertEqual(1, self._mock_i2c_msg.write.call_count)
 
 
 class Hm3301DataTest(unittest.TestCase):
