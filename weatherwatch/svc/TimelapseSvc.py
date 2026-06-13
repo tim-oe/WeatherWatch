@@ -1,7 +1,9 @@
 import sys
+import time
 from subprocess import Popen, TimeoutExpired
 
 from py_singleton import singleton
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["TimelapseSvc"]
@@ -25,7 +27,7 @@ class TimelapseSvc:
         service entry point
         :param self: this
         """
-        self.logger.info("starting timelapse subprocess")
+        start_monotonic = time.monotonic()
 
         with Popen(
             TimelapseSvc.CMD,
@@ -44,5 +46,7 @@ class TimelapseSvc:
                 # for line in p.stderr:
                 #     self.logger.error(line.strip())
             except TimeoutExpired:
-                self.logger.exception("processe timed out")
+                self.logger.exception("process timed out")
                 p.kill()
+
+        self.logger.info("timelapse processing complete  duration %s", Converter.duration_seconds(start_monotonic))

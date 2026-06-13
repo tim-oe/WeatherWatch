@@ -15,6 +15,7 @@ from py_singleton import singleton
 from pytemp import pytemp
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from sensor.light.Tsl2591SensorReader import Tsl2591SensorReader
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["CameraSvc"]
@@ -52,22 +53,26 @@ class CameraSvc:
         main service entry point
         :param self: this
         """
-        self.logger.info("processing camera")
         data: OutdoorSensor = self._repo.find_latest()
 
         try:
+            start_monotonic = time.monotonic()
+
             lux: float = self.tslSensorReader.get_lux()
-            self.logger.info(f"lux read[0] {lux}")
+            self.logger.debug(f"lux read[0] {lux}")
             time.sleep(0.2)
 
             lux = self.tslSensorReader.get_lux()
-            self.logger.info(f"lux read[1] {lux}")
+            self.logger.debug(f"lux read[1] {lux}")
 
             img_file: str = self.camera.process(lux)
 
             self.add_custom_exif(img_file, data, lux)
 
             shutil.copy(img_file, self._camera_config.current_file)
+
+            self.logger.info("camera processing complete  duration %s", Converter.duration_seconds(start_monotonic))
+
         except Exception:
             self.logger.exception("failed to take picture")
 

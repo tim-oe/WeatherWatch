@@ -38,7 +38,6 @@ class AQISvc:
         process sensor
         :param self: this
         """
-        self.logger.info("processing aqi")
         start = time.monotonic()
 
         try:
@@ -59,9 +58,9 @@ class AQISvc:
             self._repo.insert(ent)
             self.logger.info("AQI processing complete  duration %s", Converter.duration_seconds(start))
 
-            self.logger.info("running aqi clean")
+            self.logger.debug("running aqi clean")
             self._repo.clean()
-            self.logger.info("aqi clean complete")
+            self.logger.debug("aqi clean complete")
 
         except Exception:
             self.logger.exception("failed to process aqi data")

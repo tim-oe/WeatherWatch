@@ -46,7 +46,12 @@ class AQISensorRepository(BaseRepository[AQISensor]):
         """
         session: Session = self._datastore.session
         try:
-            return session.query(AQISensor).filter(AQISensor.read_time > self._coerce_to_datetime(dt)).order_by(AQISensor.read_time.desc()).all()
+            return (
+                session.query(AQISensor)
+                .filter(AQISensor.read_time > self._coerce_to_datetime(dt))
+                .order_by(AQISensor.read_time.desc())
+                .all()
+            )
         finally:
             session.close()
 

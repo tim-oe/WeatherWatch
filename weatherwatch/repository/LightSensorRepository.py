@@ -44,7 +44,12 @@ class LightSensorRepository(BaseRepository[LightSensor]):
         """
         session: Session = self._datastore.session
         try:
-            return session.query(LightSensor).filter(LightSensor.read_time > self._coerce_to_datetime(dt)).order_by(LightSensor.read_time.desc()).all()
+            return (
+                session.query(LightSensor)
+                .filter(LightSensor.read_time > self._coerce_to_datetime(dt))
+                .order_by(LightSensor.read_time.desc())
+                .all()
+            )
         finally:
             session.close()
 

@@ -48,7 +48,10 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         session: Session = self._datastore.session
         try:
             return (
-                session.query(OutdoorSensor).filter(OutdoorSensor.read_time > self._coerce_to_datetime(dt)).order_by(OutdoorSensor.read_time.desc()).all()
+                session.query(OutdoorSensor)
+                .filter(OutdoorSensor.read_time > self._coerce_to_datetime(dt))
+                .order_by(OutdoorSensor.read_time.desc())
+                .all()
             )
         finally:
             session.close()
