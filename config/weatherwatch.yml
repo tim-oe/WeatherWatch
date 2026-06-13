@@ -98,6 +98,25 @@ sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
     timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:280}
+    # usb re-enumeration recovery for a wedged RTL-SDR dongle (RTL2832U)
+    # when a read returns fewer than min_reads, the dongle is re-enumerated
+    # via sysfs (authorized 0 -> 1) and the read is retried
+    reset:
+      enable: !ENV tag:yaml.org,2002:bool ${WW_SDR_RESET_ENABLE:true}
+      # usb idVendor of the rtl-sdr (Realtek)
+      vendor_id: !ENV ${WW_SDR_USB_VENDOR:0bda}
+      # acceptable usb idProduct values for the RTL2832U
+      product_ids:
+        - "2838"
+        - "2832"
+      # min sensor reads expected per cycle; fewer triggers a reset + retry
+      min_reads: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_MIN_READS:1}
+      # how many reset + retry attempts before giving up for this cycle
+      max_retries: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_RETRIES:1}
+      # seconds to hold the device de-authorized during reset
+      settle_sec: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_SETTLE:5}
+      # seconds to wait for the device to come back after reset
+      wait_sec: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_WAIT:20}
   sensors:
     # doing device reset of outdoor sensor will change the id
     # device is the

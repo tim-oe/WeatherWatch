@@ -19,6 +19,7 @@ from sensor.sdr.OutdoorData import OutdoorData
 from util.Converter import Converter
 from util.Emailer import Emailer
 from util.Logger import logger
+from util.UsbReset import UsbReset
 
 __all__ = ["SDRReader"]
 
@@ -74,6 +75,8 @@ class SDRReader:
     ON_POSIX = "posix" in sys.builtin_module_names
     DEVICE_FLAG = "-R"
 
+    RESET_KEY = "reset"
+
     # TODO externalize
     CMD_BASE = [
         "/usr/local/bin/rtl_433",
@@ -98,7 +101,12 @@ class SDRReader:
 
         self._emailer = Emailer()
 
-        self._timeout = self._app_config.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]["timeout"]
+        reader_conf = self._app_config.conf[AppConfig.SDR_KEY][AppConfig.READER_KEY]
+        self._timeout = reader_conf["timeout"]
+
+        # usb re-enumeration recovery for a wedged RTL-SDR dongle (optional config)
+        self._reset_conf: dict = reader_conf.get(SDRReader.RESET_KEY, {})
+        self._usb_reset = UsbReset()
 
         # sensor read pool predefined thread
         self._read_pool = ThreadPoolExecutor(max_workers=1)
@@ -123,10 +131,39 @@ class SDRReader:
 
         self._sdr_metrics_repo = SDRMetricsRepository()
 
+        # startup diagnostic: confirm the SDR dongle is on the usb bus
+        self.detect_device()
+
     # override
     def __del__(self):
         self._read_pool.shutdown()
         self._data_pool.shutdown()
+
+    def detect_device(self):
+        """
+        startup diagnostic: detect the configured SDR usb dongle on the bus
+
+        logs the sysfs path when found; logs an error and emails a notification
+        when the configured dongle is missing so a dead dongle is visible at
+        boot rather than only after the first failed read cycle
+        :param self: this
+        """
+        vendor_id = self._reset_conf.get("vendor_id")
+        product_ids = self._reset_conf.get("product_ids", [])
+
+        if not vendor_id or not product_ids:
+            self.logger.warning("SDR usb device not configured - skipping startup dongle detection")
+            return
+
+        dev = self._usb_reset.find_device(vendor_id, product_ids)
+        if dev is None:
+            self.logger.error("SDR usb dongle %s:%s NOT detected at startup", vendor_id, product_ids)
+            self._emailer.send_error_notification(
+                Exception(f"SDR usb dongle {vendor_id}:{product_ids} not detected at startup"),
+                subject_prefix="SDR Dongle Missing",
+            )
+        else:
+            self.logger.info("SDR usb dongle detected at startup: %s (%s:%s)", dev, vendor_id, product_ids)
 
     @property
     def reads(self) -> List[BaseData]:
@@ -206,12 +243,54 @@ class SDRReader:
         """
         read sensor data
         this will block until all sensors are read or until timeout
+
+        when fewer than the configured min_reads sensors are read the SDR is
+        considered wedged: the usb dongle is re-enumerated and the read retried
+        up to max_retries times before giving up for this cycle
         :param self: this
+        """
+        reset_enabled = bool(self._reset_conf.get("enable", False))
+        min_reads = int(self._reset_conf.get("min_reads", 1))
+        max_retries = int(self._reset_conf.get("max_retries", 0))
+
+        attempt = 0
+        reads, sensors = self.read_once()
+
+        while reset_enabled and len(reads) < min_reads and attempt < max_retries:
+            attempt += 1
+            self.logger.warning(
+                "read %s sensor(s) (< %s) - re-enumerating SDR usb device (attempt %s/%s)",
+                len(reads),
+                min_reads,
+                attempt,
+                max_retries,
+            )
+            self.reset_sdr()
+            reads, sensors = self.read_once()
+
+        self._reads = reads
+
+        for k, v in sensors.items():
+            self.logger.warning("no data for %s=%s", k, v)
+            if v.name == "outdoor":
+                try:
+                    raise Exception(f"no data for {k}={v}")
+                except Exception as e:
+                    self._emailer.send_error_notification(
+                        e,
+                        subject_prefix="SDR Sensor unread",
+                    )
+
+    def read_once(self):
+        """
+        perform a single sensor read pass
+        this will block until all sensors are read or until timeout
+        :param self: this
+        :return: tuple of (reads, unread sensor config dict)
         """
         self.logger.debug("starting cmd: %s", self._cmd)
         sensors = self._sensors.copy()
         processed = []
-        self._reads = []
         reads = []
 
         with Popen(
@@ -244,7 +323,6 @@ class SDRReader:
                     duration = Converter.duration_seconds(start_monotonic)
 
                     self.logger.debug("duration: %s reads %s", duration, len(reads))
-                self._reads = reads
                 self.log_metrics(start_time, datetime.now(), duration, len(reads))
             except Exception as e:
                 self._emailer.send_error_notification(
@@ -255,16 +333,33 @@ class SDRReader:
                 self.logger.info("stopping reader %s sec, reads %s", duration, len(reads))
                 p.terminate()
 
-        for k, v in sensors.items():
-            self.logger.warning("no data for %s=%s", k, v)
-            if v.name == "outdoor":
-                try:
-                    raise Exception(f"no data for {k}={v}")
-                except Exception as e:
-                    self._emailer.send_error_notification(
-                        e,
-                        subject_prefix="SDR Sensor unread",
-                    )
+        return reads, sensors
+
+    def reset_sdr(self):
+        """
+        re-enumerate the SDR usb dongle to recover a wedged device
+        :param self: this
+        """
+        try:
+            ok = self._usb_reset.reset(
+                self._reset_conf.get("vendor_id"),
+                self._reset_conf.get("product_ids", []),
+                settle_sec=int(self._reset_conf.get("settle_sec", 5)),
+                wait_sec=int(self._reset_conf.get("wait_sec", 20)),
+            )
+            if not ok:
+                self._emailer.send_error_notification(
+                    Exception(
+                        f"SDR usb reset failed for {self._reset_conf.get('vendor_id')}:"
+                        f"{self._reset_conf.get('product_ids')}"
+                    ),
+                    subject_prefix="SDR USB Reset",
+                )
+        except Exception as e:
+            self._emailer.send_error_notification(
+                e,
+                subject_prefix="SDR USB Reset",
+            )
 
     def log_metrics(self, start_time: datetime, end_time: datetime, duration: int, sensor_cnt: int):
         """
