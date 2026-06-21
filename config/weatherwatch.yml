@@ -159,6 +159,18 @@ sdr:
       id: 84
       channel: 1
       device: 20
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 238
+      channel: 1
+      device: 20
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 238
+      channel: 5
+      device: 20
 
 timelapse:
   enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}
