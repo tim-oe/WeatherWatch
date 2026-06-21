@@ -1,4 +1,3 @@
-import time
 from datetime import date, timedelta
 from pathlib import Path
 from typing import List
@@ -10,7 +9,6 @@ from conf.AppConfig import AppConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
-from util.Converter import Converter
 from util.Emailer import Emailer
 from util.Logger import logger
 
@@ -54,8 +52,6 @@ class Timelapse:
             return None
 
         try:
-            start = time.monotonic()
-
             if d is None:
                 d = date.today() - timedelta(days=1)
 
@@ -91,8 +87,6 @@ class Timelapse:
             finally:
                 video.release()
                 cv2.destroyAllWindows()
-
-            self.logger.info("time lapse for %s complete  duration %s", stamp, Converter.duration_seconds(start))
 
             return vid_file
         except Exception as e:
