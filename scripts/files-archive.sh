@@ -15,15 +15,14 @@ ARCHIVE_NAME="weather_files_${HOST}_${STAMP}.tar.gz"
 ARCHIVE_PATH="${FILES_DIR}/${ARCHIVE_NAME}"
 MANIFEST_PATH="${FILES_DIR}/weather_files_${HOST}_${STAMP}.manifest"
 
-# Paths to move (absolute). Missing optional paths are skipped with a warning.
+# Paths to archive (absolute). Missing optional paths are skipped with a warning.
+# pix/vid are created empty on the target by files-restore.sh; /mnt/backup/weather
+# is already a backup location and is not part of this archive.
 REQUIRED_PATHS=(
   /etc/environment
 )
 OPTIONAL_PATHS=(
   /etc/mysql/mariadb.conf.d
-  /var/lib/weatherwatch/pix
-  /var/lib/weatherwatch/vid
-  /mnt/backup/weather
 )
 
 die() {

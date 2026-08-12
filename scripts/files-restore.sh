@@ -7,11 +7,12 @@
 #   sudo ./scripts/files-restore.sh /mnt/clones/data/weather-migration/files/weather_files_HOST_STAMP.tar.gz
 #   sudo MIG_ROOT=/mnt/clones/data/weather-migration ./scripts/files-restore.sh
 #
-# By default restores:
+# Restores:
 #   /etc/environment
+#
+# Creates empty service dirs (pix/vid are not part of the initial archive):
 #   /var/lib/weatherwatch/pix
 #   /var/lib/weatherwatch/vid
-#   /mnt/backup/weather
 #
 # MariaDB drop-ins are extracted to a review dir only (not into /etc/mysql),
 # because stock package files differ between Bookworm 10.11 and Trixie 11.8.
@@ -25,11 +26,12 @@ ARCHIVE_PATH=""
 
 RESTORE_PREFIXES=(
   etc/environment
-  var/lib/weatherwatch/pix
-  var/lib/weatherwatch/vid
-  mnt/backup/weather
 )
 MYSQL_PREFIX="etc/mysql/mariadb.conf.d"
+DATA_DIRS=(
+  /var/lib/weatherwatch/pix
+  /var/lib/weatherwatch/vid
+)
 
 die() {
   echo "ERROR: $*" >&2
@@ -99,9 +101,14 @@ list_members() {
 }
 
 prepare_dest_dirs() {
-  mkdir -p /var/lib/weatherwatch/pix
-  mkdir -p /var/lib/weatherwatch/vid
-  mkdir -p /mnt/backup/weather
+  local dir
+  mkdir -p /var/lib/weatherwatch
+  for dir in "${DATA_DIRS[@]}"; do
+    mkdir -p "${dir}"
+    chmod 755 "${dir}"
+    echo "Ensured empty data dir: ${dir}"
+  done
+  chmod 755 /var/lib/weatherwatch
 }
 
 extract_selected() {
@@ -115,7 +122,6 @@ extract_selected() {
   local -a mysql_members=()
 
   for member in "${members[@]}"; do
-    # skip directory-only entries for prefix matching of files; tar needs dirs too
     for prefix in "${RESTORE_PREFIXES[@]}"; do
       if [[ "${member}" == "${prefix}" || "${member}" == "${prefix}/"* ]]; then
         restore_members+=("${member}")
@@ -155,9 +161,6 @@ extract_selected() {
 }
 
 fix_perms() {
-  # Ensure service data dirs exist and are traversable even if archive omitted them
-  mkdir -p /var/lib/weatherwatch/pix /var/lib/weatherwatch/vid /mnt/backup/weather
-  chmod 755 /var/lib/weatherwatch /var/lib/weatherwatch/pix /var/lib/weatherwatch/vid || true
   chmod 644 /etc/environment || true
 }
 
@@ -175,7 +178,7 @@ main() {
   echo "  ${ARCHIVE_PATH}"
   echo
   echo "Confirm:"
-  echo "  ls -la /etc/environment /var/lib/weatherwatch /mnt/backup/weather"
+  echo "  ls -la /etc/environment /var/lib/weatherwatch/pix /var/lib/weatherwatch/vid"
 }
 
 main "$@"
