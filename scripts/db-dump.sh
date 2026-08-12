@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Migration dump of the cleaned weather schema (after stale-table drops).
-# Excludes apscheduler_jobs; the scheduler rebuilds jobs on startup.
+# Logical dump of the entire weather schema as it stands: every table
+# (including apscheduler_jobs and any stale *_old / *_tmp leftovers),
+# plus routines, events, and triggers.
+# Writes a fixed path so each run overwrites the file restore reads.
 #
 # Usage:
 #   sudo ./scripts/db-dump.sh
@@ -10,11 +12,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=db-common.sh
 source "${SCRIPT_DIR}/db-common.sh"
 
-HOST="$(hostname -s)"
-STAMP="$(date +%Y%m%d_%H%M%S)"
-DUMP_NAME="weather_${HOST}_${STAMP}.sql.gz"
-DUMP_PATH="${DB_DIR}/${DUMP_NAME}"
-
 main() {
   need_root
   resolve_clients
@@ -22,20 +19,17 @@ main() {
   require_server
   require_database
 
-  local archive
-  archive="$(latest_premigration_archive)"
-  [[ -n "${archive}" ]] || die "no pre-migration archive in ${DB_DIR}; run db-archive.sh first"
-
-  dump_weather "${DUMP_PATH}" --ignore-table="${DATABASE}.apscheduler_jobs"
+  dump_weather "$(default_dump_path)"
 
   echo
-  echo "Migration dump complete."
-  echo "  dump:     ${DUMP_PATH}"
-  echo "  checksum: ${DUMP_PATH}.sha256"
-  echo "  archive:  ${archive}"
+  echo "Dump complete (full ${DATABASE} schema)."
+  echo "  dump:     $(default_dump_path)"
+  echo "  checksum: $(default_dump_path).sha256"
   echo
   echo "Verify with:"
   echo "  (cd ${DB_DIR} && sha256sum -c ${DUMP_NAME}.sha256)"
+  echo "Restore on the new host with:"
+  echo "  sudo ${SCRIPT_DIR}/db-restore.sh"
 }
 
 main "$@"

@@ -8,6 +8,7 @@ DB_DIR="${MIG_ROOT}/db"
 INV_DIR="${MIG_ROOT}/inventory"
 DATABASE="${DATABASE:-weather}"
 GZIP_LEVEL="${GZIP_LEVEL:-6}"
+DUMP_NAME="${DUMP_NAME:-weather.sql.gz}"
 
 _DB_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${_DB_COMMON_DIR}/.." && pwd)"
@@ -104,15 +105,20 @@ verify_checksum() {
   (cd "${dir}" && sha256sum -c "${base}.sha256")
 }
 
+default_dump_path() {
+  printf '%s\n' "${DB_DIR}/${DUMP_NAME}"
+}
+
 latest_premigration_archive() {
   ls -1t "${DB_DIR}"/weather_premigration_*.sql.gz 2>/dev/null | head -n1 || true
 }
 
 latest_migration_dump() {
-  # Migration dumps are weather_<host>_<stamp>.sql.gz, not premigration keepsakes.
-  ls -1t "${DB_DIR}"/weather_*.sql.gz 2>/dev/null \
-    | grep -v '/weather_premigration_' \
-    | head -n1 || true
+  local path
+  path="$(default_dump_path)"
+  if [[ -f "${path}" ]]; then
+    printf '%s\n' "${path}"
+  fi
 }
 
 dump_weather() {

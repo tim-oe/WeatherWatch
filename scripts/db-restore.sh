@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Restore a migration dump into the local MariaDB 11.8 instance.
-# Run on tec-weather2 after CREATE DATABASE weather and the weather/pyway users exist.
-# Do not run pyway migrate first — the dump carries the pyway history table.
+# Restore a weather schema dump into the local MariaDB instance.
+# Restores the dump as-is (all tables, including apscheduler_jobs and stale leftovers).
+# Run on tec-weather2 after db-init.sh. Do not run pyway migrate first.
 #
 # Usage:
 #   sudo ./scripts/db-restore.sh
-#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather_HOST_STAMP.sql.gz
+#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql.gz
 #   sudo ./scripts/db-restore.sh --force   # replace tables if weather is not empty
 set -euo pipefail
 
@@ -63,7 +63,7 @@ main() {
   if [[ -z "${DUMP_PATH}" ]]; then
     DUMP_PATH="$(latest_migration_dump)"
   fi
-  [[ -n "${DUMP_PATH}" ]] || die "no weather_*.sql.gz dump under ${DB_DIR}"
+  [[ -n "${DUMP_PATH}" ]] || die "no ${DUMP_NAME} dump under ${DB_DIR} (run db-dump.sh first)"
   [[ -f "${DUMP_PATH}" ]] || die "dump not found: ${DUMP_PATH}"
 
   verify_checksum "${DUMP_PATH}"
