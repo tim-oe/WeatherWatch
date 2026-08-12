@@ -8,7 +8,6 @@ from conf.DatabaseConfig import DatabaseConfig
 
 
 class DatabaseConfigTest(unittest.TestCase):
-    URL_MATCH = "mariadb\\+mariadbconnector://(.*?):(.*?)@127.0.0.1:3306/weather"
 
     def test(self):
         ac = AppConfig()
@@ -16,7 +15,7 @@ class DatabaseConfigTest(unittest.TestCase):
         print(ac.database)
         pprint.pprint(ac.database.__dict__)
 
-        self.assertRegex(str(ac.database.url), DatabaseConfigTest.URL_MATCH)
+        self.assertRegex(str(ac.database.url), r".+://.+:.+@.+:\d+/weather")
 
     def test_pool_properties(self):
         ac = AppConfig()

@@ -76,11 +76,11 @@ addopts = [
     "--cov=weatherwatch",
     "--cov-report=html:reports/coverage",
     "--cov-report=xml:reports/coverage.xml",
-    "-m", "not integration and not db"
+    "-m", "not integration"
 ]
 markers = [
-    "integration: tests that require physical SDR hardware or a live database (deselected by default)",
-    "db: tests that require a MariaDB container via testcontainers (deselected by default)"
+    "integration: tests that require physical SDR/sensor hardware (deselected by default)",
+    "db: optional filter for tests that talk to MariaDB; the testcontainer always starts"
 ]
 
 # https://coverage.readthedocs.io/en/7.6.3/

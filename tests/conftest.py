@@ -1,6 +1,5 @@
 import os
 
-import pytest
 from pyway.configfile import ConfigFile
 from pyway.migrate import Migrate
 from testcontainers.mysql import MySqlContainer
@@ -15,23 +14,27 @@ _DB_ROOT_PASS = "weather"
 _MIGRATION_DIR = "sql/schema"
 _PYWAY_TABLE = "pyway"
 
+_INJECTED_ENV = (
+    "WW_DB_HOST",
+    "WW_DB_PORT",
+    "WW_PORT",
+    "WW_DB_USERNAME",
+    "WW_DB_PASSWORD",
+    "WW_DB_NAME",
+    "WW_DB_DIALECT",
+    "WW_DB_DRIVER",
+    "WW_DB_PROD",
+)
+
 
 @pytest.fixture(scope="session", autouse=True)
-def mariadb_container(request):
-    """Session-scoped MariaDB testcontainer for @pytest.mark.db tests.
+def mariadb_container():
+    """Session-scoped MariaDB testcontainer for the whole pytest run.
 
-    Skips Docker startup entirely when no db-marked tests are selected (e.g. the
-    default unit-test run).  When db tests are present:
-      1. Starts a MariaDB 11 container.
-      2. Loads timezone tables so migrations that SET TIME_ZONE = 'America/Chicago' work.
-      3. Runs all migrations from sql/schema/ via pyway — the single source of truth.
-      4. Points AppConfig / DataStore at the container via env vars.
+    Every test that talks to MariaDB (repository, dashboard sample load,
+    CameraSvc, WuSvc, backups, integration) must hit this container, not
+    the host weather database. Docker is required for pytest.
     """
-    db_tests = [item for item in request.session.items if item.get_closest_marker("db")]
-    if not db_tests:
-        yield None
-        return
-
     with MySqlContainer(
         image="mariadb:11",
         dialect="pymysql",
@@ -43,8 +46,6 @@ def mariadb_container(request):
         host = container.get_container_host_ip()
         port = container.get_exposed_port(3306)
 
-        # Load IANA timezone tables so migration files that reference named
-        # timezones (e.g. 'America/Chicago') execute without error.
         tz_result = container.exec(
             ["bash", "-c",
              f"mariadb-tzinfo-to-sql /usr/share/zoneinfo "
@@ -56,7 +57,6 @@ def mariadb_container(request):
             f"{tz_result.output.decode()}"
         )
 
-        # Run all schema migrations via pyway — no duplicate DDL files needed.
         cfg = ConfigFile()
         cfg.database_type = "mysql"
         cfg.database_host = host
@@ -68,9 +68,10 @@ def mariadb_container(request):
         cfg.database_table = _PYWAY_TABLE
         Migrate(cfg).run()
 
-        # Inject connection params so AppConfig / DataStore point at the container.
         os.environ["WW_DB_HOST"] = host
         os.environ["WW_DB_PORT"] = str(port)
+        # weatherwatch.yml reads port from WW_PORT, not WW_DB_PORT
+        os.environ["WW_PORT"] = str(port)
         os.environ["WW_DB_USERNAME"] = _DB_USER
         os.environ["WW_DB_PASSWORD"] = _DB_PASS
         os.environ["WW_DB_NAME"] = _DB_NAME
@@ -78,8 +79,6 @@ def mariadb_container(request):
         os.environ["WW_DB_DRIVER"] = "pymysql"
         os.environ["WW_DB_PROD"] = "false"
 
-        # Reset singletons so the first repository call re-initialises them
-        # using the env vars above.
         AppConfig.inst = None
         AppConfig.inited = False
         DataStore.inst = None
@@ -87,11 +86,9 @@ def mariadb_container(request):
 
         yield container
 
-        # Teardown: restore singleton state and remove injected env vars.
         AppConfig.inst = None
         AppConfig.inited = False
         DataStore.inst = None
         DataStore.inited = False
-        for key in ("WW_DB_HOST", "WW_DB_PORT", "WW_DB_USERNAME", "WW_DB_PASSWORD",
-                    "WW_DB_NAME", "WW_DB_DIALECT", "WW_DB_DRIVER", "WW_DB_PROD"):
+        for key in _INJECTED_ENV:
             os.environ.pop(key, None)

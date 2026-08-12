@@ -79,13 +79,13 @@
 - list dependencies
     - ```poetry show```
 - testing
-    - unit tests (default, no hardware or DB required):
+    - default (`poetry run pytest`) starts a throwaway MariaDB via Docker/testcontainers and runs unit + repository/dashboard tests against it. Hardware tests stay deselected.
         - all:    ```poetry run pytest```
         - single: ```poetry run pytest -v -s <path/to/test/file.py>```
-    - database tests (spin up MariaDB via testcontainers, requires Docker):
+    - database-only filter (same container; does not use the host `weather` schema):
         - all:    ```poetry run pytest -m db```
         - single: ```poetry run pytest -v -s -m db <path/to/test/file.py>```
-    - integration tests (require physical SDR hardware and a live database):
+    - integration tests (physical SDR/sensors; MariaDB still the testcontainer, not prod):
         - all:    ```poetry run pytest -m integration```
         - single: ```poetry run pytest -v -s -m integration <path/to/test/file.py>```
     - all tests (unit + db + integration):
