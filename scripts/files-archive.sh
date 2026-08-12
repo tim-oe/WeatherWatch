@@ -5,6 +5,12 @@
 # Usage:
 #   sudo ./scripts/files-archive.sh
 #   sudo MIG_ROOT=/mnt/clones/data/weather-migration ./scripts/files-archive.sh
+#
+# Archives:
+#   /etc/environment
+#
+# pix/vid are created empty on the target by files-restore.sh.
+# MariaDB drop-ins are not archived: the Trixie package install is vanilla.
 set -euo pipefail
 
 MIG_ROOT="${MIG_ROOT:-/mnt/clones/data/weather-migration}"
@@ -15,14 +21,8 @@ ARCHIVE_NAME="weather_files_${HOST}_${STAMP}.tar.gz"
 ARCHIVE_PATH="${FILES_DIR}/${ARCHIVE_NAME}"
 MANIFEST_PATH="${FILES_DIR}/weather_files_${HOST}_${STAMP}.manifest"
 
-# Paths to archive (absolute). Missing optional paths are skipped with a warning.
-# pix/vid are created empty on the target by files-restore.sh; /mnt/backup/weather
-# is already a backup location and is not part of this archive.
 REQUIRED_PATHS=(
   /etc/environment
-)
-OPTIONAL_PATHS=(
-  /etc/mysql/mariadb.conf.d
 )
 
 die() {
@@ -31,7 +31,7 @@ die() {
 }
 
 need_root() {
-  [[ "${EUID}" -eq 0 ]] || die "run as root (needed to read /etc and data dirs)"
+  [[ "${EUID}" -eq 0 ]] || die "run as root (needed to read /etc/environment)"
 }
 
 ensure_staging() {
@@ -46,14 +46,6 @@ collect_paths() {
   for path in "${REQUIRED_PATHS[@]}"; do
     [[ -e "${path}" ]] || die "required path missing: ${path}"
     INCLUDE_PATHS+=("${path}")
-  done
-
-  for path in "${OPTIONAL_PATHS[@]}"; do
-    if [[ -e "${path}" ]]; then
-      INCLUDE_PATHS+=("${path}")
-    else
-      echo "WARN: optional path missing, skipping: ${path}" >&2
-    fi
   done
 }
 
@@ -81,7 +73,6 @@ build_archive() {
   local -a tar_args=()
   local path
 
-  # Store paths relative to / so restore can extract onto /
   for path in "${INCLUDE_PATHS[@]}"; do
     tar_args+=("${path#/}")
   done

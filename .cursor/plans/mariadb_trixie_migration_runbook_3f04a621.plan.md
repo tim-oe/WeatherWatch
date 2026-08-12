@@ -6,10 +6,10 @@ todos:
     content: "Create the NFS staging layout /mnt/clones/data/weather-migration/{files,db,inventory} with a LAYOUT.txt describing each subdir"
     status: completed
   - id: files-archive
-    content: "Write scripts/files-archive.sh: tar/gzip /etc/environment and /etc/mysql/mariadb.conf.d to the share with a sha256 sidecar and manifest (pix/vid/backup are not part of the initial archive)"
+    content: "Write scripts/files-archive.sh: tar/gzip /etc/environment to the share with a sha256 sidecar and manifest (pix/vid start empty; MariaDB drop-ins are not archived)"
     status: completed
   - id: files-restore
-    content: "Write scripts/files-restore.sh: verify checksum, restore /etc/environment, create empty /var/lib/weatherwatch/{pix,vid}, hold MariaDB drop-ins in a review dir unless --include-mysql-conf is passed"
+    content: "Write scripts/files-restore.sh: verify checksum, restore /etc/environment via a temp dir, create empty /var/lib/weatherwatch/{pix,vid}; ignore MariaDB drop-ins"
     status: completed
   - id: archive-script
     content: "Write scripts/db-archive.sh: pre-migration logical dump of the whole weather schema including stale tables to /mnt/clones/data/weather-migration/db, gzipped with sha256 sidecar and a manifest"
@@ -59,8 +59,8 @@ Already done: the staging layout on the share, and both host-file scripts.
   inventory/  before/after inventory text for diffing
 ```
 
-- [scripts/files-archive.sh](scripts/files-archive.sh) — packs `/etc/environment` and `/etc/mysql/mariadb.conf.d` into `files/weather_files_<host>_<stamp>.tar.gz` with a sha256 sidecar and a manifest. `/etc/environment` is required; the mysql drop-ins are skipped with a warning if absent. pix, vid and `/mnt/backup/weather` are not archived: the first two start empty on the new card, and the last is already a backup location.
-- [scripts/files-restore.sh](scripts/files-restore.sh) — verifies the checksum, backs up any existing `/etc/environment`, extracts it onto `/`, and creates empty `/var/lib/weatherwatch/pix` and `/var/lib/weatherwatch/vid`. MariaDB drop-ins land in a review directory rather than `/etc/mysql`, since the stock 10.11 and 11.8 packages ship different defaults; `--include-mysql-conf` installs them anyway.
+- [scripts/files-archive.sh](scripts/files-archive.sh) — packs `/etc/environment` into `files/weather_files_<host>_<stamp>.tar.gz` with a sha256 sidecar and a manifest. pix and vid start empty on the new card. MariaDB drop-ins are not archived: the Trixie install is vanilla and `/mnt/backup/weather` is already a backup location.
+- [scripts/files-restore.sh](scripts/files-restore.sh) — verifies the checksum, backs up any existing `/etc/environment`, extracts it through a temp dir (so GNU tar does not scan live `/etc/mysql`), and creates empty `/var/lib/weatherwatch/pix` and `/var/lib/weatherwatch/vid`. Extra members in an older archive, including MariaDB drop-ins, are ignored.
 
 ## Approach: logical dump, not a datadir copy
 
@@ -134,13 +134,13 @@ plus a `sha256sum` sidecar file. The archive script above is the same call minus
 
 ## Runbook phases
 
-**Phase 0, on tec-weather.** App units are already down. `sudo systemctl start mariadb` to make the schema readable again, leaving `weatherwatch` and `weatherdash` stopped. Run the db archive script and verify its checksum. Run the stale-table report, review the generated drops, apply them. Then run the inventory script — this is the comparison baseline, so it has to be taken after the drops. Run the migration dump. Run [scripts/files-archive.sh](scripts/files-archive.sh) for `/etc/environment` (holds the DB and Weather Underground creds per [config/etc/environment](config/etc/environment)) and the `/etc/mysql/mariadb.conf.d/` drop-ins. pix, vid and `/mnt/backup/weather` stay on the origin card. Note the maximum `read_time` from the inventory — that timestamp is the boundary the new station's first rows should sit after. Then power down and **shelf the card untouched** — that is the second rollback.
+**Phase 0, on tec-weather.** App units are already down. `sudo systemctl start mariadb` to make the schema readable again, leaving `weatherwatch` and `weatherdash` stopped. Run the db archive script and verify its checksum. Run the stale-table report, review the generated drops, apply them. Then run the inventory script — this is the comparison baseline, so it has to be taken after the drops. Run the migration dump. Run [scripts/files-archive.sh](scripts/files-archive.sh) for `/etc/environment` (holds the DB and Weather Underground creds per [config/etc/environment](config/etc/environment)). pix, vid, MariaDB drop-ins and `/mnt/backup/weather` stay on the origin card. Note the maximum `read_time` from the inventory — that timestamp is the boundary the new station's first rows should sit after. Then power down and **shelf the card untouched** — that is the second rollback.
 
 **Phase 1, finish the new card.** Mostly done: OS, playbooks, repo and `poetry install`. Remaining is `mariadb-secure-installation`, setting the timezone to match tec-weather and confirming `@@global.time_zone` agrees **before** any restore, then creating the `weather` database and the `weather` / `pyway` users with the grants from [docs/SETUP.md](docs/SETUP.md). Do **not** run `pyway migrate` here — the restore carries the `pyway` history table, and migrating first would collide with it.
 
 **Phase 1.5, shakeout on tec-weather2, before the restore.** `poetry run pytest` runs unit-only by default (`-m "not integration and not db"` in [pyproject.toml](pyproject.toml)), which exercises imports, config loading and the mocked services without touching a database. If Docker is on the card, `poetry run pytest -m db` additionally spins a `mariadb:11` testcontainer and runs the schema through pyway per [tests/conftest.py](tests/conftest.py) — a clean check that the app works against 11.x independent of production data. Skip `-m integration`; it wants live SDR hardware. Fix anything that fails here rather than after the data has landed.
 
-**Phase 2, restore and verify.** Mount the share on tec-weather2, run the db restore script against the dump, and run [scripts/files-restore.sh](scripts/files-restore.sh) for `/etc/environment` plus empty pix/vid dirs. Review the extracted MariaDB drop-ins against the Trixie defaults before deciding whether to apply them. Run the inventory script again and diff against the Phase 0 output. Confirm partitions landed via `information_schema.PARTITIONS`. Confirm `aqi_clean` exists. Run `pyway info` and expect the full applied history with nothing pending.
+**Phase 2, restore and verify.** Mount the share on tec-weather2, run the db restore script against the dump, and run [scripts/files-restore.sh](scripts/files-restore.sh) for `/etc/environment` plus empty pix/vid dirs. Run the inventory script again and diff against the Phase 0 output. Confirm partitions landed via `information_schema.PARTITIONS`. Confirm `aqi_clean` exists. Run `pyway info` and expect the full applied history with nothing pending.
 
 **Phase 3, app cutover.** `/etc/environment` is already back from the files restore, so link the units from [systemd/](systemd/), enable and start, and tail `/var/log/WeatherWatch_err.log`. Sanity check that new rows are landing with `read_time` values after the Phase 0 boundary, and that the gap between the two matches the outage window rather than hinting at a timezone shift.
 

@@ -10,24 +10,18 @@
 # Restores:
 #   /etc/environment
 #
-# Creates empty service dirs (pix/vid are not part of the initial archive):
+# Creates empty service dirs (not part of the archive):
 #   /var/lib/weatherwatch/pix
 #   /var/lib/weatherwatch/vid
 #
-# MariaDB drop-ins are extracted to a review dir only (not into /etc/mysql),
-# because stock package files differ between Bookworm 10.11 and Trixie 11.8.
-# Pass --include-mysql-conf to also install etc/mysql/mariadb.conf.d into place.
+# MariaDB drop-ins are ignored even if an older archive contains them.
+# Extract goes through a temp dir so GNU tar does not scan live /etc/mysql.
 set -euo pipefail
 
 MIG_ROOT="${MIG_ROOT:-/mnt/clones/data/weather-migration}"
 FILES_DIR="${MIG_ROOT}/files"
-INCLUDE_MYSQL_CONF=0
 ARCHIVE_PATH=""
-
-RESTORE_PREFIXES=(
-  etc/environment
-)
-MYSQL_PREFIX="etc/mysql/mariadb.conf.d"
+ENV_MEMBER="etc/environment"
 DATA_DIRS=(
   /var/lib/weatherwatch/pix
   /var/lib/weatherwatch/vid
@@ -40,7 +34,7 @@ die() {
 
 usage() {
   cat <<'EOF'
-Usage: sudo ./scripts/files-restore.sh [archive.tar.gz] [--include-mysql-conf]
+Usage: sudo ./scripts/files-restore.sh [archive.tar.gz]
 
 Environment:
   MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
@@ -60,7 +54,7 @@ parse_args() {
         exit 0
         ;;
       --include-mysql-conf)
-        INCLUDE_MYSQL_CONF=1
+        echo "WARN: --include-mysql-conf is ignored; MariaDB drop-ins are not restored" >&2
         ;;
       -*)
         die "unknown option: ${arg}"
@@ -96,10 +90,6 @@ verify_checksum() {
   (cd "${dir}" && sha256sum -c "${base}.sha256")
 }
 
-list_members() {
-  tar -tzf "${ARCHIVE_PATH}"
-}
-
 prepare_dest_dirs() {
   local dir
   mkdir -p /var/lib/weatherwatch
@@ -111,57 +101,24 @@ prepare_dest_dirs() {
   chmod 755 /var/lib/weatherwatch
 }
 
-extract_selected() {
-  local -a members=()
-  local member prefix
-  local review_dir
+extract_environment() {
+  local tmp
+  tar -tzf "${ARCHIVE_PATH}" | grep -qx "${ENV_MEMBER}" \
+    || die "archive is missing ${ENV_MEMBER}"
 
-  mapfile -t members < <(list_members)
-
-  local -a restore_members=()
-  local -a mysql_members=()
-
-  for member in "${members[@]}"; do
-    for prefix in "${RESTORE_PREFIXES[@]}"; do
-      if [[ "${member}" == "${prefix}" || "${member}" == "${prefix}/"* ]]; then
-        restore_members+=("${member}")
-        continue 2
-      fi
-    done
-    if [[ "${member}" == "${MYSQL_PREFIX}" || "${member}" == "${MYSQL_PREFIX}/"* ]]; then
-      mysql_members+=("${member}")
-    fi
-  done
-
-  [[ ${#restore_members[@]} -gt 0 ]] || die "archive has none of the expected restore paths"
-
-  # Backup existing /etc/environment if present
   if [[ -f /etc/environment ]]; then
     cp -a /etc/environment "/etc/environment.pre-migration.$(date +%Y%m%d_%H%M%S)"
   fi
 
-  echo "Restoring ${#restore_members[@]} path(s) onto /"
-  tar -C / -xzf "${ARCHIVE_PATH}" "${restore_members[@]}"
-
-  if [[ ${#mysql_members[@]} -gt 0 ]]; then
-    review_dir="${MIG_ROOT}/files/mysql-conf-review-$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "${review_dir}"
-    tar -C "${review_dir}" -xzf "${ARCHIVE_PATH}" "${mysql_members[@]}"
-    echo "MariaDB drop-ins extracted for review under:"
-    echo "  ${review_dir}/${MYSQL_PREFIX}"
-
-    if [[ "${INCLUDE_MYSQL_CONF}" -eq 1 ]]; then
-      mkdir -p /etc/mysql/mariadb.conf.d
-      echo "Installing MariaDB drop-ins into /etc/mysql/mariadb.conf.d (--include-mysql-conf)"
-      tar -C / -xzf "${ARCHIVE_PATH}" "${mysql_members[@]}"
-    else
-      echo "Skipped installing mysql conf (pass --include-mysql-conf to apply)."
-    fi
-  fi
-}
-
-fix_perms() {
-  chmod 644 /etc/environment || true
+  tmp="$(mktemp -d)"
+  # Extract off to the side so GNU tar never walks live /etc (and /etc/mysql).
+  tar --no-recursion --anchored --no-wildcards \
+    -xzf "${ARCHIVE_PATH}" -C "${tmp}" "${ENV_MEMBER}"
+  [[ -f "${tmp}/${ENV_MEMBER}" ]] || die "extract did not produce /${ENV_MEMBER}"
+  cp -a "${tmp}/${ENV_MEMBER}" /etc/environment
+  rm -rf "${tmp}"
+  chmod 644 /etc/environment
+  echo "Restored /etc/environment"
 }
 
 main() {
@@ -170,8 +127,7 @@ main() {
   resolve_archive
   verify_checksum
   prepare_dest_dirs
-  extract_selected
-  fix_perms
+  extract_environment
 
   echo
   echo "Restore complete from:"
