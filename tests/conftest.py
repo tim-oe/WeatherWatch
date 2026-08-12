@@ -1,5 +1,7 @@
 import os
+from pathlib import Path
 
+import pymysql
 import pytest
 from pyway.configfile import ConfigFile
 from pyway.migrate import Migrate
@@ -14,6 +16,7 @@ _DB_PASS = "weather"
 _DB_ROOT_PASS = "weather"
 _MIGRATION_DIR = "sql/schema"
 _PYWAY_TABLE = "pyway"
+_AQI_CLEAN_SQL = Path("sql/sp/aqi_clean.sql")
 
 _INJECTED_ENV = (
     "WW_DB_HOST",
@@ -68,6 +71,7 @@ def mariadb_container():
         cfg.database_migration_dir = _MIGRATION_DIR
         cfg.database_table = _PYWAY_TABLE
         Migrate(cfg).run()
+        _load_aqi_clean(host, int(port))
 
         os.environ["WW_DB_HOST"] = host
         os.environ["WW_DB_PORT"] = str(port)
@@ -93,3 +97,27 @@ def mariadb_container():
         DataStore.inited = False
         for key in _INJECTED_ENV:
             os.environ.pop(key, None)
+
+
+def _load_aqi_clean(host: str, port: int) -> None:
+    """Apply sql/sp/aqi_clean.sql; it is not a pyway migration."""
+    raw = _AQI_CLEAN_SQL.read_text(encoding="utf-8")
+    stripped = "\n".join(
+        line for line in raw.splitlines()
+        if not line.strip().upper().startswith("DELIMITER")
+    )
+    statements = [s.strip() for s in stripped.split("//") if s.strip()]
+    conn = pymysql.connect(
+        host=host,
+        port=port,
+        user="root",
+        password=_DB_ROOT_PASS,
+        database=_DB_NAME,
+        autocommit=True,
+    )
+    try:
+        with conn.cursor() as cur:
+            for stmt in statements:
+                cur.execute(stmt)
+    finally:
+        conn.close()
