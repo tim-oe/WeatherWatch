@@ -13,19 +13,19 @@ todos:
     status: completed
   - id: archive-script
     content: "Write scripts/db-archive.sh: pre-migration logical dump of the whole weather schema including stale tables to /mnt/clones/data/weather-migration/db, gzipped with sha256 sidecar and a manifest"
-    status: pending
+    status: completed
   - id: stale-tables
     content: "Write scripts/db-stale-tables.sh: report non-canonical tables (timestamped *_old, *_tmp leftovers) with row counts and sizes, and emit ready-to-run DROP statements for review, gated on the archive existing"
-    status: pending
+    status: completed
   - id: inventory-script
     content: "Write scripts/db-inventory.sh: per-table counts, min/max read_time, max id, numeric aggregates, SHOW CREATE TABLE, partition listing, server version and time_zone, to a diffable text file"
-    status: pending
+    status: completed
   - id: dump-script
     content: "Write scripts/db-dump.sh: mariadb-dump with --single-transaction --quick --hex-blob --routines --events --triggers, excluding apscheduler_jobs, gzipped to the NFS share with a sha256 sidecar"
-    status: pending
+    status: completed
   - id: restore-script
     content: "Write scripts/db-restore.sh: verify checksum, restore from the share into the new 11.8 instance, re-apply sql/sp/aqi_clean.sql, report results"
-    status: pending
+    status: completed
   - id: shakeout
     content: "Run the unit suite (and optionally -m db) on tec-weather2 before the restore, as the gate that the image, venv and app code are sound"
     status: pending
