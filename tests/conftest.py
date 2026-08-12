@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from pyway.configfile import ConfigFile
 from pyway.migrate import Migrate
 from testcontainers.mysql import MySqlContainer
