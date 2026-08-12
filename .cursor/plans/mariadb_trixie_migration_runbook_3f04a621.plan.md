@@ -1,9 +1,18 @@
 ---
 name: MariaDB Trixie Migration Runbook
-overview: Move the `weather` schema from the Bookworm station (MariaDB 10.11.14) to a fresh Trixie SD card (MariaDB 11.8.6) via a logical dump/restore staged on the NFS share at /mnt/clones/data/weather-migration, preceded by a full pre-migration archive and a cleanup of the stale *_old tables. Deliverables are a `docs/MIGRATION.md` runbook plus archive/dump/restore/verify scripts, and repo updates so dev matches the new prod version.
+overview: Move the `weather` schema from the origin station tec-weather (Bookworm, MariaDB 10.11.14) to the new card tec-weather2 (Trixie, MariaDB 11.8.6) via a logical dump/restore staged on the NFS share at /mnt/clones/data/weather-migration, preceded by a full pre-migration archive and a cleanup of the stale *_old tables. Host files move via the completed scripts/files-archive.sh and scripts/files-restore.sh. Collection on tec-weather is already halted, so the remaining work is on a clock. Deliverables are a `docs/MIGRATION.md` runbook plus the db archive/dump/restore/verify scripts, and repo updates so dev matches the new prod version.
 todos:
+  - id: staging-layout
+    content: "Create the NFS staging layout /mnt/clones/data/weather-migration/{files,db,inventory} with a LAYOUT.txt describing each subdir"
+    status: completed
+  - id: files-archive
+    content: "Write scripts/files-archive.sh: tar/gzip /etc/environment, /etc/mysql/mariadb.conf.d, pix, vid and /mnt/backup/weather to the share with a sha256 sidecar and manifest"
+    status: completed
+  - id: files-restore
+    content: "Write scripts/files-restore.sh: verify checksum and extract host files on the target, with MariaDB drop-ins held in a review dir unless --include-mysql-conf is passed"
+    status: completed
   - id: archive-script
-    content: "Write scripts/db-archive.sh: pre-migration logical dump of the whole weather schema including stale tables to /mnt/clones/data/weather-migration, gzipped with sha256 sidecar and a manifest"
+    content: "Write scripts/db-archive.sh: pre-migration logical dump of the whole weather schema including stale tables to /mnt/clones/data/weather-migration/db, gzipped with sha256 sidecar and a manifest"
     status: pending
   - id: stale-tables
     content: "Write scripts/db-stale-tables.sh: report non-canonical tables (timestamped *_old, *_tmp leftovers) with row counts and sizes, and emit ready-to-run DROP statements for review, gated on the archive existing"
@@ -17,16 +26,41 @@ todos:
   - id: restore-script
     content: "Write scripts/db-restore.sh: verify checksum, restore from the share into the new 11.8 instance, re-apply sql/sp/aqi_clean.sql, report results"
     status: pending
+  - id: shakeout
+    content: "Run the unit suite (and optionally -m db) on tec-weather2 before the restore, as the gate that the image, venv and app code are sound"
+    status: pending
   - id: runbook
-    content: Write docs/MIGRATION.md with the four phases, collation and time-zone caveats, verification checklist, and rollback via the shelved SD card
+    content: Write docs/MIGRATION.md with the phases, collation and time-zone caveats, verification checklist, and rollback via the shelved SD card
     status: pending
   - id: repo-updates
     content: Bump mariadb-docker-compose.yml to mariadb:11.8 and update docs/SETUP.md Bookworm reference to Trixie with a link to the migration doc
+    status: pending
+  - id: rename
+    content: "Rename tec-weather2 to the permanent station name once the origin card is shelved, since tec-weather2 is a temporary name"
     status: pending
 isProject: false
 ---
 
 # MariaDB 10.11 to 11.8 station migration
+
+## Hosts and current status
+
+- **tec-weather** — the origin station, Bookworm with MariaDB 10.11.14. Powered on, but `weatherwatch`, `weatherdash` and `mariadb` are stopped and disabled. **Collection is halted**, so the dataset is frozen and every hour until cutover is a gap in the record.
+- **tec-weather2** — the new Trixie card, and a temporary name. OS burned, provisioning playbooks applied, repo cloned and `poetry install` done. MariaDB users, the `weather` database, timezone confirmation and host files still outstanding.
+
+Because `mariadb` is disabled on tec-weather, the archive/dump steps have to start it back up first. Start only `mariadb`, leave the two app units down, and the schema stays frozen while the dump runs.
+
+Already done: the staging layout on the share, and both host-file scripts.
+
+```
+/mnt/clones/data/weather-migration/
+  files/      host file archives (tar.gz + sha256 + manifest)
+  db/         MariaDB logical dumps
+  inventory/  before/after inventory text for diffing
+```
+
+- [scripts/files-archive.sh](scripts/files-archive.sh) — packs `/etc/environment`, `/etc/mysql/mariadb.conf.d`, `/var/lib/weatherwatch/pix`, `/var/lib/weatherwatch/vid` and `/mnt/backup/weather` into `files/weather_files_<host>_<stamp>.tar.gz` with a sha256 sidecar and a manifest. `/etc/environment` is required; the rest are skipped with a warning if absent.
+- [scripts/files-restore.sh](scripts/files-restore.sh) — verifies the checksum, backs up any existing `/etc/environment`, and extracts onto `/`. MariaDB drop-ins land in a review directory rather than `/etc/mysql`, since the stock 10.11 and 11.8 packages ship different defaults; `--include-mysql-conf` installs them anyway.
 
 ## Approach: logical dump, not a datadir copy
 
@@ -36,17 +70,18 @@ An in-place datadir move works in principle (MariaDB supports jumping major vers
 
 ```mermaid
 flowchart LR
-  oldPi["Old card: Bookworm + MariaDB 10.11.14"] -->|"full pre-migration archive"| nas
+  oldPi["tec-weather: Bookworm + MariaDB 10.11.14"] -->|"full pre-migration archive"| nas
+  oldPi -->|"files-archive.sh"| nas
   oldPi --> drop["Drop stale *_old / *_tmp tables"]
   drop -->|"mariadb-dump, gzip"| nas["/mnt/clones/data/weather-migration on tec-truenas"]
   oldPi -.->|"shelf, untouched rollback"| shelf["Old SD card"]
-  nas -->|"restore"| newPi["New card: Trixie + MariaDB 11.8.6"]
+  nas -->|"restore + files-restore.sh"| newPi["tec-weather2: Trixie + MariaDB 11.8.6"]
   newPi --> verify["Row count / min-max / aggregate compare"]
 ```
 
 ## Staging location
 
-Everything lands on the NFS share at `/mnt/clones/data/weather-migration/`, backed by `tec-truenas:/mnt/main/clones`, mounted read-write with 4.8T free. This replaces the earlier scp-to-tec-sdr idea: both Pis already mount it via fstab, so the new card just reads the files back rather than needing a second transfer.
+Everything lands on the NFS share at `/mnt/clones/data/weather-migration/`, backed by `tec-truenas:/mnt/main/clones`, mounted read-write with 4.8T free. This replaces the earlier scp-to-tec-sdr idea: both Pis already mount it via fstab, so the new card just reads the files back rather than needing a second transfer. The directory now exists with the `files/`, `db/` and `inventory/` subdirs and a `LAYOUT.txt`; the db scripts should write to `db/` and `inventory/` rather than the root, matching what the file scripts already do.
 
 ## Schema facts that shape the dump
 
@@ -94,19 +129,22 @@ mariadb-dump --single-transaction --quick --hex-blob \
 plus a `sha256sum` sidecar file. The archive script above is the same call minus `--ignore-table`, against the uncleaned schema.
 
 - **`scripts/db-restore.sh`** — checksum check, then `gunzip -c … | mariadb` reading straight off the share, then re-applies [sql/sp/aqi_clean.sql](sql/sp/aqi_clean.sql) and reports.
+- **[scripts/files-archive.sh](scripts/files-archive.sh)** and **[scripts/files-restore.sh](scripts/files-restore.sh)** — done, described under status above. Both are untracked in git and need committing with the rest.
 - **Repo updates**: bump [mariadb-docker-compose.yml](mariadb-docker-compose.yml) from `mariadb:10.11.6` (commented "match prod") to `mariadb:11.8`, and update the Bookworm reference in [docs/SETUP.md](docs/SETUP.md) to Trixie with a link to the new migration doc.
 
 ## Runbook phases
 
-**Phase 0, on the old card, before anything else.** `sudo systemctl stop weatherwatch weatherdash` to stop writes. Run the archive script and verify its checksum. Run the stale-table report, review the generated drops, apply them. Then run the inventory script — this is the comparison baseline, so it has to be taken after the drops. Run the migration dump. Also copy to the share: `/etc/environment` (holds the DB and Weather Underground creds per [config/etc/environment](config/etc/environment)), any `/etc/mysql/mariadb.conf.d/` drop-ins, and the data dirs the service points at, `/var/lib/weatherwatch/pix`, `/var/lib/weatherwatch/vid`, `/mnt/backup/weather`. Then power down and **shelf the card untouched** — that is the second rollback.
+**Phase 0, on tec-weather.** App units are already down. `sudo systemctl start mariadb` to make the schema readable again, leaving `weatherwatch` and `weatherdash` stopped. Run the db archive script and verify its checksum. Run the stale-table report, review the generated drops, apply them. Then run the inventory script — this is the comparison baseline, so it has to be taken after the drops. Run the migration dump. Run [scripts/files-archive.sh](scripts/files-archive.sh) for `/etc/environment` (holds the DB and Weather Underground creds per [config/etc/environment](config/etc/environment)), the `/etc/mysql/mariadb.conf.d/` drop-ins and the data dirs. Note the maximum `read_time` from the inventory — that timestamp is the boundary the new station's first rows should sit after. Then power down and **shelf the card untouched** — that is the second rollback.
 
-**Phase 1, build the new card.** Trixie image, `apt install mariadb-server` (11.8.6), set timezone, `mariadb-secure-installation`, create the `weather` database and the `weather` / `pyway` users with the grants from [docs/SETUP.md](docs/SETUP.md).
+**Phase 1, finish the new card.** Mostly done: OS, playbooks, repo and `poetry install`. Remaining is `mariadb-secure-installation`, setting the timezone to match tec-weather and confirming `@@global.time_zone` agrees **before** any restore, then creating the `weather` database and the `weather` / `pyway` users with the grants from [docs/SETUP.md](docs/SETUP.md). Do **not** run `pyway migrate` here — the restore carries the `pyway` history table, and migrating first would collide with it.
 
-**Phase 2, restore and verify.** Mount the share on the new card, run the restore script against the dump on it, run the inventory script again, diff against the Phase 0 output. Confirm partitions landed via `information_schema.PARTITIONS`. Confirm `aqi_clean` exists. Run `pyway info` and expect the full applied history with nothing pending.
+**Phase 1.5, shakeout on tec-weather2, before the restore.** `poetry run pytest` runs unit-only by default (`-m "not integration and not db"` in [pyproject.toml](pyproject.toml)), which exercises imports, config loading and the mocked services without touching a database. If Docker is on the card, `poetry run pytest -m db` additionally spins a `mariadb:11` testcontainer and runs the schema through pyway per [tests/conftest.py](tests/conftest.py) — a clean check that the app works against 11.x independent of production data. Skip `-m integration`; it wants live SDR hardware. Fix anything that fails here rather than after the data has landed.
 
-**Phase 3, app cutover.** Clone to `/opt/WeatherWatch`, `poetry install`, restore `/etc/environment`, link the units from [systemd/](systemd/), start, and tail `/var/log/WeatherWatch_err.log`. Sanity check that new rows are landing with sane `read_time` values relative to the migrated history.
+**Phase 2, restore and verify.** Mount the share on tec-weather2, run the db restore script against the dump, and run [scripts/files-restore.sh](scripts/files-restore.sh) for the host files. Review the extracted MariaDB drop-ins against the Trixie defaults before deciding whether to apply them. Run the inventory script again and diff against the Phase 0 output. Confirm partitions landed via `information_schema.PARTITIONS`. Confirm `aqi_clean` exists. Run `pyway info` and expect the full applied history with nothing pending.
 
-**Phase 4, repo commit.** The compose and docs updates above.
+**Phase 3, app cutover.** `/etc/environment` is already back from the files restore, so link the units from [systemd/](systemd/), enable and start, and tail `/var/log/WeatherWatch_err.log`. Sanity check that new rows are landing with `read_time` values after the Phase 0 boundary, and that the gap between the two matches the outage window rather than hinting at a timezone shift.
+
+**Phase 4, cleanup and commit.** Rename tec-weather2 to the permanent station name now that the origin card is shelved. Commit the compose and docs updates above along with the four `scripts/` files, which are all still untracked or unstaged — note [docs/SETUP.md](docs/SETUP.md) already carries unrelated playbook-link corrections in the working tree.
 
 ## Open item to resolve during Phase 0
 

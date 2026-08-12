@@ -55,7 +55,7 @@
     - to stop:  ```python3 setup.py mysqlDown```
     - app user weather:weather     
 - external/prod setup configuration
-    - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/apps/mysql.yml)
+    - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
     - create db ```create database weather;``` 
     - create user ```CREATE user 'weather'@'%' identified by 'weather';``` 
     - grant privileges ```GRANT lock tables, drop, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
@@ -113,16 +113,16 @@ all located in $PROJECT_ROOT/reports
 
 ## complete system initialization
 - [piAptInit](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/pi-init.yml)
-- [alias](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
+- [piAliases](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
 - [motd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/motd.yml)
 - [console](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/console-resize.yml)
-- [brutoof](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
+- [disbt](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
 - [timesyncd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/nm-timesyncd.yml)
 - [piSwap](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/rpi-swap.yml)
 - [wPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
 - [circuitPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/circuit-python.yml)
 - [poetry](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/poetry.yml)
-- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/i2c.yml)
+- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/i2c.yml)
 - [sdr](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
 - [mysql](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
 - [git](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/git.yml)
