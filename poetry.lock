@@ -2379,7 +2379,7 @@ version = "0.0.1"
 description = "python temperature converter"
 optional = false
 python-versions = "*"
-groups = ["test"]
+groups = ["main"]
 files = [
     {file = "pytemp-0.0.1-py3-none-any.whl", hash = "sha256:36ce46095c942a48765533e2c076aeb37baf73b54577bbc6991f2599612d1cc4"},
 ]
