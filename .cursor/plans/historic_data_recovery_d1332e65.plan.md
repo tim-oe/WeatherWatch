@@ -34,7 +34,7 @@ isProject: false
 Restores the historic weather readings onto the live `tec-weather` instance
 without losing the readings collected since the station came back up.
 
-**Status: Phases 0–4 complete. Live tables swapped and collection resumed 2026-09-02T00:04:21Z. New rows landing with ids above the historic maximum. Phase 5 cleanup deferred.**
+**Status: Phases 0–4 complete. Collection resumed 2026-09-02T00:04:21Z and is persisting new rows. Phase 5 cleanup deferred until a few days of normal operation (hold `weather_hist`, `weather_new`, and `*_pre_recovery`).**
 
 ## Situation
 
