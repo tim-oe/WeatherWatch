@@ -153,6 +153,11 @@ sdr:
       dataClass: OutdoorData
       id: 84
       device: 153
+    - name: unknown_outdoor
+      model: Cotech-367959
+      dataClass: OutdoorData
+      id: 105
+      device: 153
     - name: unknown_indoor
       model: Ambientweather-F007TH
       dataClass: IndoorData
