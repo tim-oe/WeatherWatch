@@ -57,9 +57,12 @@ class WUSvc:
         start_monotonic = time.monotonic()
         try:
             in_data: IndoorSensor = self._indoor_repo.find_latest(self._config.indoor_channel)
-            rainfail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
-
             out_data: OutdoorSensor = self._outdoor_repo.find_latest()
+            if in_data is None or out_data is None:
+                self.logger.warning("skipping weather underground upload; sensor reading unavailable")
+                return
+
+            rainfail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
 
             data: WUData = WUData(
                 winddir=out_data.wind_dir_deg,

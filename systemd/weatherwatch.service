@@ -18,6 +18,8 @@ EnvironmentFile=/etc/environment
 Environment="WW_LOG_PATH=/var/log"
 # root backup folder
 Environment="WW_BACKUP_FOLDER=/mnt/backup/weather"
+# local spool; must not live on the NAS mount
+Environment="WW_SPOOL_FOLDER=/var/lib/weatherwatch/spool"
 # this will remove console logging handler
 Environment="WW_NO_CONSOLE=1"
 # set logging level

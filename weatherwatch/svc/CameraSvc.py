@@ -97,12 +97,13 @@ class CameraSvc:
             exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._camera_config.lens_make
             exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._camera_config.lens_model
 
-            # weather
-            # Add custom metadata to the Exif UserComment
-            c = pytemp(float(data.temperature_f), "f", "c")
-            exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
-            exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
-            exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
+            if data is None:
+                self.logger.warning("skipping weather exif; no outdoor reading")
+            else:
+                c = pytemp(float(data.temperature_f), "f", "c")
+                exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
+                exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
+                exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
 
             try:
                 self.add_gps_exif(exif_dict)

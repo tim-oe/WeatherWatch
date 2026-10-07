@@ -94,4 +94,17 @@ class WuSvcTest(unittest.TestCase):
         self.svc.process()
 
         self.svc._emailer.send_error_notification.assert_called_once()
+
+    def test_process_skips_without_email_when_reading_missing(self):
+        self.svc._indoor_repo = mock.MagicMock()
+        self.svc._outdoor_repo = mock.MagicMock()
+        self.svc._indoor_repo.find_latest.return_value = None
+        self.svc._outdoor_repo.find_latest.return_value = None
+        self.svc._emailer = mock.MagicMock()
+        self.svc._client = mock.MagicMock()
+
+        self.svc.process()
+
+        self.svc._emailer.send_error_notification.assert_not_called()
+        self.svc._client.post.assert_not_called()
             

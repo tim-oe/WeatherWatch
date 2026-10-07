@@ -57,16 +57,6 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(x)
         self.assertIsInstance(x, Decimal)
 
-    def test_get_value_false_bool_returns_zero(self):
-        """get_value() with False boolean should return '0'."""
-        repo: OutdoorSensorRepository = self.getRepo()
-        # Call get_value directly for the False branch (line 174)
-        result = repo.get_value("battery_ok", False)
-        self.assertEqual("0", result)
-        # Also verify True returns "1"
-        result_true = repo.get_value("battery_ok", True)
-        self.assertEqual("1", result_true)
-
     def test_top_returns_limited_results(self):
         """top(n) should return at most n records."""
         repo: OutdoorSensorRepository = self.getRepo()
@@ -86,21 +76,6 @@ class OutdoorSensorRepositoryTest(BaseRespositoryTest):
         self.assertIsNotNone(repo.find_by_id(ent.id))
         repo.delete(ent)
 
-    def test_backup(self):
-        repo: BaseRepository = self.getRepo()        
-        repo.exec(f'truncate {repo.entity.__table__}')
-
-        repo.exec_file("sql/sample/outdoor_sensor.sql")
-
-        from_date: date = date.today() - timedelta(days=1)
-        to_date: date = date.today() - timedelta(days=-1)
-        
-        repo.backup(from_date, to_date, "test.sql")
-        
-        repo.exec(f'truncate {repo.entity.__table__}')
-
-        repo.exec_file("test.sql")
-        
     @staticmethod
     def getSample() -> OutdoorSensor:
             

@@ -5,6 +5,7 @@ from typing import List, Union
 from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
+from repository.db_read import db_read
 from sqlalchemy import DATE, Row, cast, func
 from sqlalchemy.orm import Session
 
@@ -24,6 +25,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         """
         super().__init__(entity=OutdoorSensor)
 
+    @db_read(default=None)
     def find_latest(self) -> OutdoorSensor:
         """
         get the latest record
@@ -38,6 +40,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
             session.close()
 
     # pylint: disable=duplicate-code
+    @db_read(default=[])
     def find_greater_than_read_time(self, dt: Union[date, datetime]) -> List[OutdoorSensor]:
         """
         get records greater than the given date
@@ -56,6 +59,7 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
+    @db_read(default=Decimal("0"))
     def get_days_rainfall(self, rain_date: date) -> Decimal:
         """
         get the total days rain fall
@@ -79,20 +83,45 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
         finally:
             session.close()
 
-    # pylint: disable=duplicate-code
-    def backup(self, from_date: date, to_date: date, file_name: str):
+    def after_drain(self, first_read_time):
         """
-        generate backup file for a given data range
+        recompute rain_delta_mm from the first replayed read_time onward
         :param self: this
-        :param from_date: from date
-        :param to_date: to date
-        :param file_name: the backup file name
+        :param first_read_time: earliest replayed read_time
         """
-        with open(file_name, "w", encoding="utf-8") as f:
-            session: Session = self._datastore.session
-            try:
-                for v in session.query(OutdoorSensor).filter(cast(OutdoorSensor.read_time, DATE).between(from_date, to_date)):
-                    f.write(f"{self.get_insert(v)};\n")
-            finally:
-                f.close()
-                session.close()
+        if first_read_time is None:
+            return
+        session: Session = self._datastore.session
+        try:
+            rows = (
+                session.query(OutdoorSensor)
+                .filter(OutdoorSensor.read_time >= first_read_time)
+                .order_by(OutdoorSensor.sensor_id.asc(), OutdoorSensor.read_time.asc())
+                .all()
+            )
+            previous_by_sensor = {}
+            for row in rows:
+                if row.sensor_id not in previous_by_sensor:
+                    seed = (
+                        session.query(OutdoorSensor)
+                        .filter(
+                            OutdoorSensor.sensor_id == row.sensor_id,
+                            OutdoorSensor.read_time < first_read_time,
+                        )
+                        .order_by(OutdoorSensor.read_time.desc())
+                        .first()
+                    )
+                    previous_by_sensor[row.sensor_id] = seed.rain_cum_mm if seed is not None else None
+                previous = previous_by_sensor[row.sensor_id]
+                if previous is None:
+                    delta = Decimal("0")
+                else:
+                    delta = round(Decimal(str(row.rain_cum_mm)) - Decimal(str(previous)), 2)
+                if delta < 0:
+                    row.rain_delta_mm = round(Decimal(str(row.rain_cum_mm)), 2)
+                else:
+                    row.rain_delta_mm = delta
+                previous_by_sensor[row.sensor_id] = row.rain_cum_mm
+            session.commit()
+        finally:
+            session.close()

@@ -28,8 +28,8 @@ this was spurred by my original [weather station](https://github.com/tim-oe/SkyW
         - weather information
 - roll up images into daily timelapse video        
 - post weather data to [Weather Underground](https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US)
-- backup db, images, videos to nas 
-    - secondary cloud backup handled externally
+- backup images and videos to nas
+    - database dumps are owned by home_server
 
 ## Objectivs
 - improve python development knowledge

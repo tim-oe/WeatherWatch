@@ -133,6 +133,11 @@ all located in $PROJECT_ROOT/reports
 - initialize DB users db 
 - run test suite
 
+## Database backups and offline spool
+Database dumps are no longer taken by WeatherWatch. home_server's offen sidecar owns them, so `WW_DB_BACKUP_ENABLE` is not read.
+
+When MariaDB is unreachable, sensor writes spool to `WW_SPOOL_FOLDER` (default `spool`, `/var/lib/weatherwatch/spool` on the station) and replay after the database returns. The UTC storage change is a later deploy and must wait until that folder has no `.jsonl` or `.draining` files.
+
 ## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
@@ -140,7 +145,6 @@ all located in $PROJECT_ROOT/reports
 - [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
 - [pylint vscode](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)
 - [tuning sonar violations](https://www.baeldung.com/sonar-exclude-violations)
-
 - project reset
     1. shut down vscode
     2. on the remote instance `rm -rf ~/.vscode-server`

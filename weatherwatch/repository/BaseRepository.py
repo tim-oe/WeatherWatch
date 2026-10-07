@@ -1,12 +1,15 @@
 import json
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Generic, List, TypeVar, Union
 
 from conf.AppConfig import AppConfig
-from conf.DatabaseConfig import DatabaseConfig
 from repository.DataStore import DataStore
-from sqlalchemy import Column, Connection, DateTime, Integer, Numeric, Table, insert
+from repository.db_read import db_read, is_connection_error
+from spool.EntityCodec import EntityCodec
+from spool.SpoolStore import SpoolStore
+from sqlalchemy import Connection
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy.sql import text
 from util.Logger import logger
@@ -34,15 +37,7 @@ class BaseRepository(Generic[T]):
         :param self: this
         """
         self._entity = entity
-        self._config: DatabaseConfig = AppConfig().database
         self._datastore: DataStore = DataStore()
-        self._table: Table = self._datastore.get_table_def(self._entity.__tablename__)
-
-        self._columns = {}
-        c: Column
-
-        for c in self._table.columns:
-            self._columns[c.name] = c.type
 
     @property
     def entity(self) -> DeclarativeBase:
@@ -69,24 +64,117 @@ class BaseRepository(Generic[T]):
 
     def insert(self, o: T):
         """
-        insert new object
+        insert new object, spooling when the database is unreachable
+        :param self: this
+        :param o: the object to insert
+        """
+        if self._spool_enabled() and self._datastore.is_offline():
+            self._spool(o)
+            return
+        session: Session = self._datastore.session
+        session.expire_on_commit = False
+        try:
+            session.add(o)
+            session.commit()
+            self._datastore.mark_online()
+        except Exception as exc:
+            self._rollback(session)
+            if self._spool_enabled() and is_connection_error(exc):
+                if self._datastore.mark_offline():
+                    self.logger.warning("database unavailable, spooling writes: %s", exc)
+                self._spool(o)
+                return
+            raise
+        finally:
+            session.close()
+
+    def insert_direct(self, o: T):
+        """
+        insert with no spool fallback
         :param self: this
         :param o: the object to insert
         """
         session: Session = self._datastore.session
+        session.expire_on_commit = False
         try:
             session.add(o)
             session.commit()
-            session.refresh(o)
+        except Exception:
+            self._rollback(session)
+            raise
         finally:
             session.close()
 
+    def replay(self, entity: T) -> bool:
+        """
+        insert a spooled entity; a duplicate key counts as already delivered
+        :param self: this
+        :param entity: the decoded entity
+        :return: True when a new row was inserted
+        """
+        try:
+            self.insert_direct(entity)
+            return True
+        except IntegrityError:
+            self.logger.warning("replay skipped duplicate %s", type(entity).__name__)
+            return False
+
+    def spool_decode(self, data: dict) -> T:
+        """
+        build an entity from an envelope data object
+        :param self: this
+        :param data: the spooled columns
+        :return: the entity
+        """
+        return EntityCodec.decode(self._entity, data)
+
+    def after_drain(self, first_read_time):
+        """
+        post-drain hook; subclasses override when a column is derived
+        :param self: this
+        :param first_read_time: earliest replayed read_time, or None
+        """
+
+    def _spool(self, o: T):
+        """
+        encode the entity and append an envelope for this repository
+        :param self: this
+        :param o: the object to spool
+        """
+        payload = {
+            "repository": f"{type(self).__module__}.{type(self).__qualname__}",
+            "entity": type(o).__name__,
+            "spooled_at": datetime.now(timezone.utc).isoformat(),
+            "data": EntityCodec.encode(o),
+        }
+        SpoolStore().append(self._entity.__tablename__, json.dumps(payload))
+
+    def _spool_enabled(self) -> bool:
+        """
+        whether connection failures are buffered locally
+        :param self: this
+        :return: the spool enable flag
+        """
+        return AppConfig().spool.enable
+
+    @staticmethod
+    def _rollback(session: Session):
+        """
+        roll back, ignoring a dead connection
+        :param session: the session
+        """
+        try:
+            session.rollback()
+        except Exception:
+            pass
+
+    @db_read(default=None)
     def find_by_id(self, record_id: int) -> T:
         """
         find record by id
         :param self: this
-        :param id: the object identity
-        :return the object for the given id
+        :param record_id: the object identity
+        :return: the object for the given id
         """
         session: Session = self._datastore.session
         try:
@@ -94,12 +182,13 @@ class BaseRepository(Generic[T]):
         finally:
             session.close()
 
+    @db_read(default=[])
     def top(self, limit: int) -> List[T]:
         """
         get top most objects to the limit
         :param self: this
         :param limit: the number of object to get
-        :return list of top objects
+        :return: list of top objects
         """
         session: Session = self._datastore.session
         try:
@@ -151,54 +240,3 @@ class BaseRepository(Generic[T]):
                 con.commit()
         finally:
             con.close()
-
-    def get_insert(self, o: T) -> str:
-        """
-        get insert statement for object
-        :param self: this
-        :param o: the object to build the statement from
-        :return the sql statement
-        """
-
-        raw = o.__dict__.copy()
-        del raw["_sa_instance_state"]
-
-        insert_stmt = insert(self._table).values(raw)
-        sql: str = str(insert_stmt)
-        for key, value in raw.items():
-            sql = sql.replace(f":{key}", self.get_value(key, value))
-
-        return sql
-
-    def get_value(self, key: str, value) -> str:
-        """
-        get the value for he column for the sql statement
-        :param self: this
-        :param key: the column metadata key
-        :param value: the raw valeu
-        :return value injected into the sql statement
-        """
-        t = self._columns[key]
-
-        self.logger.debug("%s %s %s", key, type(t), value)
-
-        # getting mysql specific type for bool
-        if isinstance(value, bool):
-            if value:
-                return "1"
-            return "0"
-        # needs to be valid json
-        if key == "raw":
-            return f"'{json.dumps(value)}'"
-
-        match t:
-            case DateTime():
-                # TODO is there more generic way
-                dt = value.strftime("%Y-%m-%d %H:%M:%S")
-                return f"'{dt}'"
-            case Numeric() | Integer():
-                return str(value)
-            case _:  # pragma: no cover
-                # value = str(value)
-                value = value.replace("'", "''")
-                return f"'{value}'"

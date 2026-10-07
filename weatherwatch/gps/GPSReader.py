@@ -44,20 +44,27 @@ class GPSReader:
             # PMTK_SET_NMEA_UPDATERATE
             gps.send_command(b"PMTK220,1000")
             time.sleep(1)
-            gps.update()
+            # Drop sentences buffered before the module switched to RMC+GGA.
+            uart.reset_input_buffer()
 
             start = time.monotonic()
             duration = 0
-            while not gps.has_fix and duration < self._gps_config.init_timeout:
-                time.sleep(0.5)
-                gps.update()
+            # update() parses one sentence. RMC sets has_fix and leaves
+            # altitude empty; the GGA from that same second carries altitude.
+            # Keep reading so the two are not split across a later cycle.
+            while duration < self._gps_config.init_timeout:
+                got_sentence = bool(gps.update())
+                altitude = gps.altitude_m
+                if got_sentence and gps.has_fix and altitude is not None and altitude > 0:
+                    break
+                if not got_sentence:
+                    time.sleep(0.05)
                 duration = Converter.duration_seconds(start)
                 self.logger.debug("waiting on GPS %s", duration)
-
-            if not gps.has_fix:
-                raise IOError("initialize gps timeout")
-
-            time.sleep(0.5)
+            else:
+                if not gps.has_fix:
+                    raise IOError("initialize gps timeout")
+                self.logger.warning("gps fix has no altitude")
 
             self.logger.debug(f"GPS {pprint.pformat(gps.__dict__)}")
 

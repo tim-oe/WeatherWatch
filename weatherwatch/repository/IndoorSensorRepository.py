@@ -4,7 +4,8 @@ from typing import List, Union
 from entity.IndoorSensor import IndoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import DATE, and_, cast
+from repository.db_read import db_read
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 __all__ = ["IndoorSensorRepository"]
@@ -23,6 +24,7 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
         """
         super().__init__(entity=IndoorSensor)
 
+    @db_read(default=None)
     def find_latest(self, c: int) -> IndoorSensor:
         """
         get the latest record
@@ -37,6 +39,7 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
             session.close()
 
     # pylint: disable=duplicate-code
+    @db_read(default=[])
     def find_greater_than_read_time(self, channel: int, dt: Union[date, datetime]) -> List[IndoorSensor]:
         """
         get records greater than the given date
@@ -55,21 +58,3 @@ class IndoorSensorRepository(BaseRepository[IndoorSensor]):
             )
         finally:
             session.close()
-
-    # pylint: disable=duplicate-code
-    def backup(self, from_date: date, to_date: date, file_name: str):
-        """
-        generate backup file for a given data range
-        :param self: this
-        :param from_date: from date
-        :param to_date: to date
-        :param file_name: the backup file name
-        """
-        with open(file_name, "w", encoding="utf-8") as f:
-            session: Session = self._datastore.session
-            try:
-                for v in session.query(IndoorSensor).filter(cast(IndoorSensor.read_time, DATE).between(from_date, to_date)):
-                    f.write(f"{self.get_insert(v)};\n")
-            finally:
-                f.close()
-                session.close()

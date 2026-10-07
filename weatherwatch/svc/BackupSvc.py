@@ -1,23 +1,72 @@
-import concurrent
-import functools
-import glob
-import zipfile
-from concurrent.futures import Future, ThreadPoolExecutor
+import os
+import re
+import subprocess
 from pathlib import Path
 
-from backup.BackupRange import BackupRange
 from conf.AppConfig import AppConfig
 from conf.BackupConfig import BackupConfig
 from conf.CameraConfig import CameraConfig
 from conf.TimelapseConfig import TimelapseConfig
 from py_singleton import singleton
-from repository.AQISensorRepository import AQISensorRepository
-from repository.IndoorSensorRepository import IndoorSensorRepository
-from repository.OutdoorSensorRepository import OutdoorSensorRepository
+from util.Emailer import Emailer
 from util.Logger import logger
 from util.Rsync import Rsync
 
-__all__ = ["BackupSvc"]
+__all__ = ["BackupSvc", "mount_fstype"]
+
+_NFS_TYPES = ("nfs", "nfs4")
+_MOUNT_ESCAPE = re.compile(r"\\([0-7]{3})")
+
+
+def _unescape_mount(value: str) -> str:
+    """
+    undo octal escapes used in /proc/self/mountinfo paths
+    :param value: the raw mount field
+    :return: the unescaped path
+    """
+    return _MOUNT_ESCAPE.sub(lambda match: chr(int(match.group(1), 8)), value)
+
+
+def _mount_covers(mountpoint: str, resolved: str) -> bool:
+    """
+    whether resolved sits on mountpoint
+    :param mountpoint: the mount point
+    :param resolved: the absolute path being checked
+    :return: True when resolved is the mount or a child of it
+    """
+    if mountpoint == "/":
+        return resolved.startswith("/")
+    prefix = mountpoint.rstrip("/")
+    return resolved == prefix or resolved.startswith(prefix + "/")
+
+
+def mount_fstype(resolved: str, mountinfo: str) -> str | None:
+    """
+    longest mount-point prefix of resolved, read from mountinfo text
+    :param resolved: absolute path
+    :param mountinfo: contents of /proc/self/mountinfo
+    :return: fstype, or None when no mount covers the path
+    """
+    best_len = -1
+    best_fs = None
+    for line in mountinfo.splitlines():
+        parts = line.split()
+        if "-" not in parts:
+            continue
+        separator = parts.index("-")
+        if separator < 5 or separator + 1 >= len(parts):
+            continue
+        mountpoint = _unescape_mount(parts[4])
+        fstype = parts[separator + 1]
+        if _mount_covers(mountpoint, resolved) and len(mountpoint) > best_len:
+            best_len = len(mountpoint)
+            best_fs = fstype
+    return best_fs
+
+
+def _absolute_path(path: Path) -> Path:
+    """Return an absolute lexical path without touching the filesystem."""
+    return Path(os.path.abspath(os.path.expanduser(str(path))))
 
 
 @logger
@@ -25,8 +74,11 @@ __all__ = ["BackupSvc"]
 class BackupSvc:
     """
     system backup service
-    performs db and camera backup
+    performs camera and timelapse backup
     """
+
+    MOUNTINFO = "/proc/self/mountinfo"
+    PROBE_TIMEOUT = 10
 
     def __init__(self):
         """
@@ -36,33 +88,29 @@ class BackupSvc:
         self._camera_config: CameraConfig = AppConfig().camera
         self._timelapse_config: TimelapseConfig = AppConfig().timelapse
         self._backup_config: BackupConfig = AppConfig().backup
-
-        # run db backups concurrently
-        self._backup_pool = ThreadPoolExecutor(max_workers=3)
         self._rsync: Rsync = Rsync()
+        self._dest_alerted = False
 
         self._base_dir: Path = self._backup_config.folder
-        self._base_dir.mkdir(parents=True, exist_ok=True)
-
-        self._db_m_dir: Path = Path(self._base_dir / "db/m")
-        self._db_m_dir.mkdir(parents=True, exist_ok=True)
-        self._db_w_dir: Path = Path(self._base_dir / "db/w")
-        self._db_w_dir.mkdir(parents=True, exist_ok=True)
 
     def camera(self):
         """
         backup camera resource files
         :param self: this
         """
-        if self._backup_config.file_enable:
-            backup_folder = str(self._backup_config.folder.resolve())
-            self.backup_stills(backup_folder)
-            self.backup_vids(backup_folder)
+        if not self._backup_config.file_enable:
+            return
+        if not self._dest_ready(self._backup_config.folder):
+            return
+        backup_folder = str(_absolute_path(self._backup_config.folder))
+        self.backup_stills(backup_folder)
+        self.backup_vids(backup_folder)
 
     def backup_stills(self, backup_folder):
         """
         backup camera image
         :param self: this
+        :param backup_folder: archive destination
         """
         if self._camera_config.enable:
             self.logger.info("starting camera backup")
@@ -70,17 +118,18 @@ class BackupSvc:
             if folder.endswith("/"):
                 folder = folder.rstrip("/")
 
-            self._rsync.archive(folder, backup_folder)
-
-            if self._backup_config.purge_enable:
+            if self._rsync.archive(folder, backup_folder) and self._backup_config.purge_enable:
                 self._rsync.purge(folder, self._backup_config.img_old)
+            elif self._backup_config.purge_enable:
+                self.logger.error("camera archive failed; skipping purge")
 
             self.logger.info("camera backup complete")
 
     def backup_vids(self, backup_folder):
         """
-        backup camera image
+        backup timelapse video
         :param self: this
+        :param backup_folder: archive destination
         """
         if self._timelapse_config.enable:
             self.logger.info("starting timelapse backup")
@@ -88,120 +137,67 @@ class BackupSvc:
             if folder.endswith("/"):
                 folder = folder.rstrip("/")
 
-            self._rsync.archive(folder, backup_folder)
-
-            if self._backup_config.purge_enable:
+            if self._rsync.archive(folder, backup_folder) and self._backup_config.purge_enable:
                 self._rsync.purge(folder, self._backup_config.vid_old)
+            elif self._backup_config.purge_enable:
+                self.logger.error("timelapse archive failed; skipping purge")
             self.logger.info("timelapse backup complete")
 
-    def db(self):
+    def _dest_ready(self, folder: Path) -> bool:
         """
-        main entry point for db backup
+        destination is a writable nfs mount, unless require_mount is off
         :param self: this
+        :param folder: configured backup folder
+        :return: True when archive and purge may run
         """
-        if self._backup_config.db_enable:
-            m: BackupRange = BackupRange.prev_month()
+        resolved = _absolute_path(folder)
+        if self._backup_config.require_mount:
+            mountinfo = Path(self.MOUNTINFO).read_text(encoding="utf-8")
+            fstype = mount_fstype(str(resolved), mountinfo)
+            if fstype not in _NFS_TYPES:
+                shown = fstype if fstype is not None else "unmounted"
+                self._alert_dest(f"backup folder '{folder}' resolved to '{resolved}' on '{shown}', expected nfs")
+                return False
+        if not self._probe_writable(resolved):
+            self._alert_dest(f"backup folder '{folder}' resolved to '{resolved}' is not writable")
+            return False
+        self._dest_alerted = False
+        return True
 
-            mf: Path = Path(self._db_m_dir / f"{m.file_prefix}.bz2.zip")
-
-            active_threads = set()
-            active_threads.add(self._backup_pool.submit(functools.partial(self.outdoor_sensor_backup, mf)))
-            active_threads.add(self._backup_pool.submit(functools.partial(self.indoor_sensor_backup, mf)))
-            active_threads.add(self._backup_pool.submit(functools.partial(self.aqi_sensor_backup, mf)))
-
-            future: Future
-            for future in concurrent.futures.as_completed(active_threads):
-                self.logger.info("thread complete %s", future.result)
-
-            self.archive_monthly(mf)
-
-    def outdoor_sensor_backup(self, monthly_archive):
+    def _probe_writable(self, folder: Path) -> bool:
         """
-        backup database outdoor sensor tables
+        touch and unlink a probe file in a killable subprocess
         :param self: this
-        :param monthly_archive: the monthly archive file
+        :param folder: directory to probe
+        :return: True when both steps finish in time
         """
-        self.db_backup(OutdoorSensorRepository(), monthly_archive)
-
-    def indoor_sensor_backup(self, monthly_archive):
-        """
-        backup database indoor sensor tables
-        :param self: this
-        :param monthly_archive: the monthly archive file
-        """
-        self.db_backup(IndoorSensorRepository(), monthly_archive)
-
-    def aqi_sensor_backup(self, monthly_archive):
-        """
-        backup database aqi sensor tables
-        :param self: this
-        :param monthly_archive: the monthly archive file
-        """
-
-        self.db_backup(AQISensorRepository(), monthly_archive)
-
-    def db_backup(self, repo, monthly_archive):
-        """
-        backup database table
-        performs monthly and weekly backup
-        pruning weeklys whe monthy is in place
-        :param self: this
-        :param repo: the db repo for backup
-        :param monthly_archive: the monthly archive file
-        """
-        self.logger.info("backup %s", repo.entity.__table__)
+        probe = str(folder / ".ww-backup-probe")
         try:
-            m: BackupRange = BackupRange.prev_month()
-            w: BackupRange = BackupRange.prev_week()
+            created = subprocess.run(
+                ["mkdir", "-p", str(folder)],
+                timeout=self.PROBE_TIMEOUT,
+                check=False,
+            )
+            if created.returncode != 0:
+                return False
+            touched = subprocess.run(["touch", probe], timeout=self.PROBE_TIMEOUT, check=False)
+            if touched.returncode != 0:
+                return False
+            removed = subprocess.run(["unlink", probe], timeout=self.PROBE_TIMEOUT, check=False)
+            return removed.returncode == 0
+        except subprocess.TimeoutExpired:
+            return False
+        except OSError:
+            return False
 
-            mf: Path = Path(self._db_m_dir / f"{m.file_prefix}_{repo.entity.__table__}.sql")
-            wf: Path = Path(self._db_w_dir / f"{w.file_prefix}_{repo.entity.__table__}.sql")
-
-            if not monthly_archive.is_file():
-                self.logger.info("peforming monthly backup of %s %s %s", m.from_date, m.to_date, mf.absolute())
-                repo.backup(m.from_date, m.to_date, mf)
-                self._rsync.purge(self._db_w_dir, self._backup_config.db_weekly_old)
-            else:
-                self.logger.info("skiping backup of %s", mf)
-
-            # TODO edge case when prev week is in the prev month
-            if not wf.is_file():
-                self.logger.info("peforming weekly backup of %s %s %s", w.from_date, w.to_date, wf.absolute())
-                repo.backup(w.from_date, w.to_date, wf)
-            else:
-                self.logger.info("skiping backup of %s", wf)
-
-        except Exception:
-            self.logger.exception("error performing backup for %s", repo.entity.__table__)
-
-    def archive_monthly(self, mf):
+    def _alert_dest(self, message: str):
         """
-        archive monthly files if created
-        performs monthly and weekly backup
-        pruning weeklys whe monthy is in place
+        log and email once per failure streak
         :param self: this
-        :param mf: the monthly archive file
+        :param message: the failure detail
         """
-        self.logger.info("archive monthly files")
-        try:
-            m: BackupRange = BackupRange.prev_month()
-
-            pattern = f"{m.file_prefix}*.sql"
-
-            if not mf.is_file() and len(glob.glob(str(self._db_m_dir / pattern))) > 2:
-                self.logger.info("creating archive %s", mf.absolute())
-
-                with zipfile.ZipFile(mf.resolve(), "w", zipfile.ZIP_BZIP2, compresslevel=9) as archive:
-                    for file in self._db_m_dir.glob(pattern):
-                        archive.write(file.absolute(), file.name)
-
-                # delete files now in archive
-                for file in self._db_m_dir.glob(pattern):
-                    self.logger.info("deleting %s", file.absolute())
-                    file.unlink()
-
-            else:
-                self.logger.info("skiping ar chive %s", mf.absolute())
-
-        except Exception:
-            self.logger.exception("error performing monthly archive")
+        self.logger.error(message)
+        if self._dest_alerted:
+            return
+        self._dest_alerted = True
+        Emailer().send_alert("Camera backup destination not ready", message)

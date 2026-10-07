@@ -168,6 +168,8 @@ raspi-blinka.py
 # dev folders
 pix/
 vid/
+# runtime spool only; weatherwatch/spool and tests/spool stay tracked
+/spool/
 reports/
 # ingore root dir but not any other backup dir...
 backup/

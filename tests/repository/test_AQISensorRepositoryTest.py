@@ -62,18 +62,3 @@ class AQISensorRepositoryTest(BaseRespositoryTest):
 
         repo.clean()
         
-    def test_backup(self):
-        repo: BaseRepository = self.getRepo()        
-        repo.exec(f'truncate {repo.entity.__table__}')
-
-        repo.exec_file("sql/sample/aqi_sensor.sql")
-
-        from_date: date = date.today() - timedelta(days=1)
-        to_date: date = date.today() - timedelta(days=-1)
-        
-        repo.backup(from_date, to_date, "test.sql")
-        
-        repo.exec(f'truncate {repo.entity.__table__}')
-
-        repo.exec_file("test.sql")
-        

@@ -60,6 +60,27 @@ class Emailer:
         except Exception:
             self.logger.exception("Failed to send error notification")
 
+    def send_alert(self, subject: str, body: str):
+        """
+        send a plain alert when email is enabled
+        :param self: this
+        :param subject: the subject
+        :param body: the message body
+        """
+        self.logger.error("%s: %s", subject, body)
+        if not self._config.enable:
+            self.logger.debug("Email notifications are disabled in the configuration.")
+            return
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = self._config.from_email
+            msg["To"] = self._config.to_email
+            msg["Subject"] = subject
+            msg.attach(MIMEText(body, "plain"))
+            self.send_message(msg)
+        except Exception:
+            self.logger.exception("Failed to send alert")
+
     def build_attachement(self, stack: str) -> MIMEBase:
         """
         build stack trace attachment

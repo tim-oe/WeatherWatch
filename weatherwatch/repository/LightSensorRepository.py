@@ -4,7 +4,7 @@ from typing import List, Union
 from entity.LightSensor import LightSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
-from sqlalchemy import DATE, cast
+from repository.db_read import db_read
 from sqlalchemy.orm import Session
 
 __all__ = ["LightSensorRepository"]
@@ -23,6 +23,7 @@ class LightSensorRepository(BaseRepository[LightSensor]):
         """
         super().__init__(entity=LightSensor)
 
+    @db_read(default=None)
     def find_latest(self) -> LightSensor:
         """
         get the latest record
@@ -35,6 +36,8 @@ class LightSensorRepository(BaseRepository[LightSensor]):
         finally:
             session.close()
 
+    # pylint: disable=duplicate-code
+    @db_read(default=[])
     def find_greater_than_read_time(self, dt: Union[date, datetime]) -> List[LightSensor]:
         """
         get records greater than the given date
@@ -52,20 +55,3 @@ class LightSensorRepository(BaseRepository[LightSensor]):
             )
         finally:
             session.close()
-
-    def backup(self, from_date: date, to_date: date, file_name: str):
-        """
-        generate backup file for a given data range
-        :param self: this
-        :param from_date: from date
-        :param to_date: to date
-        :param file_name: the backup file name
-        """
-        with open(file_name, "w", encoding="utf-8") as f:
-            session: Session = self._datastore.session
-            try:
-                for v in session.query(LightSensor).filter(cast(LightSensor.read_time, DATE).between(from_date, to_date)):
-                    f.write(f"{self.get_insert(v)};\n")
-            finally:
-                f.close()
-                session.close()

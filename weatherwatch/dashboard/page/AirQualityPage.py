@@ -34,6 +34,8 @@ class AirQualityPage(BasePage):
         :param kwargs: additional arguments
         """
         data: AQISensor = self._aqi_repo.find_latest()
+        if data is None:
+            return self.unavailable()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         d = date.today() - timedelta(days=7)

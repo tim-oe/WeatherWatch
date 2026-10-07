@@ -11,7 +11,7 @@ class SchedulerConfig:
 
     AQI_KEY = "aqi"
     CAMERA_KEY = "camera"
-    DB_BACKUP_KEY = "db_backup"
+    DB_FLUSH_KEY = "db_flush"
     FILE_BACKUP_KEY = "file_backup"
     PIMETRICS_KEY = "pimetrics"
     SENSOR_KEY = "sensor"
@@ -84,13 +84,13 @@ class SchedulerConfig:
         return self.__dict__[SchedulerConfig.TIMELAPSE_KEY][SchedulerConfig.HOUR_KEY]
 
     @property
-    def db_back_hour(self) -> int:
+    def db_flush_interval(self) -> int:
         """
-        db_backup Hour property getter
+        db_flush interval property getter
         :param self: this
-        :return: the db_backup Hour
+        :return: the db_flush interval in minutes
         """
-        return self.__dict__[SchedulerConfig.DB_BACKUP_KEY][SchedulerConfig.HOUR_KEY]
+        return self.__dict__[SchedulerConfig.DB_FLUSH_KEY][SchedulerConfig.INTERVAL_KEY]
 
     @property
     def file_back_hour(self) -> int:

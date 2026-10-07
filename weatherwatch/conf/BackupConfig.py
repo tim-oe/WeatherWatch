@@ -12,13 +12,12 @@ class BackupConfig:
     """
 
     FILE_KEY = "file"
-    DB_KEY = "db"
     ENABLE_KEY = "enable"
     FOLDER_KEY = "folder"
     PURGE_KEY = "purge"
     IMG_OLD_KEY = "img_old"
     VID_OLD_KEY = "vid_old"
-    WEEKLY_OLD = "weekly_old"
+    REQUIRE_MOUNT_KEY = "require_mount"
 
     def __init__(self, config: dict):
         """
@@ -48,13 +47,13 @@ class BackupConfig:
         return self.__dict__[BackupConfig.FILE_KEY][BackupConfig.ENABLE_KEY]
 
     @property
-    def db_enable(self) -> bool:
+    def require_mount(self) -> bool:
         """
-        db_enable property getter
+        require_mount property getter
         :param self: this
-        :return: the db_enable
+        :return: whether the destination must be an nfs mount
         """
-        return self.__dict__[BackupConfig.DB_KEY][BackupConfig.ENABLE_KEY]
+        return self.__dict__[BackupConfig.REQUIRE_MOUNT_KEY]
 
     @property
     def purge_enable(self) -> bool:
@@ -82,12 +81,3 @@ class BackupConfig:
         :return: the vid_old
         """
         return self.__dict__[BackupConfig.PURGE_KEY][BackupConfig.VID_OLD_KEY]
-
-    @property
-    def db_weekly_old(self) -> int:
-        """
-        db_weekly_old property getter
-        :param self: this
-        :return: the db_weekly_old
-        """
-        return self.__dict__[BackupConfig.DB_KEY][BackupConfig.WEEKLY_OLD]

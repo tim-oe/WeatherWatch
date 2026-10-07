@@ -1,4 +1,6 @@
 import os
+import shutil
+import tempfile
 from pathlib import Path
 
 import pymysql
@@ -28,7 +30,11 @@ _INJECTED_ENV = (
     "WW_DB_DIALECT",
     "WW_DB_DRIVER",
     "WW_DB_PROD",
+    "WW_SPOOL_FOLDER",
+    "WW_BACKUP_REQUIRE_MOUNT",
 )
+
+_SPOOL_DIR = tempfile.mkdtemp(prefix="ww-spool-")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -83,11 +89,14 @@ def mariadb_container():
         os.environ["WW_DB_DIALECT"] = "mysql"
         os.environ["WW_DB_DRIVER"] = "pymysql"
         os.environ["WW_DB_PROD"] = "false"
+        os.environ["WW_SPOOL_FOLDER"] = _SPOOL_DIR
+        os.environ["WW_BACKUP_REQUIRE_MOUNT"] = "false"
 
         AppConfig.inst = None
         AppConfig.inited = False
         DataStore.inst = None
         DataStore.inited = False
+        _reset_runtime_singletons()
 
         yield container
 
@@ -95,8 +104,43 @@ def mariadb_container():
         AppConfig.inited = False
         DataStore.inst = None
         DataStore.inited = False
+        _reset_runtime_singletons()
+        shutil.rmtree(_SPOOL_DIR, ignore_errors=True)
         for key in _INJECTED_ENV:
             os.environ.pop(key, None)
+
+
+def _reset_runtime_singletons():
+    """Drop singletons that captured config before the test database existed."""
+    from spool.SpoolStore import SpoolStore
+    from svc.BackupSvc import BackupSvc
+    from svc.DBFlushSvc import DBFlushSvc
+    from svc.SchedulerSvc import SchedulerSvc
+
+    for cls in (SpoolStore, DBFlushSvc, SchedulerSvc, BackupSvc):
+        cls.inst = None
+        cls.inited = False
+
+
+@pytest.fixture(autouse=True)
+def _reset_offline_and_spool():
+    """Keep a failed outage test from diverting later writes onto disk."""
+    yield
+    if DataStore.inst is not None:
+        with DataStore.inst._state_lock:
+            DataStore.inst._offline_until = None
+    from spool.SpoolStore import SpoolStore
+
+    if SpoolStore.inst is not None:
+        store = SpoolStore.inst
+        store._evict_alerted = False
+        store._age_alerted = False
+        if store._folder.exists():
+            for child in list(store._folder.iterdir()):
+                if child.is_dir():
+                    shutil.rmtree(child, ignore_errors=True)
+                else:
+                    child.unlink(missing_ok=True)
 
 
 def _load_aqi_clean(host: str, port: int) -> None:

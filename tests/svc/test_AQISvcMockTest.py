@@ -110,6 +110,14 @@ class AQISvcMockTest(unittest.TestCase):
         self._mock_repo.insert.assert_called_once()
         self._mock_repo.clean.assert_called_once()
 
+    def test_process_skips_clean_when_database_is_offline(self):
+        """A spooled insert must not be followed by a stored-procedure call."""
+        with patch("svc.AQISvc.DataStore") as datastore:
+            datastore.return_value.is_offline.return_value = True
+            self._svc.process()
+        self._mock_repo.insert.assert_called_once()
+        self._mock_repo.clean.assert_not_called()
+
     def test_process_swallows_sensor_exception(self):
         """process() catches all exceptions and does not propagate them."""
         self._mock_reader.read.side_effect = RuntimeError("sensor error")
