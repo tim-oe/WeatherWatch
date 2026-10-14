@@ -1,7 +1,6 @@
 import io
 
-from apscheduler.jobstores.base import JobLookupError
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from conf.AppConfig import AppConfig
 from conf.SchedulerConfig import SchedulerConfig
@@ -9,6 +8,7 @@ from py_singleton import singleton
 from svc.AQISvc import AQISvc
 from svc.BackupSvc import BackupSvc
 from svc.CameraSvc import CameraSvc
+from svc.DBFlushSvc import DBFlushSvc
 from svc.PIMetricsSvc import PIMetricsSvc
 from svc.SensorSvc import SensorSvc
 from svc.TimelapseSvc import TimelapseSvc
@@ -58,14 +58,6 @@ def file_backup():
     svc.camera()
 
 
-def db_backup():
-    """
-    schedule entry point for file backup task
-    """
-    svc = BackupSvc()
-    svc.db()
-
-
 def timelapse():
     """
     schedule entry point for timelapse task
@@ -82,6 +74,14 @@ def pimetrics():
     svc.process()
 
 
+def db_flush():
+    """
+    schedule entry point for spool drain
+    """
+    svc = DBFlushSvc()
+    svc.process()
+
+
 @logger
 @singleton
 class SchedulerSvc:
@@ -94,8 +94,8 @@ class SchedulerSvc:
 
     AQI_JOB = "aqi"
     CAMERA_JOB = "camera"
-    DB_BACKUP_JOB = "db_backup"
     FILE_BACKUP_JOB = "file_backup"
+    DB_FLUSH_JOB = "db_flush"
     PI_METRICS_JOB = "pi_metrics"
     SENSOR_JOB = "sensor"
     TIMELAPSE_JOB = "timelapse"
@@ -108,10 +108,9 @@ class SchedulerSvc:
         """
         self._app_config = AppConfig()
         self._scheduler_config: SchedulerConfig = self._app_config.scheduler
+        self._db_flush = DBFlushSvc()
 
-        # upgrade of apscheduler is currently breaking impl...
-        self._jobstore = SQLAlchemyJobStore(url=AppConfig().database.url)
-        jobstores = {"default": self._jobstore}
+        jobstores = {"default": MemoryJobStore()}
 
         job_defaults = {"coalesce": True, "max_instances": 1, "replace_existing": True, "misfire_grace_time": 60}
 
@@ -145,9 +144,8 @@ class SchedulerSvc:
         self.init_wu()
         self.init_timelapse()
         self.init_backup_file()
-        self.init_backup_db()
         self.init_aqi()
-        self.init_wu()
+        self.init_db_flush()
 
     def init_camera(self):
         """
@@ -166,11 +164,6 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.CAMERA_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.CAMERA_JOB)
 
     def init_timelapse(self):
         """
@@ -190,11 +183,6 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.TIMELAPSE_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.TIMELAPSE_JOB)
 
     def init_backup_file(self):
         """
@@ -214,35 +202,23 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.FILE_BACKUP_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.FILE_BACKUP_JOB)
 
-    def init_backup_db(self):
+    def init_db_flush(self):
         """
-        initialize backup db
+        initialize spool drain
         :param self: this
         """
-        if self._app_config.backup.db_enable is True:
-            self._scheduler.add_job(
-                db_backup,
-                "cron",
-                hour=self._scheduler_config.db_back_hour,
-                minute="7",
-                name=SchedulerSvc.DB_BACKUP_JOB,
-                id=SchedulerSvc.DB_BACKUP_JOB,
-                coalesce=True,
-                max_instances=1,
-                replace_existing=True,
-                misfire_grace_time=60,
-            )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.DB_BACKUP_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.DB_BACKUP_JOB)
+        self._scheduler.add_job(
+            db_flush,
+            "interval",
+            minutes=self._scheduler_config.db_flush_interval,
+            name=SchedulerSvc.DB_FLUSH_JOB,
+            id=SchedulerSvc.DB_FLUSH_JOB,
+            coalesce=True,
+            max_instances=1,
+            replace_existing=True,
+            misfire_grace_time=60,
+        )
 
     def init_aqi(self):
         """
@@ -261,11 +237,6 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.AQI_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.AQI_JOB)
 
     def init_wu(self):
         """
@@ -284,11 +255,6 @@ class SchedulerSvc:
                 replace_existing=True,
                 misfire_grace_time=60,
             )
-        else:
-            try:
-                self._jobstore.remove_job(SchedulerSvc.WU_JOB)
-            except JobLookupError:
-                self.logger.exception("no job to remove %s", SchedulerSvc.WU_JOB)
 
     def __str__(self):  # pragma: no cover
         """

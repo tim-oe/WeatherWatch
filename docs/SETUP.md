@@ -25,7 +25,9 @@
 ## python sensor libs
 - [BMP 3xx](https://github.com/adafruit/Adafruit_CircuitPython_BMP3XX)
 - [GPS](https://github.com/adafruit/Adafruit_CircuitPython_GPS)
+- [lux sensor (TSL2591)](https://github.com/adafruit/Adafruit_CircuitPython_TSL2591)
 - [PiCamera2](https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf)
+- [PM2.5 PM10 detect sensor (HM3301)](https://github.com/Seeed-Studio/grove.py/blob/master/grove/grove_PM2_5_HM3301.py)
 
 ## System initialization
 - used [sdm](https://github.com/gitbls/sdm) for burning sd image
@@ -53,7 +55,7 @@
     - to stop:  ```python3 setup.py mysqlDown```
     - app user weather:weather     
 - external/prod setup configuration
-    - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/apps/mysql.yml)
+    - [mysql ansible playbook](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
     - create db ```create database weather;``` 
     - create user ```CREATE user 'weather'@'%' identified by 'weather';``` 
     - grant privileges ```GRANT lock tables, drop, select, insert, delete, update, execute, create temporary tables on weather.* to 'weather'@'%';```
@@ -77,13 +79,13 @@
 - list dependencies
     - ```poetry show```
 - testing
-    - unit tests (default, no hardware or DB required):
+    - default (`poetry run pytest`) starts a throwaway MariaDB via Docker/testcontainers and runs unit + repository/dashboard tests against it. Hardware tests stay deselected.
         - all:    ```poetry run pytest```
         - single: ```poetry run pytest -v -s <path/to/test/file.py>```
-    - database tests (spin up MariaDB via testcontainers, requires Docker):
+    - database-only filter (same container; does not use the host `weather` schema):
         - all:    ```poetry run pytest -m db```
         - single: ```poetry run pytest -v -s -m db <path/to/test/file.py>```
-    - integration tests (require physical SDR hardware and a live database):
+    - integration tests (physical SDR/sensors; MariaDB still the testcontainer, not prod):
         - all:    ```poetry run pytest -m integration```
         - single: ```poetry run pytest -v -s -m integration <path/to/test/file.py>```
     - all tests (unit + db + integration):
@@ -111,16 +113,16 @@ all located in $PROJECT_ROOT/reports
 
 ## complete system initialization
 - [piAptInit](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/pi-init.yml)
-- [alias](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
+- [piAliases](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/aliases.yml)
 - [motd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/motd.yml)
 - [console](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/console-resize.yml)
-- [brutoof](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
+- [disbt](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/brutoof-disable.yml)
 - [timesyncd](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/common/nm-timesyncd.yml)
 - [piSwap](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/rpi-swap.yml)
 - [wPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/python.yml)
 - [circuitPython](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/circuit-python.yml)
 - [poetry](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/poetry.yml)
-- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/i2c.yml)
+- [i2c](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/pi/i2c.yml)
 - [sdr](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/nesdr.yml)
 - [mysql](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/weather/mysql.yml)
 - [git](https://raw.githubusercontent.com/tim-oe/piImage/refs/heads/main/src/ansible/dev/git.yml)
@@ -131,6 +133,11 @@ all located in $PROJECT_ROOT/reports
 - initialize DB users db 
 - run test suite
 
+## Database backups and offline spool
+Database dumps are no longer taken by WeatherWatch. home_server's offen sidecar owns them, so `WW_DB_BACKUP_ENABLE` is not read.
+
+When MariaDB is unreachable, sensor writes spool to `WW_SPOOL_FOLDER` (default `spool`, `/var/lib/weatherwatch/spool` on the station) and replay after the database returns. The UTC storage change is a later deploy and must wait until that folder has no `.jsonl` or `.draining` files.
+
 ## FAQ
 - [logging config file](https://gist.github.com/panamantis/5797dda98b1fa6fab2f739a7aacc5e9d)
 - [poetry vscode](https://www.markhneedham.com/blog/2023/07/24/vscode-poetry-python-interpreter/)
@@ -138,7 +145,6 @@ all located in $PROJECT_ROOT/reports
 - [pytest setup teardown](https://stackoverflow.com/questions/26405380/how-do-i-correctly-setup-and-teardown-for-my-pytest-class-with-tests)
 - [pylint vscode](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)
 - [tuning sonar violations](https://www.baeldung.com/sonar-exclude-violations)
-
 - project reset
     1. shut down vscode
     2. on the remote instance `rm -rf ~/.vscode-server`

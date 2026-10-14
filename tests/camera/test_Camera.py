@@ -56,7 +56,7 @@ class CameraTest(unittest.TestCase):
         print(f"ISOSpeedRatings {iso}")
 
         self.assertGreater(num, den)
-        self.assertEqual(iso, 800)
+        self.assertEqual(iso, 1000)
     
         for f in cc.folder.iterdir():
             f.unlink()

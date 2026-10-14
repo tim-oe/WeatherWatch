@@ -46,3 +46,11 @@ class AirQualityPageUnitTest(unittest.TestCase):
             result = page.content()
 
         self.assertIsInstance(result, dbc.Container)
+
+    def test_content_unavailable_when_latest_missing(self):
+        with patch("dashboard.page.AirQualityPage.AQISensorRepository") as MockRepo, \
+             patch("dashboard.page.BasePage.AppConfig"):
+            MockRepo.return_value.find_latest.return_value = None
+            page = AirQualityPage()
+            result = page.content()
+        self.assertIn("unavailable", str(result))

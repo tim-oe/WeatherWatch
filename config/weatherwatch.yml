@@ -9,15 +9,13 @@ aqi:
 
 backup:
   folder: !ENV ${WW_BACKUP_FOLDER:backup}
+  require_mount: !ENV tag:yaml.org,2002:bool ${WW_BACKUP_REQUIRE_MOUNT:true}
   file:
     enable: !ENV tag:yaml.org,2002:bool ${WW_BACKUP_ENABLE:true}
   purge:
     enable: !ENV tag:yaml.org,2002:bool ${WW_PURGE_ENABLE:true}
     img_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_IMG_OLD:14}
     vid_old: !ENV tag:yaml.org,2002:int ${WW_PURGE_VID_OLD:90}
-  db:
-    enable: !ENV tag:yaml.org,2002:bool ${WW_DB_BACKUP_ENABLE:true}
-    weekly_old: !ENV tag:yaml.org,2002:int ${WW_DB_WEEKLY_OLD:35}
 
 camera:
   enable: !ENV tag:yaml.org,2002:bool ${WW_CAM_ENABLE:true}
@@ -77,8 +75,8 @@ scheduler:
   camera:
     # camera pic interval should not be < 5. can eat up disk space
     interval: !ENV tag:yaml.org,2002:int ${WW_CAMERA_INTERVAL:5}
-  db_backup:
-    hour: !ENV tag:yaml.org,2002:int ${WW_FILE_BACKUP_HOUR:3}
+  db_flush:
+    interval: !ENV tag:yaml.org,2002:int ${WW_DB_FLUSH_INTERVAL:1}
   file_backup:
     hour: !ENV tag:yaml.org,2002:int ${WW_FILE_BACKUP_HOUR:2}
   light:
@@ -94,10 +92,37 @@ scheduler:
   weather_undergound:
     interval: !ENV tag:yaml.org,2002:int ${WW_WU_INTERVAL:10}
 
+spool:
+  enable: !ENV tag:yaml.org,2002:bool ${WW_SPOOL_ENABLE:true}
+  folder: !ENV ${WW_SPOOL_FOLDER:spool}
+  # eviction floor: oldest segments are dropped to keep this much of the filesystem free
+  min_free_pct: !ENV tag:yaml.org,2002:int ${WW_SPOOL_MIN_FREE_PCT:14}
+  # operational target; exceeding it warns once per outage, it does not limit anything
+  warn_age_hours: !ENV tag:yaml.org,2002:int ${WW_SPOOL_WARN_AGE_HOURS:24}
+
 sdr:
   reader:
     # this is the total time the reader will poll if not all sensors are read
     timeout: !ENV tag:yaml.org,2002:int ${WW_SENSOR_READ_TIMEOUT:280}
+    # usb re-enumeration recovery for a wedged RTL-SDR dongle (RTL2832U)
+    # when a read returns fewer than min_reads, the dongle is re-enumerated
+    # via sysfs (authorized 0 -> 1) and the read is retried
+    reset:
+      enable: !ENV tag:yaml.org,2002:bool ${WW_SDR_RESET_ENABLE:true}
+      # usb idVendor of the rtl-sdr (Realtek)
+      vendor_id: !ENV ${WW_SDR_USB_VENDOR:0bda}
+      # acceptable usb idProduct values for the RTL2832U
+      product_ids:
+        - "2838"
+        - "2832"
+      # min sensor reads expected per cycle; fewer triggers a reset + retry
+      min_reads: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_MIN_READS:1}
+      # how many reset + retry attempts before giving up for this cycle
+      max_retries: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_RETRIES:1}
+      # seconds to hold the device de-authorized during reset
+      settle_sec: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_SETTLE:5}
+      # seconds to wait for the device to come back after reset
+      wait_sec: !ENV tag:yaml.org,2002:int ${WW_SDR_RESET_WAIT:20}
   sensors:
     # doing device reset of outdoor sensor will change the id
     # device is the
@@ -121,12 +146,42 @@ sdr:
       channel: 3
       dataClass: IndoorData
       device: 20
+
   ignores: # extraneous sensors that are not mine
     - name: unknown_outdoor
       model: Cotech-367959
       dataClass: OutdoorData
       id: 84
       device: 153
+    - name: unknown_outdoor
+      model: Cotech-367959
+      dataClass: OutdoorData
+      id: 105
+      device: 153
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 21
+      channel: 1
+      device: 20
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 84
+      channel: 1
+      device: 20
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 238
+      channel: 1
+      device: 20
+    - name: unknown_indoor
+      model: Ambientweather-F007TH
+      dataClass: IndoorData
+      id: 238
+      channel: 5
+      device: 20
 
 timelapse:
   enable: !ENV tag:yaml.org,2002:bool ${WW_TIMELAPSE_ENABLE:true}

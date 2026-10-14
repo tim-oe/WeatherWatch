@@ -78,3 +78,12 @@ class OutdoorSensorPageUnitTest(unittest.TestCase):
             result = page.content()
 
         self.assertIsNotNone(result)
+
+    def test_content_unavailable_when_latest_missing(self):
+        with patch("dashboard.page.OutdoorSensorPage.OutdoorSensorRepository") as MockOutdoor, \
+             patch("dashboard.page.OutdoorSensorPage.LightSensorRepository"), \
+             patch("dashboard.page.BasePage.AppConfig"):
+            MockOutdoor.return_value.find_latest.return_value = None
+            page = OutdoorSensorPage()
+            result = page.content()
+        self.assertIn("unavailable", str(result))

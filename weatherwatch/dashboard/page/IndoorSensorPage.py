@@ -38,6 +38,8 @@ class IndoorSensorPage(BasePage):
         sensor: SensorConfig = self._app_config.get_sensor(kwargs["name"])
 
         data: IndoorSensor = self._indoor_repo.find_latest(sensor.channel)
+        if data is None:
+            return self.unavailable()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         min_temp = min(0, int(data.temperature_f) - 5)

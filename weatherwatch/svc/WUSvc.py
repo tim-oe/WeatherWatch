@@ -2,6 +2,7 @@ __all__ = ["WUSvc"]
 
 
 import math
+import time
 from datetime import date
 from decimal import Decimal
 
@@ -53,12 +54,15 @@ class WUSvc:
         service entry point
         :param self: this
         """
-        self.logger.info("processing weather underground upload")
+        start_monotonic = time.monotonic()
         try:
             in_data: IndoorSensor = self._indoor_repo.find_latest(self._config.indoor_channel)
-            rainfail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
-
             out_data: OutdoorSensor = self._outdoor_repo.find_latest()
+            if in_data is None or out_data is None:
+                self.logger.warning("skipping weather underground upload; sensor reading unavailable")
+                return
+
+            rainfail_mm = float(self._outdoor_repo.get_days_rainfall(date.today()))
 
             data: WUData = WUData(
                 winddir=out_data.wind_dir_deg,
@@ -79,6 +83,8 @@ class WUSvc:
             # self.set_aqi(data)
 
             self._client.post(out_data.read_time, data)
+
+            self.logger.info("weather underground upload complete  duration %s", Converter.duration_seconds(start_monotonic))
         except Exception as e:
             self._emailer.send_error_notification(
                 e,

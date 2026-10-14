@@ -26,9 +26,6 @@ class DatabaseConfig:
     POOL_KEY = "pool"
     SIZE_KEY = "size"
     OVERFLOW_KEY = "overflow"
-    BACKUP_KEY = "backup"
-    ENABLE_KEY = "enable"
-    FOLDER_KEY = "folder"
 
     # TODO envars placed in /etc/environment and not in user space
     USERNAME_ENVAR = "WW_DB_USERNAME"
@@ -89,21 +86,3 @@ class DatabaseConfig:
         :return: the pool_size
         """
         return self.__dict__[DatabaseConfig.POOL_KEY][DatabaseConfig.OVERFLOW_KEY]
-
-    @property
-    def backup_enable(self) -> bool:
-        """
-        backupEnable property getter
-        :param self: this
-        :return: the backupEnable
-        """
-        return self.__dict__[DatabaseConfig.BACKUP_KEY][DatabaseConfig.ENABLE_KEY]
-
-    @property
-    def backup_folder(self) -> bool:
-        """
-        backupFolder property getter
-        :param self: this
-        :return: the backupFolder
-        """
-        return self.__dict__[DatabaseConfig.BACKUP_KEY][DatabaseConfig.FOLDER_KEY]

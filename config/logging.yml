@@ -26,3 +26,5 @@ loggers:
     # dash app spewing debug    
     watchdog.observers.inotify_buffer:
         level: INFO
+    apscheduler:
+        level: WARNING

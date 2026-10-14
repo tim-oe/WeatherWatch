@@ -135,6 +135,21 @@ class GPSReaderMockTest(unittest.TestCase):
         self.assertIsInstance(data, GPSData)
         self.assertGreaterEqual(self._mock_gps.update.call_count, 2)
 
+    def test_read_waits_for_altitude_after_fix(self):
+        """read() keeps updating after a fix until altitude_m is positive."""
+        type(self._mock_gps).altitude_m = PropertyMock(side_effect=[None, None, 150.0, 150.0])
+        data = self._reader.read()
+        self.assertEqual(150.0, data.altitude)
+        self.assertGreaterEqual(self._mock_gps.update.call_count, 2)
+
+    def test_read_returns_fix_when_altitude_times_out(self):
+        """a lat/lon fix is still returned when altitude never arrives."""
+        type(self._mock_gps).altitude_m = PropertyMock(return_value=None)
+        self._mock_converter.duration_seconds.return_value = self._mock_gps_config.init_timeout
+        data = self._reader.read()
+        self.assertIsNone(data.altitude)
+        self.assertEqual(43.6532, data.latitude)
+
     def test_read_raises_ioerror_when_fix_times_out(self):
         """read() raises IOError when the fix is not acquired within init_timeout."""
         type(self._mock_gps).has_fix = PropertyMock(return_value=False)

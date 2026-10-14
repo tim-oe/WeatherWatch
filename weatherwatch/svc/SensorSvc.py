@@ -54,13 +54,9 @@ class SensorSvc:
         service entry point
         :param self: this
         """
-        self.logger.info("processing sensors")
-
         self.read_light()
 
         self._sdr_reader.read()
-
-        self.logger.info("processing complete")
 
     def read_light(self):
         """

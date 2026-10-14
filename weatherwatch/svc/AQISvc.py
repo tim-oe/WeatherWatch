@@ -6,6 +6,7 @@ from conf.AQIConfig import AQIConfig
 from entity.AQISensor import AQISensor
 from py_singleton import singleton
 from repository.AQISensorRepository import AQISensorRepository
+from repository.DataStore import DataStore
 from sensor.aqi.Hm3301Data import Hm3301Data
 from sensor.aqi.Hm3301Reader import Hm3301Reader
 from util.Converter import Converter
@@ -38,7 +39,6 @@ class AQISvc:
         process sensor
         :param self: this
         """
-        self.logger.info("processing aqi")
         start = time.monotonic()
 
         try:
@@ -59,9 +59,12 @@ class AQISvc:
             self._repo.insert(ent)
             self.logger.info("AQI processing complete  duration %s", Converter.duration_seconds(start))
 
-            self.logger.info("running aqi clean")
-            self._repo.clean()
-            self.logger.info("aqi clean complete")
+            if DataStore().is_offline():
+                self.logger.warning("skipping aqi clean; database offline")
+            else:
+                self.logger.debug("running aqi clean")
+                self._repo.clean()
+                self.logger.debug("aqi clean complete")
 
         except Exception:
             self.logger.exception("failed to process aqi data")

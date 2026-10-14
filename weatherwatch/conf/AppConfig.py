@@ -12,6 +12,7 @@ from conf.GPSConfig import GPSConfig
 from conf.LightConfig import LightConfig
 from conf.SchedulerConfig import SchedulerConfig
 from conf.SensorConfig import SensorConfig
+from conf.SpoolConfig import SpoolConfig
 from conf.TimelapseConfig import TimelapseConfig
 from conf.WUConfig import WUConfig
 from py_singleton import singleton
@@ -48,6 +49,7 @@ class AppConfig:
     CAMERA_KEY = "camera"
     BACKUP_KEY = "backup"
     SCHEDULER_KEY = "scheduler"
+    SPOOL_KEY = "spool"
     DASHBOARD_KEY = "dashboard"
     TIMELAPSE_KEY = "timelapse"
     WU_KEY = "weather_undergound"
@@ -108,6 +110,9 @@ class AppConfig:
 
         self._scheduler = SchedulerConfig(self._conf[AppConfig.SCHEDULER_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SCHEDULER_KEY)
+
+        self._spool = SpoolConfig(self._conf[AppConfig.SPOOL_KEY])
+        self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.SPOOL_KEY)
 
         self._timelapse = TimelapseConfig(self._conf[AppConfig.TIMELAPSE_KEY])
         self.logger.info(AppConfig.CONF_INIT_MSG, AppConfig.TIMELAPSE_KEY)
@@ -259,6 +264,15 @@ class AppConfig:
         :return: the scheduler
         """
         return self._scheduler
+
+    @property
+    def spool(self) -> SpoolConfig:
+        """
+        spool property getter
+        :param self: this
+        :return: the spool
+        """
+        return self._spool
 
     @property
     def timelapse(self) -> TimelapseConfig:

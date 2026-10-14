@@ -2,8 +2,6 @@ import unittest
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 
-from apscheduler.jobstores.base import JobLookupError
-
 import svc.SchedulerSvc as scheduler_module
 from svc.SchedulerSvc import SchedulerSvc
 
@@ -39,10 +37,10 @@ class SchedulerModuleFunctionsTest(unittest.TestCase):
         scheduler_module.file_backup()
         MockSvc.return_value.camera.assert_called_once()
 
-    @patch("svc.SchedulerSvc.BackupSvc")
-    def test_db_backup_calls_db(self, MockSvc):
-        scheduler_module.db_backup()
-        MockSvc.return_value.db.assert_called_once()
+    @patch("svc.SchedulerSvc.DBFlushSvc")
+    def test_db_flush_calls_process(self, MockSvc):
+        scheduler_module.db_flush()
+        MockSvc.return_value.process.assert_called_once()
 
     @patch("svc.SchedulerSvc.TimelapseSvc")
     def test_timelapse_calls_process(self, MockSvc):
@@ -86,121 +84,64 @@ class SchedulerSvcTest(unittest.TestCase):
     # init_camera
     # ------------------------------------------------------------------
 
-    def test_init_camera_disabled_removes_job(self):
+    def test_init_camera_disabled_does_not_add(self):
         cfg = MagicMock()
         cfg.camera.enable = False
         with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
+            with patch.object(self.svc._scheduler, "add_job") as mock_add:
                 self.svc.init_camera()
-        mock_remove.assert_called_once_with(SchedulerSvc.CAMERA_JOB)
-
-    def test_init_camera_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.camera.enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.CAMERA_JOB)):
-                self.svc.init_camera()  # must not raise
+        mock_add.assert_not_called()
 
     # ------------------------------------------------------------------
     # init_timelapse
     # ------------------------------------------------------------------
 
-    def test_init_timelapse_disabled_removes_job(self):
+    def test_init_timelapse_disabled_does_not_add(self):
         cfg = MagicMock()
         cfg.timelapse.enable = False
         with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
+            with patch.object(self.svc._scheduler, "add_job") as mock_add:
                 self.svc.init_timelapse()
-        mock_remove.assert_called_once_with(SchedulerSvc.TIMELAPSE_JOB)
-
-    def test_init_timelapse_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.timelapse.enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.TIMELAPSE_JOB)):
-                self.svc.init_timelapse()
+        mock_add.assert_not_called()
 
     # ------------------------------------------------------------------
     # init_backup_file
     # ------------------------------------------------------------------
 
-    def test_init_backup_file_disabled_removes_job(self):
+    def test_init_backup_file_disabled_does_not_add(self):
         cfg = MagicMock()
         cfg.backup.file_enable = False
         with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
+            with patch.object(self.svc._scheduler, "add_job") as mock_add:
                 self.svc.init_backup_file()
-        mock_remove.assert_called_once_with(SchedulerSvc.FILE_BACKUP_JOB)
+        mock_add.assert_not_called()
 
-    def test_init_backup_file_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.backup.file_enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.FILE_BACKUP_JOB)):
-                self.svc.init_backup_file()
-
-    # ------------------------------------------------------------------
-    # init_backup_db
-    # ------------------------------------------------------------------
-
-    def test_init_backup_db_disabled_removes_job(self):
-        cfg = MagicMock()
-        cfg.backup.db_enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
-                self.svc.init_backup_db()
-        mock_remove.assert_called_once_with(SchedulerSvc.DB_BACKUP_JOB)
-
-    def test_init_backup_db_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.backup.db_enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.DB_BACKUP_JOB)):
-                self.svc.init_backup_db()
+    def test_db_flush_job_is_registered(self):
+        self.assertIsNotNone(self.svc._scheduler.get_job(SchedulerSvc.DB_FLUSH_JOB))
 
     # ------------------------------------------------------------------
     # init_aqi
     # ------------------------------------------------------------------
 
-    def test_init_aqi_disabled_removes_job(self):
+    def test_init_aqi_disabled_does_not_add(self):
         cfg = MagicMock()
         cfg.aqi.enable = False
         with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
+            with patch.object(self.svc._scheduler, "add_job") as mock_add:
                 self.svc.init_aqi()
-        mock_remove.assert_called_once_with(SchedulerSvc.AQI_JOB)
-
-    def test_init_aqi_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.aqi.enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.AQI_JOB)):
-                self.svc.init_aqi()
+        mock_add.assert_not_called()
 
     # ------------------------------------------------------------------
     # init_wu
     # ------------------------------------------------------------------
 
-    def test_init_wu_disabled_removes_job(self):
+    def test_init_wu_disabled_does_not_add(self):
         cfg = MagicMock()
         cfg.wu.enable = False
         with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job") as mock_remove:
+            with patch.object(self.svc._scheduler, "add_job") as mock_add:
                 self.svc.init_wu()
-        mock_remove.assert_called_once_with(SchedulerSvc.WU_JOB)
-
-    def test_init_wu_disabled_job_not_found_logged(self):
-        cfg = MagicMock()
-        cfg.wu.enable = False
-        with self._swap_config(cfg):
-            with patch.object(self.svc._jobstore, "remove_job",
-                              side_effect=JobLookupError(SchedulerSvc.WU_JOB)):
-                self.svc.init_wu()
+        mock_add.assert_not_called()
 
     def test_del_shuts_down_scheduler(self):
         """Calling __del__ directly invokes _scheduler.shutdown()."""

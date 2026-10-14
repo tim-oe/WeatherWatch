@@ -15,6 +15,7 @@ from py_singleton import singleton
 from pytemp import pytemp
 from repository.OutdoorSensorRepository import OutdoorSensorRepository
 from sensor.light.Tsl2591SensorReader import Tsl2591SensorReader
+from util.Converter import Converter
 from util.Logger import logger
 
 __all__ = ["CameraSvc"]
@@ -52,22 +53,26 @@ class CameraSvc:
         main service entry point
         :param self: this
         """
-        self.logger.info("processing camera")
         data: OutdoorSensor = self._repo.find_latest()
 
         try:
+            start_monotonic = time.monotonic()
+
             lux: float = self.tslSensorReader.get_lux()
-            self.logger.info(f"lux read[0] {lux}")
+            self.logger.debug(f"lux read[0] {lux}")
             time.sleep(0.2)
 
             lux = self.tslSensorReader.get_lux()
-            self.logger.info(f"lux read[1] {lux}")
+            self.logger.debug(f"lux read[1] {lux}")
 
             img_file: str = self.camera.process(lux)
 
             self.add_custom_exif(img_file, data, lux)
 
             shutil.copy(img_file, self._camera_config.current_file)
+
+            self.logger.info("camera processing complete  duration %s", Converter.duration_seconds(start_monotonic))
+
         except Exception:
             self.logger.exception("failed to take picture")
 
@@ -92,12 +97,13 @@ class CameraSvc:
             exif_dict["Exif"][piexif.ExifIFD.LensMake] = self._camera_config.lens_make
             exif_dict["Exif"][piexif.ExifIFD.LensModel] = self._camera_config.lens_model
 
-            # weather
-            # Add custom metadata to the Exif UserComment
-            c = pytemp(float(data.temperature_f), "f", "c")
-            exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
-            exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
-            exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
+            if data is None:
+                self.logger.warning("skipping weather exif; no outdoor reading")
+            else:
+                c = pytemp(float(data.temperature_f), "f", "c")
+                exif_dict["Exif"][piexif.ExifIFD.Temperature] = (int(c), 1)
+                exif_dict["Exif"][piexif.ExifIFD.Humidity] = (data.humidity, 100)
+                exif_dict["Exif"][piexif.ExifIFD.Pressure] = (int(data.pressure), 1)
 
             try:
                 self.add_gps_exif(exif_dict)
@@ -105,10 +111,15 @@ class CameraSvc:
                 self.logger.warning("skipping GPS exif data", exc_info=True)
 
             # custom data to persist lux
-            # TODO add other fields if needed
-            user_data = json.dumps({"lux": round(lux, 3)})
+            # Keep JSON in UserComment for machine parsing, and add human-readable
+            # strings in common tags shown by standard EXIF viewers.
+            lux_value = round(lux, 3)
+            user_data = json.dumps({"lux": lux_value})
+            display_data = f"WeatherWatch lux={lux_value}"
 
             exif_dict["Exif"][piexif.ExifIFD.UserComment] = user_data.encode("utf-8")
+            exif_dict["0th"][piexif.ImageIFD.ImageDescription] = display_data.encode("utf-8")
+            exif_dict["0th"][piexif.ImageIFD.XPComment] = (display_data + "\x00").encode("utf-16le")
 
             # Dump the modified Exif data
             exif_bytes = piexif.dump(exif_dict)

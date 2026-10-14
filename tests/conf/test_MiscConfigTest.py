@@ -16,8 +16,8 @@ class BackupConfigTest(unittest.TestCase):
     def test_file_enable(self):
         self.assertIsNotNone(self.cfg.file_enable)
 
-    def test_db_enable(self):
-        self.assertIsNotNone(self.cfg.db_enable)
+    def test_require_mount(self):
+        self.assertIsNotNone(self.cfg.require_mount)
 
     def test_folder(self):
         self.assertIsNotNone(self.cfg.folder)
@@ -30,9 +30,6 @@ class BackupConfigTest(unittest.TestCase):
 
     def test_vid_old(self):
         self.assertIsNotNone(self.cfg.vid_old)
-
-    def test_db_weekly_old(self):
-        self.assertIsNotNone(self.cfg.db_weekly_old)
 
 
 class GPSConfigTest(unittest.TestCase):
@@ -98,8 +95,8 @@ class SchedulerConfigTest(unittest.TestCase):
     def test_timelapse_hour(self):
         self.assertIsNotNone(self.cfg.timelapse_hour)
 
-    def test_db_back_hour(self):
-        self.assertIsNotNone(self.cfg.db_back_hour)
+    def test_db_flush_interval(self):
+        self.assertGreater(self.cfg.db_flush_interval, 0)
 
     def test_file_back_hour(self):
         self.assertIsNotNone(self.cfg.file_back_hour)

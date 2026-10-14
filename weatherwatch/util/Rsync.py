@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from subprocess import Popen, TimeoutExpired
+from subprocess import PIPE, Popen, TimeoutExpired
 
 from util.Logger import logger
 
@@ -19,38 +19,42 @@ class Rsync:
 
     BASE_CMD = ["rsync", "-a", "--no-perms", "--no-owner", "--no-group"]
 
-    def archive(self, src: str, dest: str):
+    ARCHIVE_TIMEOUT = 60 * 5
+
+    def archive(self, src: str, dest: str) -> bool:
         """
         archive data
         :param self: this
         :param src: the source folder
         :param dest: the destination folder
+        :return: True when rsync exits 0
         """
-        self.logger.info(f"starting rsync {src} -> {dest}")
+        self.logger.info("starting rsync %s -> %s", src, dest)
 
-        cmd = Rsync.BASE_CMD.copy()
+        cmd = list(self.BASE_CMD)
         cmd.append(src)
         cmd.append(dest)
 
         with Popen(
             cmd,
-            # stdout=PIPE,
-            # stderr=PIPE,
-            # text=True,
+            stderr=PIPE,
+            text=True,
             close_fds=Rsync.ON_POSIX,
-        ) as p:
-
+        ) as process:
             try:
-                p.wait(timeout=60 * 5)
-                self.logger.info("rsync subprocess complete %s", p.returncode)
-                # for line in p.stdout:
-                #     self.logger.debug(line.strip())
-
-                # for line in p.stderr:
-                #     self.logger.error(line.strip())
+                _, err = process.communicate(timeout=self.ARCHIVE_TIMEOUT)
             except TimeoutExpired:
-                self.logger.exception("rsync timed out")
-                p.kill()
+                self.logger.error("rsync timed out")
+                process.kill()
+                process.wait()
+                return False
+
+            if process.returncode != 0:
+                self.logger.error("rsync failed %s: %s", process.returncode, (err or "").strip())
+                return False
+
+            self.logger.info("rsync subprocess complete %s", process.returncode)
+            return True
 
     def purge(self, src: str, days_ago: int):
         """

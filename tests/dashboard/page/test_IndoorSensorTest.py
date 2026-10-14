@@ -76,3 +76,14 @@ class IndoorSensorPageUnitTest(unittest.TestCase):
                 result = page.content(name="TestSensor")
 
         self.assertIsNotNone(result)
+
+    def test_content_unavailable_when_latest_missing(self):
+        mock_sensor_cfg = MagicMock()
+        mock_sensor_cfg.channel = 2
+        with patch("dashboard.page.IndoorSensorPage.IndoorSensorRepository") as MockRepo, \
+             patch("dashboard.page.BasePage.AppConfig") as MockCfg:
+            MockCfg.return_value.get_sensor.return_value = mock_sensor_cfg
+            MockRepo.return_value.find_latest.return_value = None
+            page = IndoorSensorPage()
+            result = page.content(name="TestSensor")
+        self.assertIn("unavailable", str(result))

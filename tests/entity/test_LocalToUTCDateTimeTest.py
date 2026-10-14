@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import date, datetime
 
 import pytz
 
@@ -123,3 +123,12 @@ class LocalToUTCDateTimeTest(unittest.TestCase):
         utc = self.typ.process_bind_param(CST_LOCAL, None)
         offset_hours = int((utc - CST_LOCAL).total_seconds() // 3600)
         self.assertEqual(6, offset_hours, "CST should be UTC-6")
+
+    # ------------------------------------------------------------------
+    # Invalid input — date (not datetime) must be rejected
+    # ------------------------------------------------------------------
+
+    def test_bind_date_only_raises(self):
+        """A bare date object has no tzinfo attribute and must not be passed to process_bind_param."""
+        with self.assertRaises((AttributeError, TypeError)):
+            self.typ.process_bind_param(date(2026, 4, 20), None)

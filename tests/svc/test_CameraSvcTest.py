@@ -56,6 +56,15 @@ class SensorSvcTest(unittest.TestCase):
         user_data = json.loads(exif_dict["Exif"][piexif.ExifIFD.UserComment].decode())
         pprint.pprint(user_data)
         self.assertIn("lux", user_data)
+        self.assertTrue(piexif.ImageIFD.ImageDescription in exif_dict["0th"])
+        image_description = exif_dict["0th"][piexif.ImageIFD.ImageDescription].decode("utf-8")
+        self.assertTrue(image_description.startswith("WeatherWatch lux="))
+        self.assertTrue(piexif.ImageIFD.XPComment in exif_dict["0th"])
+        xp_comment_raw = exif_dict["0th"][piexif.ImageIFD.XPComment]
+        if isinstance(xp_comment_raw, tuple):
+            xp_comment_raw = bytes(xp_comment_raw)
+        xp_comment = xp_comment_raw.decode("utf-16le").rstrip("\x00")
+        self.assertEqual(image_description, xp_comment)
 
         # camera
         self.assertTrue(piexif.ExifIFD.LightSource in exif_dict["Exif"])

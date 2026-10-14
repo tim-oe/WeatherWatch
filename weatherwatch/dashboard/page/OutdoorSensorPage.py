@@ -44,6 +44,8 @@ class OutdoorSensorPage(BasePage):
         """
 
         data: OutdoorSensor = self._outdoor_repo.find_latest()
+        if data is None:
+            return self.unavailable()
         curr_date: str = data.read_time.strftime("%Y-%m-%d %H-%M-%S")
 
         rain_fail = self._outdoor_repo.get_days_rainfall(date.today())
