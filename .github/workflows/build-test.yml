@@ -22,21 +22,31 @@ jobs:
       - name: Install system packages
         run: |
           sudo apt-get update
-          # libgl1 and libglib2.0-0 are required to import the opencv wheel.
-          sudo apt-get install -y pkg-config libmariadb-dev build-essential libgl1 libglib2.0-0
+          # The opencv wheel links Qt against these system libraries.
+          # libmariadb-dev is for the MariaDB Python driver, which has no Linux wheel.
+          sudo apt-get install -y \
+            pkg-config \
+            libmariadb-dev \
+            build-essential \
+            libgl1 \
+            libglib2.0-0 \
+            libsm6 \
+            libice6 \
+            libxext6
 
       - name: Install dependencies
         run: |
-          pip install poetry
+          pip install --disable-pip-version-check -q poetry
           # poetry.toml forces an opencv source build for the Pi h264 encoder.
           # The wheel is enough to import cv2 in CI.
           printf '%s\n' '[installer]' > poetry.toml
           # RPi.GPIO ships arm wheels only and will not build on ubuntu-latest.
           sed -i '/^rpi-gpio /d' pyproject.toml
-          poetry lock --no-interaction
-          poetry install --no-interaction
+          poetry lock --no-interaction -q
+          # -w hides the compiler warnings from the MariaDB driver source build.
+          CFLAGS=-w poetry install --no-interaction -q
           # Imported by the AQI reader. Present as a system package on the Pi.
-          poetry run pip install 'smbus2==0.4.3'
+          poetry run pip install --disable-pip-version-check -q 'smbus2==0.4.3'
 
       - name: Stub Pi-only imports
         run: |
@@ -75,6 +85,7 @@ jobs:
       - name: Run tests
         env:
           PYTHONPATH: ${{ runner.temp }}/pi-stubs
+          QT_QPA_PLATFORM: offscreen
           WW_DASH_SALT_KEY: ci
           WW_DB_USERNAME: weather
           WW_DB_PASSWORD: weather
