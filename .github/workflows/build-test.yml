@@ -81,6 +81,23 @@ jobs:
               def __init__(self, *args, **kwargs):
                   pass
           EOF
+          # python3-libcamera is a system package on the Pi and is not on PyPI.
+          cat > "$stub/libcamera.py" << 'EOF'
+          class NoiseReductionModeEnum:
+              HighQuality = 0
+
+          class AwbModeEnum:
+              Auto = 0
+
+          class _Draft:
+              NoiseReductionModeEnum = NoiseReductionModeEnum
+
+          class _Controls:
+              AwbModeEnum = AwbModeEnum
+              draft = _Draft
+
+          controls = _Controls()
+          EOF
 
       - name: Run tests
         env:
@@ -93,16 +110,21 @@ jobs:
           WW_BACKUP_REQUIRE_MOUNT: "false"
         run: |
           # These tests drive a physical camera. Picamera2 is not installable here.
+          mkdir -p reports
+          set +e
           poetry run pytest \
             --ignore=tests/camera/test_Camera.py \
-            --ignore=tests/svc/test_CameraSvcTest.py
+            --ignore=tests/svc/test_CameraSvcTest.py \
+            2>&1 | tee reports/pytest.log
+          status=${PIPESTATUS[0]}
+          exit "$status"
 
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: reports/coverage/
+          name: test-reports
+          path: reports/
           retention-days: 7
           if-no-files-found: ignore
 
