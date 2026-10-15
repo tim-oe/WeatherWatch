@@ -32,7 +32,8 @@ jobs:
             libglib2.0-0 \
             libsm6 \
             libice6 \
-            libxext6
+            libxext6 \
+            tzdata
 
       - name: Install dependencies
         run: |
@@ -103,6 +104,10 @@ jobs:
         env:
           PYTHONPATH: ${{ runner.temp }}/pi-stubs
           QT_QPA_PLATFORM: offscreen
+          # The suite expects the station zone. GitHub runners are UTC.
+          TZ: America/Chicago
+          # The opencv wheel has no h264 encoder. mp4v writes the timelapse.
+          WW_CAM_TIMELAPSE_CODEC: mp4v
           WW_DASH_SALT_KEY: ci
           WW_DB_USERNAME: weather
           WW_DB_PASSWORD: weather
