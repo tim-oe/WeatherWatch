@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*" # Trigger on version tags like v1.0.0, v1.2.3, etc.
+
+permissions:
+  contents: write # Required for creating releases
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          echo "pyproject_version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building version from pyproject.toml: $VERSION"
+          echo "Git tag version: $TAG_VERSION"
+
+          if [ "$VERSION" != "$TAG_VERSION" ]; then
+            echo "::warning::Version mismatch: pyproject.toml ($VERSION) != git tag ($TAG_VERSION)"
+          fi
+
+      - name: Build release package
+        run: python3 scripts/build_release.py
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/release/weatherwatch-${{ steps.get_version.outputs.pyproject_version }}.tar.gz
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          body: |
+            ## WeatherWatch Release v${{ steps.get_version.outputs.pyproject_version }}
+
+            ### Installation
+
+            On the Raspberry Pi:
+
+            ```bash
+            cd /opt
+            sudo wget https://github.com/${{ github.repository }}/releases/download/v${{ steps.get_version.outputs.tag_version }}/weatherwatch-${{ steps.get_version.outputs.pyproject_version }}.tar.gz
+            sudo tar -xzf weatherwatch-${{ steps.get_version.outputs.pyproject_version }}.tar.gz
+            cd WeatherWatch
+
+            # In-project venv so systemd can call /opt/WeatherWatch/.venv/bin/python3.
+            # System site packages are required for Picamera2.
+            sudo poetry config virtualenvs.in-project true --local
+            sudo poetry config virtualenvs.options.system-site-packages true --local
+            sudo poetry install --only main
+
+            sudo cp systemd/weatherwatch.service /etc/systemd/system/
+            sudo cp systemd/weatherdash.service /etc/systemd/system/
+            sudo systemctl daemon-reload
+            sudo systemctl enable --now weatherwatch weatherdash
+            ```
+
+            ### What's Included
+            - Runtime application code
+            - Configuration files
+            - SQL schema and stored procedures
+            - Systemd service definitions
+
+            ### Requirements
+            - Raspberry Pi 3B+ or newer
+            - Python 3.11 or higher
+            - Poetry
+            - MariaDB
+            - rtl_433 for the outdoor sensors
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
