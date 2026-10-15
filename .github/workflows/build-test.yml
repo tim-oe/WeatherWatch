@@ -106,6 +106,8 @@ jobs:
           QT_QPA_PLATFORM: offscreen
           # The suite expects the station zone. GitHub runners are UTC.
           TZ: America/Chicago
+          # DEBUG logging is written to stdout and floods the Actions log.
+          WW_LOG_LEVEL: WARNING
           # The opencv wheel has no h264 encoder. mp4v writes the timelapse.
           WW_CAM_TIMELAPSE_CODEC: mp4v
           WW_DASH_SALT_KEY: ci

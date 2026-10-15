@@ -32,8 +32,9 @@ class PIMetricsRepositoryTest(BaseRespositoryTest):
         data.disk_used = disk.used
         data.disk_percent = disk.percent
 
-        cpu = psutil.sensors_temperatures()
-        data.cpu_temp_c = cpu['cpu_thermal'][0].current
+        temps = psutil.sensors_temperatures()
+        zone = temps.get("cpu_thermal") or next(iter(temps.values()), None)
+        data.cpu_temp_c = zone[0].current if zone else 0
 
         print(str(data))
         

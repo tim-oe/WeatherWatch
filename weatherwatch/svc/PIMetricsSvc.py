@@ -58,8 +58,14 @@ class PIMetricsSvc:
         :param self: this
         :param data: metrics data
         """
-        cpu = psutil.sensors_temperatures()
-        data.cpu_temp_c = cpu["cpu_thermal"][0].current
+        temps = psutil.sensors_temperatures()
+        # Pi OS exposes cpu_thermal. Other hosts may use another zone, or none.
+        zone = temps.get("cpu_thermal") or next(iter(temps.values()), None)
+        if not zone:
+            self.logger.warning("cpu temperature sensor unavailable")
+            data.cpu_temp_c = 0
+            return
+        data.cpu_temp_c = zone[0].current
 
     def get_metrics(self) -> PIMetrics:
         """
