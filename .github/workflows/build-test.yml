@@ -22,7 +22,8 @@ jobs:
       - name: Install system packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config libmariadb-dev build-essential
+          # libgl1 and libglib2.0-0 are required to import the opencv wheel.
+          sudo apt-get install -y pkg-config libmariadb-dev build-essential libgl1 libglib2.0-0
 
       - name: Install dependencies
         run: |
@@ -37,11 +38,19 @@ jobs:
           # Imported by the AQI reader. Present as a system package on the Pi.
           poetry run pip install 'smbus2==0.4.3'
 
-      - name: Stub Picamera2
+      - name: Stub Pi-only imports
         run: |
-          stub="${RUNNER_TEMP}/pi-stubs/picamera2"
-          mkdir -p "$stub"
-          cat > "$stub/__init__.py" << 'EOF'
+          stub="${RUNNER_TEMP}/pi-stubs"
+          mkdir -p "$stub/picamera2"
+          # Blinka raises NotImplementedError on import when the host is not a Pi.
+          cat > "$stub/board.py" << 'EOF'
+          def I2C(*args, **kwargs):
+              raise RuntimeError("board.I2C is unavailable in CI")
+
+          SCL = object()
+          SDA = object()
+          EOF
+          cat > "$stub/picamera2/__init__.py" << 'EOF'
           class Preview:
               NULL = None
 
@@ -57,7 +66,7 @@ jobs:
               def __init__(self, *args, **kwargs):
                   pass
           EOF
-          cat > "$stub/allocators.py" << 'EOF'
+          cat > "$stub/picamera2/allocators.py" << 'EOF'
           class PersistentAllocator:
               def __init__(self, *args, **kwargs):
                   pass
