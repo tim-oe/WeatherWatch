@@ -5,6 +5,11 @@ from pathlib import Path
 
 import pymysql
 import pytest
+
+from tests.mysql_connector import allow_pure_mysql_connector
+
+allow_pure_mysql_connector()
+
 from pyway.configfile import ConfigFile
 from pyway.migrate import Migrate
 from testcontainers.mysql import MySqlContainer
