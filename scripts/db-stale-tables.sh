@@ -11,6 +11,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=db-common.sh
 source "${SCRIPT_DIR}/db-common.sh"
 
+usage() {
+  cat <<EOF
+Usage: sudo ./scripts/db-stale-tables.sh
+
+List ${DATABASE} tables that are not in the canonical set.
+Writes a report and a DROP script under ${DB_DIR}/ and does not execute the drops.
+Refuses to run until a weather_premigration_*.sql archive exists on the share.
+EOF
+}
+
 HOST="$(hostname -s)"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 REPORT_PATH="${DB_DIR}/stale_tables_${HOST}_${STAMP}.txt"
@@ -25,6 +35,7 @@ is_canonical() {
 }
 
 main() {
+  check_no_args "$@"
   need_root
   resolve_clients
   ensure_staging

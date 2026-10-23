@@ -14,6 +14,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=db-common.sh
 source "${SCRIPT_DIR}/db-common.sh"
 
+usage() {
+  cat <<EOF
+Usage: sudo ./scripts/db-archive.sh
+
+Write a plain SQL archive of the whole ${DATABASE} schema, stale tables
+included, to:
+  ${DB_DIR}/weather_premigration_<host>_<stamp>.sql
+
+Environment:
+  MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
+EOF
+}
+
 HOST="$(hostname -s)"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 ARCHIVE_NAME="weather_premigration_${HOST}_${STAMP}.sql"
@@ -37,6 +50,7 @@ write_manifest() {
 }
 
 main() {
+  check_no_args "$@"
   need_root
   resolve_clients
   ensure_staging

@@ -12,7 +12,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=db-common.sh
 source "${SCRIPT_DIR}/db-common.sh"
 
+usage() {
+  cat <<EOF
+Usage: sudo ./scripts/db-dump.sh
+
+Write a plain SQL dump of the ${DATABASE} schema to:
+  ${DB_DIR}/${DUMP_NAME}
+
+Environment:
+  MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
+EOF
+}
+
 main() {
+  check_no_args "$@"
   need_root
   resolve_clients
   ensure_staging
@@ -29,7 +42,7 @@ main() {
   echo "Verify with:"
   echo "  (cd ${DB_DIR} && sha256sum -c ${DUMP_NAME}.sha256)"
   echo "Restore on the new host with:"
-  echo "  sudo ${SCRIPT_DIR}/db-restore.sh"
+  echo "  sudo ${SCRIPT_DIR}/db-restore.sh $(default_dump_path)"
 }
 
 main "$@"

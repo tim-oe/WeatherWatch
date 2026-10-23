@@ -30,6 +30,30 @@ die() {
   exit 1
 }
 
+usage() {
+  cat <<EOF
+Usage: sudo ./scripts/files-archive.sh
+
+Archive /etc/environment to:
+  ${FILES_DIR}/weather_files_<host>_<stamp>.tar.gz
+
+Environment:
+  MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
+EOF
+}
+
+check_no_args() {
+  if [[ $# -eq 0 ]]; then
+    return 0
+  fi
+  if [[ $# -eq 1 && ( "${1}" == "-h" || "${1}" == "--help" ) ]]; then
+    usage
+    exit 0
+  fi
+  usage >&2
+  exit 1
+}
+
 need_root() {
   [[ "${EUID}" -eq 0 ]] || die "run as root (needed to read /etc/environment)"
 }
@@ -86,6 +110,7 @@ build_archive() {
 }
 
 main() {
+  check_no_args "$@"
   need_root
   ensure_staging
   collect_paths

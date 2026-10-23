@@ -4,9 +4,9 @@
 # Run on tec-weather2 after db-init.sh. Do not run pyway migrate first.
 #
 # Usage:
-#   sudo ./scripts/db-restore.sh
 #   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql
-#   sudo ./scripts/db-restore.sh --force   # replace tables if weather is not empty
+#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql --force
+# Running with no arguments prints this syntax and exits.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,8 +17,15 @@ FORCE=0
 DUMP_PATH=""
 
 usage() {
-  cat <<'EOF'
-Usage: sudo ./scripts/db-restore.sh [dump.sql] [--force]
+  cat <<EOF
+Usage: sudo ./scripts/db-restore.sh <dump.sql> [--force]
+
+Read a plain SQL dump from the clones share into the local MariaDB.
+
+Arguments:
+  dump.sql   SQL file to load. Typical path:
+             ${DB_DIR}/${DUMP_NAME}
+  --force    Replace tables when ${DATABASE} is not empty
 
 Environment:
   MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
@@ -37,10 +44,16 @@ parse_args() {
         FORCE=1
         ;;
       -*)
-        die "unknown option: ${arg}"
+        echo "ERROR: unknown option: ${arg}" >&2
+        usage >&2
+        exit 1
         ;;
       *)
-        [[ -z "${DUMP_PATH}" ]] || die "unexpected argument: ${arg}"
+        if [[ -n "${DUMP_PATH}" ]]; then
+          echo "ERROR: unexpected argument: ${arg}" >&2
+          usage >&2
+          exit 1
+        fi
         DUMP_PATH="${arg}"
         ;;
     esac
@@ -54,16 +67,17 @@ table_count() {
 
 main() {
   parse_args "$@"
+  if [[ -z "${DUMP_PATH}" ]]; then
+    usage >&2
+    exit 1
+  fi
+
   need_root
   resolve_clients
   ensure_staging
   require_server
   require_database
 
-  if [[ -z "${DUMP_PATH}" ]]; then
-    DUMP_PATH="$(latest_migration_dump)"
-  fi
-  [[ -n "${DUMP_PATH}" ]] || die "no ${DUMP_NAME} dump under ${DB_DIR} (run db-dump.sh first)"
   [[ -f "${DUMP_PATH}" ]] || die "dump not found: ${DUMP_PATH}"
 
   verify_checksum "${DUMP_PATH}"

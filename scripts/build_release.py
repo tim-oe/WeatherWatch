@@ -116,8 +116,24 @@ def build_release(version: str | None = None) -> int:
     return 0
 
 
+def usage() -> None:
+    """Print the command syntax."""
+    print(
+        "Usage: ./scripts/build_release.py\n"
+        "\n"
+        "Pack the runtime tree into build/release/weatherwatch-<version>.tar.gz.\n"
+        "The version is read from pyproject.toml. This script takes no arguments."
+    )
+
+
 def main() -> int:
     """Entry point."""
+    if len(sys.argv) > 1:
+        if sys.argv[1:] == ["-h"] or sys.argv[1:] == ["--help"]:
+            usage()
+            return 0
+        usage()
+        return 1
     return build_release(get_version())
 
 

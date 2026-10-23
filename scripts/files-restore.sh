@@ -3,9 +3,8 @@
 # Run on the target (new) host before starting weather services.
 #
 # Usage:
-#   sudo ./scripts/files-restore.sh
 #   sudo ./scripts/files-restore.sh /mnt/clones/data/weather-migration/files/weather_files_HOST_STAMP.tar.gz
-#   sudo MIG_ROOT=/mnt/clones/data/weather-migration ./scripts/files-restore.sh
+# Running with no arguments prints this syntax and exits.
 #
 # Restores:
 #   /etc/environment
@@ -33,8 +32,15 @@ die() {
 }
 
 usage() {
-  cat <<'EOF'
-Usage: sudo ./scripts/files-restore.sh [archive.tar.gz]
+  cat <<EOF
+Usage: sudo ./scripts/files-restore.sh <archive.tar.gz>
+
+Restore /etc/environment from a files archive on the clones share
+and create empty /var/lib/weatherwatch/pix and vid directories.
+
+Arguments:
+  archive.tar.gz   Archive under ${FILES_DIR}/
+                   named weather_files_<host>_<stamp>.tar.gz
 
 Environment:
   MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
@@ -57,27 +63,25 @@ parse_args() {
         echo "WARN: --include-mysql-conf is ignored; MariaDB drop-ins are not restored" >&2
         ;;
       -*)
-        die "unknown option: ${arg}"
+        echo "ERROR: unknown option: ${arg}" >&2
+        usage >&2
+        exit 1
         ;;
       *)
-        [[ -z "${ARCHIVE_PATH}" ]] || die "unexpected argument: ${arg}"
+        if [[ -n "${ARCHIVE_PATH}" ]]; then
+          echo "ERROR: unexpected argument: ${arg}" >&2
+          usage >&2
+          exit 1
+        fi
         ARCHIVE_PATH="${arg}"
         ;;
     esac
   done
 }
 
-resolve_archive() {
-  local latest
-  if [[ -n "${ARCHIVE_PATH}" ]]; then
-    [[ -f "${ARCHIVE_PATH}" ]] || die "archive not found: ${ARCHIVE_PATH}"
-    return
-  fi
-
-  [[ -d "${FILES_DIR}" ]] || die "files dir missing: ${FILES_DIR}"
-  latest="$(ls -1t "${FILES_DIR}"/weather_files_*.tar.gz 2>/dev/null | head -n1 || true)"
-  [[ -n "${latest}" ]] || die "no weather_files_*.tar.gz under ${FILES_DIR}"
-  ARCHIVE_PATH="${latest}"
+require_archive() {
+  [[ -n "${ARCHIVE_PATH}" ]] || { usage >&2; exit 1; }
+  [[ -f "${ARCHIVE_PATH}" ]] || die "archive not found: ${ARCHIVE_PATH}"
 }
 
 verify_checksum() {
@@ -123,8 +127,12 @@ extract_environment() {
 
 main() {
   parse_args "$@"
+  if [[ -z "${ARCHIVE_PATH}" ]]; then
+    usage >&2
+    exit 1
+  fi
   need_root
-  resolve_archive
+  require_archive
   verify_checksum
   prepare_dest_dirs
   extract_environment

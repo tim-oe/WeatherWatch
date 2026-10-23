@@ -112,12 +112,18 @@ latest_premigration_archive() {
   ls -1t "${DB_DIR}"/weather_premigration_*.sql 2>/dev/null | head -n1 || true
 }
 
-latest_migration_dump() {
-  local path
-  path="$(default_dump_path)"
-  if [[ -f "${path}" ]]; then
-    printf '%s\n' "${path}"
+# No positional parameters. Zero arguments continues.
+# -h/--help prints usage and exits 0. Anything else prints usage and exits 1.
+check_no_args() {
+  if [[ $# -eq 0 ]]; then
+    return 0
   fi
+  if [[ $# -eq 1 && ( "${1}" == "-h" || "${1}" == "--help" ) ]]; then
+    usage
+    exit 0
+  fi
+  usage >&2
+  exit 1
 }
 
 dump_weather() {

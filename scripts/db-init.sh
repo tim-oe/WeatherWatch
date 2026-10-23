@@ -12,6 +12,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=db-common.sh
 source "${SCRIPT_DIR}/db-common.sh"
 
+usage() {
+  cat <<EOF
+Usage: sudo ./scripts/db-init.sh
+
+Create the ${DATABASE} database and the app/pyway users from /etc/environment.
+Does not run pyway migrate.
+
+Environment:
+  ENV_FILE      File to read (default: /etc/environment)
+  DB_USER_HOST  Account host (default: %)
+EOF
+}
+
 ENV_FILE="${ENV_FILE:-/etc/environment}"
 DB_USER_HOST="${DB_USER_HOST:-%}"
 
@@ -37,6 +50,7 @@ sql_quote() {
 }
 
 main() {
+  check_no_args "$@"
   need_root
   resolve_clients
   require_server
@@ -89,7 +103,7 @@ SQL
   mysql_exec -e "SHOW GRANTS FOR ${q_pyway_user}@${q_host}"
   echo
   echo "Init complete. Do not run pyway migrate; restore the dump next:"
-  echo "  sudo ${SCRIPT_DIR}/db-restore.sh"
+  echo "  sudo ${SCRIPT_DIR}/db-restore.sh $(default_dump_path)"
 }
 
 main "$@"
