@@ -33,7 +33,7 @@ main() {
 
   local archive
   archive="$(latest_premigration_archive)"
-  [[ -n "${archive}" ]] || die "no weather_premigration_*.sql.gz in ${DB_DIR}; run db-archive.sh first"
+  [[ -n "${archive}" ]] || die "no weather_premigration_*.sql in ${DB_DIR}; run db-archive.sh first"
 
   local -a stale=()
   local table

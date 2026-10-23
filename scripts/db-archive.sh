@@ -16,7 +16,7 @@ source "${SCRIPT_DIR}/db-common.sh"
 
 HOST="$(hostname -s)"
 STAMP="$(date +%Y%m%d_%H%M%S)"
-ARCHIVE_NAME="weather_premigration_${HOST}_${STAMP}.sql.gz"
+ARCHIVE_NAME="weather_premigration_${HOST}_${STAMP}.sql"
 ARCHIVE_PATH="${DB_DIR}/${ARCHIVE_NAME}"
 MANIFEST_PATH="${DB_DIR}/weather_premigration_${HOST}_${STAMP}.manifest"
 

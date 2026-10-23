@@ -5,7 +5,7 @@
 #
 # Usage:
 #   sudo ./scripts/db-restore.sh
-#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql.gz
+#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql
 #   sudo ./scripts/db-restore.sh --force   # replace tables if weather is not empty
 set -euo pipefail
 
@@ -18,7 +18,7 @@ DUMP_PATH=""
 
 usage() {
   cat <<'EOF'
-Usage: sudo ./scripts/db-restore.sh [dump.sql.gz] [--force]
+Usage: sudo ./scripts/db-restore.sh [dump.sql] [--force]
 
 Environment:
   MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
@@ -75,7 +75,7 @@ main() {
   fi
 
   echo "Restoring ${DUMP_PATH} into ${DATABASE}"
-  gunzip -c "${DUMP_PATH}" | "${MYSQL_BIN}"
+  "${MYSQL_BIN}" <"${DUMP_PATH}"
   echo "Dump loaded."
 
   if [[ -f "${AQI_CLEAN_SQL}" ]]; then

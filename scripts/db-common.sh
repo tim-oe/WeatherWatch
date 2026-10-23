@@ -7,8 +7,7 @@ MIG_ROOT="${MIG_ROOT:-/mnt/clones/data/weather-migration}"
 DB_DIR="${MIG_ROOT}/db"
 INV_DIR="${MIG_ROOT}/inventory"
 DATABASE="${DATABASE:-weather}"
-GZIP_LEVEL="${GZIP_LEVEL:-6}"
-DUMP_NAME="${DUMP_NAME:-weather.sql.gz}"
+DUMP_NAME="${DUMP_NAME:-weather.sql}"
 
 _DB_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${_DB_COMMON_DIR}/.." && pwd)"
@@ -110,7 +109,7 @@ default_dump_path() {
 }
 
 latest_premigration_archive() {
-  ls -1t "${DB_DIR}"/weather_premigration_*.sql.gz 2>/dev/null | head -n1 || true
+  ls -1t "${DB_DIR}"/weather_premigration_*.sql 2>/dev/null | head -n1 || true
 }
 
 latest_migration_dump() {
@@ -122,13 +121,15 @@ latest_migration_dump() {
 }
 
 dump_weather() {
-  # Args: extra mariadb-dump flags, then the output .sql.gz path as last arg.
+  # First arg is the output .sql path on the share. Remaining args are extra
+  # mariadb-dump flags. The file is plain SQL; the share has the space and
+  # restore reads it directly.
   local out="$1"
   shift
   local -a extra=("$@")
 
   echo "Dumping ${DATABASE} -> ${out}"
-  echo "  client: ${DUMP_BIN}  gzip -${GZIP_LEVEL}"
+  echo "  client: ${DUMP_BIN}"
   "${DUMP_BIN}" \
     --single-transaction \
     --quick \
@@ -139,7 +140,7 @@ dump_weather() {
     --default-character-set=utf8mb4 \
     "${extra[@]}" \
     --databases "${DATABASE}" \
-    | gzip "-${GZIP_LEVEL}" >"${out}"
+    >"${out}"
   write_checksum "${out}"
   echo "  size: $(du -h "${out}" | awk '{print $1}')"
 }
