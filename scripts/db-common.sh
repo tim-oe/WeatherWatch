@@ -280,8 +280,137 @@ dump_weather() {
   echo "  size: $(du -h "${out}" | awk '{print $1}')"
 }
 
+query_exec() {
+  "${Q_EXEC:-mysql_exec}" "$@"
+}
+
+query_n() {
+  "${Q_N:-mysql_n}" "$@"
+}
+
+sql_ident() {
+  local s="$1"
+  s="${s//\`/\`\`}"
+  printf '`%s`' "${s}"
+}
+
 list_weather_tables() {
-  mysql_n -e "SELECT TABLE_NAME FROM information_schema.TABLES
-    WHERE TABLE_SCHEMA='${DATABASE}' AND TABLE_TYPE='BASE TABLE'
+  query_n -e "SELECT TABLE_NAME FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA=$(sql_string "${DATABASE}") AND TABLE_TYPE='BASE TABLE'
     ORDER BY TABLE_NAME"
+}
+
+inventory_has_column() {
+  local table="$1" col="$2"
+  local n
+  n="$(query_n -e "SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA=$(sql_string "${DATABASE}")
+      AND TABLE_NAME=$(sql_string "${table}")
+      AND COLUMN_NAME=$(sql_string "${col}")")"
+  [[ "${n}" == "1" ]]
+}
+
+inventory_emit_table() {
+  local table="$1"
+  local ident
+  ident="$(sql_ident "${table}")"
+  echo "===== TABLE ${table} ====="
+
+  query_exec -e "SELECT
+      TABLE_ROWS AS approx_rows,
+      DATA_LENGTH AS data_bytes,
+      INDEX_LENGTH AS index_bytes,
+      CREATE_TIME,
+      TABLE_COLLATION
+    FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA=$(sql_string "${DATABASE}") AND TABLE_NAME=$(sql_string "${table}")\G"
+
+  echo "-- COUNT(*)"
+  query_exec "${DATABASE}" -e "SELECT COUNT(*) AS row_count FROM ${ident}"
+
+  if inventory_has_column "${table}" id; then
+    echo "-- MAX(id)"
+    query_exec "${DATABASE}" -e "SELECT MAX(id) AS max_id FROM ${ident}"
+  fi
+
+  if inventory_has_column "${table}" read_time; then
+    echo "-- MIN/MAX(read_time)"
+    query_exec "${DATABASE}" -e "SELECT MIN(read_time) AS min_read_time, MAX(read_time) AS max_read_time FROM ${ident}"
+  fi
+
+  echo "-- SHOW CREATE TABLE"
+  query_exec "${DATABASE}" -e "SHOW CREATE TABLE ${ident}\G"
+
+  echo "-- PARTITIONS"
+  query_exec -e "SELECT PARTITION_NAME, TABLE_ROWS, PARTITION_DESCRIPTION
+    FROM information_schema.PARTITIONS
+    WHERE TABLE_SCHEMA=$(sql_string "${DATABASE}") AND TABLE_NAME=$(sql_string "${table}")
+      AND PARTITION_NAME IS NOT NULL
+    ORDER BY PARTITION_ORDINAL_POSITION"
+  echo
+}
+
+write_inventory() {
+  local out="$1"
+  local label="$2"
+  mkdir -p "$(dirname "${out}")"
+  {
+    echo "host=${label}"
+    echo "created_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "database=${DATABASE}"
+    query_exec -e "SELECT VERSION() AS server_version,
+      @@global.time_zone AS global_time_zone,
+      @@session.time_zone AS session_time_zone,
+      NOW() AS now_local,
+      UTC_TIMESTAMP() AS now_utc\G"
+    echo
+
+    local table
+    while IFS= read -r table; do
+      [[ -n "${table}" ]] || continue
+      inventory_emit_table "${table}"
+    done < <(list_weather_tables)
+
+    echo "===== ROUTINES ====="
+    query_exec -e "SELECT ROUTINE_NAME, ROUTINE_TYPE
+      FROM information_schema.ROUTINES
+      WHERE ROUTINE_SCHEMA=$(sql_string "${DATABASE}")
+      ORDER BY ROUTINE_NAME"
+  } >"${out}"
+}
+
+# Lines that should match across a source dump and the new database.
+# Drops host, clock, server version, storage sizes, and SHOW CREATE TABLE.
+inventory_facts() {
+  local file="$1"
+  awk -F '\t' -v OFS='\t' '
+    /^database=/ { print; next }
+    /^[[:space:]]*global_time_zone:/ {
+      sub(/^[[:space:]]*global_time_zone:[[:space:]]*/, "")
+      printf "global_time_zone=%s\n", $0
+      next
+    }
+    /^[[:space:]]*session_time_zone:/ {
+      sub(/^[[:space:]]*session_time_zone:[[:space:]]*/, "")
+      printf "session_time_zone=%s\n", $0
+      next
+    }
+    /^===== ROUTINES =====/ { print; capture=1; in_part=0; next }
+    /^===== TABLE / { print; capture=0; in_part=0; next }
+    /^-- PARTITIONS$/ { print; in_part=1; capture=0; next }
+    /^-- COUNT\(\*\)/ || /^-- MAX\(id\)/ || /^-- MIN\/MAX\(read_time\)/ {
+      print; capture=1; in_part=0; next
+    }
+    /^-- / { capture=0; in_part=0; next }
+    in_part && $0 != "" {
+      if ($1 == "PARTITION_NAME") {
+        print "PARTITION_NAME", "PARTITION_DESCRIPTION"
+        next
+      }
+      if (NF >= 3) print $1, $3
+      else print
+      next
+    }
+    capture && $0 != "" { print }
+  ' "${file}"
 }

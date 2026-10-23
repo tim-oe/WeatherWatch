@@ -115,6 +115,8 @@ main() {
     WHERE ROUTINE_SCHEMA=$(sql_string "${DATABASE}")"
   echo
   echo "Restore complete on ${DB_HOST}:${DB_PORT}/${DATABASE}."
+  echo "Verify against the source inventory:"
+  echo "  ${SCRIPT_DIR}/db-verify.sh --host ${DB_HOST} --port ${DB_PORT} --user ${DB_USER} --password PASS --database ${DATABASE} ${INV_DIR}/weather_inventory_<host>_<stamp>.txt"
 }
 
 main "$@"
