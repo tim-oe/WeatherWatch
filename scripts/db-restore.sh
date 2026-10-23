@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Restore a weather schema dump into the local MariaDB instance.
-# Restores the dump as-is (all tables, including apscheduler_jobs and stale leftovers).
-# Run on tec-weather2 after db-init.sh. Do not run pyway migrate first.
+# Load a weather schema dump into the new database.
+# Run from a host that can reach that server. The dump is read from the
+# path given here (the clones share). Connection settings are the new
+# database's own host, port, user, password, and database name.
 #
 # Usage:
-#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql
-#   sudo ./scripts/db-restore.sh /mnt/clones/data/weather-migration/db/weather.sql --force
-# Running with no arguments prints this syntax and exits.
+#   ./scripts/db-restore.sh --host HOST --port PORT --user USER --password PASS --database NAME /mnt/clones/data/weather-migration/db/weather.sql
+#   ./scripts/db-restore.sh --host HOST --port PORT --user USER --password PASS --database NAME /mnt/clones/data/weather-migration/db/weather.sql --force
+# Running without the connection settings or the dump path prints this syntax.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,28 +19,34 @@ DUMP_PATH=""
 
 usage() {
   cat <<EOF
-Usage: sudo ./scripts/db-restore.sh <dump.sql> [--force]
+Usage: ./scripts/db-restore.sh --host HOST --port PORT --user USER --password PASS --database NAME <dump.sql> [--force]
 
-Read a plain SQL dump from the clones share into the local MariaDB.
+Load a plain SQL dump into the new database over TCP.
+
+Connection:
+  --host       Server address
+  --port       Server port
+  --user       Account that can create and load the schema
+  --password   Password for that account
+  --database   Database name to load
 
 Arguments:
-  dump.sql   SQL file to load. Typical path:
-             ${DB_DIR}/${DUMP_NAME}
-  --force    Replace tables when ${DATABASE} is not empty
+  dump.sql     SQL file to read. Typical path:
+               ${DB_DIR}/${DUMP_NAME}
+  --force      Replace tables when the database is not empty
 
-Environment:
-  MIG_ROOT   Staging root (default: /mnt/clones/data/weather-migration)
+The account is the new database login, not the application login.
 EOF
 }
 
 parse_args() {
   local arg
-  for arg in "$@"; do
+  parse_remote_args "$@"
+  if [[ ${#REMOTE_POSITIONAL[@]} -eq 0 ]]; then
+    return
+  fi
+  for arg in "${REMOTE_POSITIONAL[@]}"; do
     case "${arg}" in
-      -h|--help)
-        usage
-        exit 0
-        ;;
       --force)
         FORCE=1
         ;;
@@ -61,26 +68,25 @@ parse_args() {
 }
 
 table_count() {
-  mysql_n -e "SELECT COUNT(*) FROM information_schema.TABLES
-    WHERE TABLE_SCHEMA='${DATABASE}' AND TABLE_TYPE='BASE TABLE'"
+  local q
+  q="$(sql_string "${DATABASE}")"
+  remote_mysql_n -e "SELECT COUNT(*) FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA=${q} AND TABLE_TYPE='BASE TABLE'"
 }
 
 main() {
   parse_args "$@"
+  require_remote_config
   if [[ -z "${DUMP_PATH}" ]]; then
+    echo "ERROR: missing dump.sql" >&2
     usage >&2
     exit 1
   fi
-
-  need_root
-  resolve_clients
-  ensure_staging
-  require_server
-  require_database
-
   [[ -f "${DUMP_PATH}" ]] || die "dump not found: ${DUMP_PATH}"
-
   verify_checksum "${DUMP_PATH}"
+
+  prepare_remote_client
+  require_remote_server
 
   local existing
   existing="$(table_count)"
@@ -88,27 +94,27 @@ main() {
     die "${DATABASE} already has ${existing} table(s). Pass --force to replace them from the dump."
   fi
 
-  echo "Restoring ${DUMP_PATH} into ${DATABASE}"
-  "${MYSQL_BIN}" <"${DUMP_PATH}"
+  echo "Restoring ${DUMP_PATH} into ${DB_USER}@${DB_HOST}:${DB_PORT}/${DATABASE}"
+  remote_mysql <"${DUMP_PATH}"
   echo "Dump loaded."
 
   if [[ -f "${AQI_CLEAN_SQL}" ]]; then
     echo "Re-applying ${AQI_CLEAN_SQL}"
-    "${MYSQL_BIN}" "${DATABASE}" <"${AQI_CLEAN_SQL}"
+    remote_mysql "${DATABASE}" <"${AQI_CLEAN_SQL}"
   else
     echo "WARN: ${AQI_CLEAN_SQL} not found; skipped aqi_clean re-apply" >&2
   fi
 
   echo
   echo "Tables now in ${DATABASE}:"
-  mysql_exec "${DATABASE}" -e "SHOW TABLES"
+  remote_mysql "${DATABASE}" -e "SHOW TABLES"
   echo
   echo "Routines:"
-  mysql_exec -e "SELECT ROUTINE_NAME, ROUTINE_TYPE
+  remote_mysql -e "SELECT ROUTINE_NAME, ROUTINE_TYPE
     FROM information_schema.ROUTINES
-    WHERE ROUTINE_SCHEMA='${DATABASE}'"
+    WHERE ROUTINE_SCHEMA=$(sql_string "${DATABASE}")"
   echo
-  echo "Restore complete. Next: sudo ./scripts/db-inventory.sh and diff against the Phase 0 inventory."
+  echo "Restore complete on ${DB_HOST}:${DB_PORT}/${DATABASE}."
 }
 
 main "$@"

@@ -45,7 +45,7 @@ ensure_staging() {
   [[ -w "${INV_DIR}" ]] || die "not writable: ${INV_DIR}"
 }
 
-resolve_clients() {
+resolve_mysql_client() {
   if command -v mariadb >/dev/null 2>&1; then
     MYSQL_BIN=mariadb
   elif command -v mysql >/dev/null 2>&1; then
@@ -53,6 +53,10 @@ resolve_clients() {
   else
     die "neither mariadb nor mysql client is on PATH"
   fi
+}
+
+resolve_clients() {
+  resolve_mysql_client
 
   if command -v mariadb-dump >/dev/null 2>&1; then
     DUMP_BIN=mariadb-dump
@@ -80,6 +84,131 @@ require_database() {
   local found
   found="$(mysql_n -e "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='${DATABASE}'")"
   [[ -n "${found}" ]] || die "database '${DATABASE}' does not exist"
+}
+
+# Remote connection for scripts that load the new database.
+# Dump and inventory stay on the source and use the local root socket.
+DB_HOST=""
+DB_PORT=""
+DB_USER=""
+DB_PASSWORD=""
+DB_NAME=""
+REMOTE_POSITIONAL=()
+CLIENT_DEFAULTS=""
+
+cnf_quote() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  printf '"%s"' "${s}"
+}
+
+sql_string() {
+  local s="$1"
+  s="${s//\'/\'\'}"
+  printf "'%s'" "${s}"
+}
+
+cleanup_client_defaults() {
+  if [[ -n "${CLIENT_DEFAULTS}" && -f "${CLIENT_DEFAULTS}" ]]; then
+    rm -f "${CLIENT_DEFAULTS}"
+  fi
+}
+
+parse_remote_args() {
+  REMOTE_POSITIONAL=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      --host|--port|--user|--password|--database)
+        local flag="$1"
+        [[ $# -ge 2 ]] || { echo "ERROR: ${flag} requires a value" >&2; usage >&2; exit 1; }
+        local value="$2"
+        if [[ -z "${value}" || "${value}" == --* ]]; then
+          echo "ERROR: ${flag} requires a value" >&2
+          usage >&2
+          exit 1
+        fi
+        case "${flag}" in
+          --host) DB_HOST="${value}" ;;
+          --port) DB_PORT="${value}" ;;
+          --user) DB_USER="${value}" ;;
+          --password) DB_PASSWORD="${value}" ;;
+          --database) DB_NAME="${value}" ;;
+        esac
+        shift 2
+        ;;
+      --host=*|--port=*|--user=*|--password=*|--database=*)
+        local key="${1%%=*}"
+        local value="${1#*=}"
+        if [[ -z "${value}" ]]; then
+          echo "ERROR: ${key} requires a value" >&2
+          usage >&2
+          exit 1
+        fi
+        case "${key}" in
+          --host) DB_HOST="${value}" ;;
+          --port) DB_PORT="${value}" ;;
+          --user) DB_USER="${value}" ;;
+          --password) DB_PASSWORD="${value}" ;;
+          --database) DB_NAME="${value}" ;;
+        esac
+        shift
+        ;;
+      *)
+        REMOTE_POSITIONAL+=("$1")
+        shift
+        ;;
+    esac
+  done
+}
+
+require_remote_config() {
+  local -a missing=()
+  [[ -n "${DB_HOST}" ]] || missing+=("--host")
+  [[ -n "${DB_PORT}" ]] || missing+=("--port")
+  [[ -n "${DB_USER}" ]] || missing+=("--user")
+  [[ -n "${DB_PASSWORD}" ]] || missing+=("--password")
+  [[ -n "${DB_NAME}" ]] || missing+=("--database")
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    echo "ERROR: missing ${missing[*]}" >&2
+    usage >&2
+    exit 1
+  fi
+  [[ "${DB_PORT}" =~ ^[0-9]+$ ]] || { echo "ERROR: --port must be a number" >&2; usage >&2; exit 1; }
+  [[ "${DB_PASSWORD}" != *$'\n'* ]] || die "--password cannot contain a newline"
+  DATABASE="${DB_NAME}"
+}
+
+prepare_remote_client() {
+  resolve_mysql_client
+  CLIENT_DEFAULTS="$(mktemp)"
+  chmod 600 "${CLIENT_DEFAULTS}"
+  trap cleanup_client_defaults EXIT
+  {
+    echo "[client]"
+    echo "protocol=tcp"
+    printf 'host=%s\n' "$(cnf_quote "${DB_HOST}")"
+    printf 'port=%s\n' "${DB_PORT}"
+    printf 'user=%s\n' "$(cnf_quote "${DB_USER}")"
+    printf 'password=%s\n' "$(cnf_quote "${DB_PASSWORD}")"
+  } >"${CLIENT_DEFAULTS}"
+}
+
+remote_mysql() {
+  "${MYSQL_BIN}" --defaults-extra-file="${CLIENT_DEFAULTS}" --batch --raw "$@"
+}
+
+remote_mysql_n() {
+  remote_mysql --skip-column-names "$@"
+}
+
+require_remote_server() {
+  remote_mysql_n -e "SELECT 1" >/dev/null 2>&1 \
+    || die "cannot connect to ${DB_USER}@${DB_HOST}:${DB_PORT}"
 }
 
 write_checksum() {

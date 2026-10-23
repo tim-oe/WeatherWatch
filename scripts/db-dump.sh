@@ -41,8 +41,8 @@ main() {
   echo
   echo "Verify with:"
   echo "  (cd ${DB_DIR} && sha256sum -c ${DUMP_NAME}.sha256)"
-  echo "Restore on the new host with:"
-  echo "  sudo ${SCRIPT_DIR}/db-restore.sh $(default_dump_path)"
+  echo "Load it into the new database from a host that can reach it:"
+  echo "  ${SCRIPT_DIR}/db-restore.sh --host HOST --port PORT --user USER --password PASS --database NAME $(default_dump_path)"
 }
 
 main "$@"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Diffable inventory of the weather schema. Run on tec-weather after stale
-# drops (baseline) and again on tec-weather2 after restore.
+# Diffable inventory of the weather schema on the source database.
+# Run with sudo on the source host. The new database is loaded separately.
 #
 # Usage:
 #   sudo ./scripts/db-inventory.sh
