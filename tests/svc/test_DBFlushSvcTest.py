@@ -1,3 +1,4 @@
+import logging
 import sys
 import types
 import unittest
@@ -188,6 +189,30 @@ class DBFlushSvcTest(unittest.TestCase):
             session.close()
         self.assertEqual(2, len(rows))
         self.assertFalse(SpoolStore().segments("outdoor_sensor"))
+
+    def test_idle_table_logs_at_debug(self):
+        with (
+            patch.object(self.svc._store, "tables", return_value=["light_sensor", "outdoor_sensor"]),
+            patch.object(self.svc._datastore, "is_available", return_value=True),
+            self.assertLogs("DBFlushSvc", level="DEBUG") as captured,
+        ):
+            self.svc.process()
+        idle = [record for record in captured.records if record.getMessage().startswith("db flush table=")]
+        self.assertEqual(2, len(idle))
+        self.assertTrue(all(record.levelno == logging.DEBUG for record in idle))
+
+    def test_active_table_logs_at_info(self):
+        with (
+            patch.object(self.svc._store, "tables", return_value=["outdoor_sensor"]),
+            patch.object(self.svc._datastore, "is_available", return_value=True),
+            patch.object(self.svc, "_drain_table", return_value=(None, False, 2, 1, 1)),
+            patch.object(self.svc, "_finish_table"),
+            self.assertLogs("DBFlushSvc", level="DEBUG") as captured,
+        ):
+            self.svc.process()
+        active = [record for record in captured.records if "replayed=2" in record.getMessage()]
+        self.assertEqual(1, len(active))
+        self.assertEqual(logging.INFO, active[0].levelno)
 
     def test_reentrancy_lock_skips_overlapping_drain(self):
         self.assertTrue(self.svc._lock.acquire(blocking=False))

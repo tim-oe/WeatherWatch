@@ -61,7 +61,9 @@ class DBFlushSvc:
                     if is_connection_error(exc):
                         self._datastore.mark_offline()
                     self.logger.exception("db flush after_drain failed for table %s", table)
-            self.logger.info(
+            # an empty directory is checked every interval; only a pass that moved rows is info
+            log = self.logger.info if failed or replayed or duplicates or rejected else self.logger.debug
+            log(
                 "db flush table=%s replayed=%s duplicates=%s rejected=%s failed=%s",
                 table,
                 replayed,
