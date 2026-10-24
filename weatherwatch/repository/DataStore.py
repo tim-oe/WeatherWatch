@@ -26,8 +26,9 @@ class DataStore:
 
     ONLINE_EVENT = "DataStoreOnline"
     CONNECT_TIMEOUT = 5
-    READ_TIMEOUT = 10
-    WRITE_TIMEOUT = 10
+    # remote MariaDB; daily aggregates and stored procedures exceed 10s
+    READ_TIMEOUT = 60
+    WRITE_TIMEOUT = 60
     POOL_RECYCLE_SECONDS = 3600
     OFFLINE_RETRY_SECONDS = 60
 

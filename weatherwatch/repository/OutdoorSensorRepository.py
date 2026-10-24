@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import List, Union
 
@@ -6,7 +6,7 @@ from entity.OutdoorSensor import OutdoorSensor
 from py_singleton import singleton
 from repository.BaseRepository import BaseRepository
 from repository.db_read import db_read
-from sqlalchemy import DATE, Row, cast, func
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 __all__ = ["OutdoorSensorRepository"]
@@ -62,24 +62,27 @@ class OutdoorSensorRepository(BaseRepository[OutdoorSensor]):
     @db_read(default=Decimal("0"))
     def get_days_rainfall(self, rain_date: date) -> Decimal:
         """
-        get the total days rain fall
+        get the total rainfall for a UTC calendar day
         :param self: this
-        :param date: date to lookup rain fall
-        theres an edge case of just after midnight where there will not be
-        data for the current day yet
+        :param rain_date: the UTC day to sum
+        half-open range on read_time so outdoor_rain_day_idx can be used.
+        bounds are UTC wall times and stay out of LocalToUTCDateTime.
+        just after midnight the current day can still be empty
         """
+        start = datetime(rain_date.year, rain_date.month, rain_date.day)
+        end = start + timedelta(days=1)
         session: Session = self._datastore.session
         try:
-            r: Row = (
-                session.query(func.sum(OutdoorSensor.rain_delta_mm).label("total"))
-                .filter(cast(OutdoorSensor.read_time, DATE) == rain_date)
-                .group_by(cast(OutdoorSensor.read_time, DATE))
-                .first()
+            total = (
+                session.query(func.sum(OutdoorSensor.rain_delta_mm))
+                .filter(text("read_time >= :start AND read_time < :end"))
+                .params(start=start, end=end)
+                .scalar()
             )
-            if r is not None:
-                return r.total
+            if total is None:
+                return Decimal(0)
 
-            return Decimal(0.0)
+            return total
         finally:
             session.close()
 
